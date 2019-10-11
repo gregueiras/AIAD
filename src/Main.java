@@ -14,11 +14,18 @@ public class Main {
 
       Profile p1 = new ProfileImpl();
       p1.setParameter(Profile.GUI, "true");
+
       ContainerController mainController = rt.createAgentContainer(p1);
       AgentController ac1 = mainController
-          .createNewAgent("joao", BookSellerAgent.class.getName(), null);
+          .createNewAgent("Jeff", BookSellerAgent.class.getName(), null);
+
+      String[] buyerArgs = {"Lusíadas"};
+
+      AgentController ac2 = mainController
+          .createNewAgent("Nerd", BookBuyerAgent.class.getName(), buyerArgs);
 
       ac1.start();
+      ac2.start();
     } catch (StaleProxyException e) {
       e.printStackTrace();
     }
