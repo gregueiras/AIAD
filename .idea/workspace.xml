@@ -1,34 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4c328dc7-6ee6-450b-97e1-b559120a7f86" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/description.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/jade.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/project-template.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AIAD.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APDescription.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MTPs-Main-Container.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/jade.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookBuyerAgent$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookBuyerAgent$RequestPerformer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookBuyerAgent.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerAgent$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerAgent$OfferRequestsServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerAgent$PurchaseOrdersServer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerAgent.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerGui$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerGui$2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/BookSellerGui.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/AIAD/META-INF/AIAD.kotlin_module" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BookBuyerAgent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BookSellerAgent.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BookSellerGui.java" afterDir="false" />
-    </list>
+    <list default="true" id="4c328dc7-6ee6-450b-97e1-b559120a7f86" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +49,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1570784277604</updated>
-      <workItem from="1570784290794" duration="1848000" />
+      <workItem from="1570784290794" duration="2161000" />
     </task>
     <servers />
   </component>
