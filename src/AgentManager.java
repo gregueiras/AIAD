@@ -4,22 +4,14 @@ import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.FSMBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetInitiator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
 public class AgentManager extends Agent {
@@ -48,13 +40,15 @@ public class AgentManager extends Agent {
     }
 
     Behaviour printHW = new Print("Hello World!", 1);
-    Behaviour printBye = new Print("Hasta la vista, baby!", 2);
     Behaviour printHey = new Print("Hey!", 3);
+    Behaviour printBye = new Print("Hasta la vista, baby!", 2);
+    Behaviour printHey2 = new Print("Hey!2", 0);
 
     Transition t1 = new Transition(printHW, printHey, 1);
-    Transition t2 = new Transition(printHey, printBye, 2);
+    Transition t2 = new Transition(printHey, printBye, 3);
+    Transition t3 = new Transition(printBye, printHey2, 2);
 
-    StateMachine sm = new StateMachine(this, printHW, printBye, t1, t2);
+    StateMachine sm = new StateMachine(this, printHW, printBye, t1, t2, t3);
 
     addBehaviour(sm);
   }
