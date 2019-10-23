@@ -8,13 +8,17 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.util.Hashtable;
 
-public class BookBuyerAgent extends Agent {
+public class AgentInvestor extends Agent {
 
-  // The title of the book to buy
-  private String targetBookTitle;
+  // The companies that the investor has in it's wallet, mapped by title
+  private Hashtable<String, Company> wallet;
+
   // The list of known seller agents
   private AID[] sellerAgents;
+
+  private String companyToBuy;
 
   // Put agent initializations here
   protected void setup() {
@@ -24,7 +28,7 @@ public class BookBuyerAgent extends Agent {
     // Get the title of the book to buy as a start-up argument
     Object[] args = getArguments();
     if (args != null && args.length > 0) {
-      targetBookTitle = (String) args[0];
+      var targetBookTitle = (String) args[0];
       System.out.println("Target book is " + targetBookTitle);
 
       // Add a TickerBehaviour that schedules a request to seller agents every minute
@@ -34,7 +38,7 @@ public class BookBuyerAgent extends Agent {
           // Update the list of seller agents
           DFAgentDescription template = new DFAgentDescription();
           ServiceDescription sd = new ServiceDescription();
-          sd.setType("book-selling");
+          sd.setType("wall-street-manager");
           template.addServices(sd);
           try {
             DFAgentDescription[] result = DFService.search(myAgent, template);
@@ -85,7 +89,7 @@ public class BookBuyerAgent extends Agent {
           for (AID sellerAgent : sellerAgents) {
             cfp.addReceiver(sellerAgent);
           }
-          cfp.setContent(targetBookTitle);
+          cfp.setContent("targetBookTitle");
           cfp.setConversationId("book-trade");
           cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
           myAgent.send(cfp);
@@ -121,7 +125,7 @@ public class BookBuyerAgent extends Agent {
           // Send the purchase order to the seller that provided the best offer
           ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
           order.addReceiver(bestSeller);
-          order.setContent(targetBookTitle);
+          order.setContent("targetBookTitle");
           order.setConversationId("book-trade");
           order.setReplyWith("order" + System.currentTimeMillis());
           myAgent.send(order);
@@ -138,7 +142,7 @@ public class BookBuyerAgent extends Agent {
             if (reply.getPerformative() == ACLMessage.INFORM) {
               // Purchase successful. We can terminate
               System.out.println(
-                  targetBookTitle + " successfully purchased from agent " + reply.getSender()
+                  "targetBookTitle" + " successfully purchased from agent " + reply.getSender()
                       .getName());
               System.out.println("Price = " + bestPrice);
               myAgent.doDelete();
@@ -156,7 +160,7 @@ public class BookBuyerAgent extends Agent {
 
     public boolean done() {
       if (step == 2 && bestSeller == null) {
-        System.out.println("Attempt failed: " + targetBookTitle + " not available for sale");
+        System.out.println("Attempt failed: " + "targetBookTitle" + " not available for sale");
       }
       return ((step == 2 && bestSeller == null) || step == 4);
     }

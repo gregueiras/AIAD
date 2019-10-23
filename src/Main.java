@@ -13,19 +13,18 @@ public class Main {
       Runtime rt = Runtime.instance();
 
       Profile p1 = new ProfileImpl();
-      p1.setParameter(Profile.GUI, "true");
+      //p1.setParameter(Profile.GUI, "true");
 
       ContainerController mainController = rt.createAgentContainer(p1);
       AgentController ac1 = mainController
-          .createNewAgent("Jeff", BookSellerAgent.class.getName(), null);
+          .createNewAgent("Jeff", AgentManager.class.getName(), null);
 
-      String[] buyerArgs = {"Lusíadas"};
-
+/*
       AgentController ac2 = mainController
-          .createNewAgent("Nerd", BookBuyerAgent.class.getName(), buyerArgs);
-
+          .createNewAgent("Nerd", AgentManager.class.getName(), null);
+*/
       ac1.start();
-      ac2.start();
+      //ac2.start();
     } catch (StaleProxyException e) {
       e.printStackTrace();
     }
