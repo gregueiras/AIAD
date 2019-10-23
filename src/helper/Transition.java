@@ -7,33 +7,42 @@ public class Transition {
   private Behaviour initialState;
   private Behaviour finalState;
   private int event;
+  private boolean isDefault = false;
 
-  public Behaviour getInitialState() {
-    return initialState;
+  public Transition(Behaviour initialState, Behaviour finalState, int event) {
+    this.initialState = initialState;
+    this.finalState = finalState;
+    this.event = event;
   }
 
   public Behaviour getFinalState() {
     return finalState;
   }
 
-  public String getInitialName() {
+  public Transition(Behaviour initialState, Behaviour finalState) {
+    this.initialState = initialState;
+    this.finalState = finalState;
+    this.isDefault = true;
+  }
+
+  Behaviour getInitialState() {
+    return initialState;
+  }
+
+  String getInitialName() {
     return initialState.getBehaviourName();
   }
 
-  public String getFinalName() {
+  String getFinalName() {
     return finalState.getBehaviourName();
   }
 
-  public int getEvent() {
+  int getEvent() {
     return event;
   }
 
-  public Transition(Behaviour initialState, Behaviour finalState, int event) {
-    this.initialState = initialState;
-    this.finalState = finalState;
-    this.event = event;
-
-
+  boolean isDefault() {
+    return isDefault;
   }
 
   @Override

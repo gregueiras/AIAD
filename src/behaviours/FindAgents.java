@@ -7,7 +7,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
-  public class FindAgents extends OneShotBehaviour {
+public class FindAgents extends OneShotBehaviour {
 
   private String typeToSearch; // type of agent to search
   private boolean agentsFound;
@@ -30,6 +30,7 @@ import jade.domain.FIPAException;
       System.out.println("Found the following " + typeToSearch + " agents:");
       AID[] sellerAgents = new AID[result.length];
       for (int i = 0; i < result.length; ++i) {
+        agentsFound = true;
         sellerAgents[i] = result[i].getName();
         System.out.println(sellerAgents[i].getName());
       }

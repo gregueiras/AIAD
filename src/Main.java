@@ -1,3 +1,4 @@
+import agents.AgentManager;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -19,12 +20,17 @@ public class Main {
       AgentController ac1 = mainController
           .createNewAgent("Jeff", AgentManager.class.getName(), null);
 
-/*
+
       AgentController ac2 = mainController
-          .createNewAgent("Nerd", AgentManager.class.getName(), null);
-*/
+          .createNewAgent("Nerd", agents.AgentInvestor.class.getName(), null);
+      AgentController ac3 = mainController
+          .createNewAgent("Nerd_2", agents.AgentInvestor.class.getName(), null);
+
       ac1.start();
-      //ac2.start();
+
+      ac2.start();
+      ac3.start();
+
     } catch (StaleProxyException e) {
       e.printStackTrace();
     }
