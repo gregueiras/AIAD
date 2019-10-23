@@ -9,28 +9,23 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.Hashtable;
 
-public class BookSellerAgent extends Agent {
+public class AgentBoard extends Agent {
 
   // The catalogue of books for sale (maps the title of a book to its price)
   private Hashtable<String, Integer> catalogue;
   // The GUI by means of which the user can add books in the catalogue
-  private BookSellerGui myGui;
 
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
     catalogue = new Hashtable<>();
 
-    // Create and show the GUI
-    myGui = new BookSellerGui(this);
-    myGui.showGui();
-
     // Register the book-selling service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
     ServiceDescription sd = new ServiceDescription();
-    sd.setType("book-selling");
-    sd.setName("JADE-book-trading");
+    sd.setType("board");
+    sd.setName("JADE-Panic-Wall-Street");
     dfd.addServices(sd);
     try {
       DFService.register(this, dfd);
@@ -54,21 +49,8 @@ public class BookSellerAgent extends Agent {
       fe.printStackTrace();
     }
     // Close the GUI
-    myGui.dispose();
     // Printout a dismissal message
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
-  }
-
-  /**
-   * This is invoked by the GUI when the user adds a new book for sale
-   */
-  void updateCatalogue(final String title, final int price) {
-    addBehaviour(new OneShotBehaviour() {
-      public void action() {
-        catalogue.put(title, price);
-        System.out.println(title + " inserted into catalogue. Price = " + price);
-      }
-    });
   }
 
   /**
