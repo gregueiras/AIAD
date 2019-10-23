@@ -17,8 +17,14 @@ public class StateMachine extends FSMBehaviour {
 
     for(Transition transition : transitions) {
       registerState(transition.getInitialState(), transition.getInitialName());
-      registerTransition(transition.getInitialName(), transition.getFinalName(), transition.getEvent());
-//      System.out.println("Registered " + transition);
+
+      if (transition.isDefault()) {
+        registerDefaultTransition(transition.getInitialName(), transition.getFinalName());
+      } else {
+        registerTransition(transition.getInitialName(), transition.getFinalName(),
+            transition.getEvent());
+      }
+      //      System.out.println("Registered " + transition);
     }
   }
 

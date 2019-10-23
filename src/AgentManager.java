@@ -1,3 +1,4 @@
+import behaviours.FindAgents;
 import behaviours.Print;
 import helper.StateMachine;
 import helper.Transition;
@@ -39,16 +40,17 @@ public class AgentManager extends Agent {
       fe.printStackTrace();
     }
 
-    Behaviour printHW = new Print("Hello World!", 1);
-    Behaviour printHey = new Print("Hey!", 3);
-    Behaviour printBye = new Print("Hasta la vista, baby!", 2);
-    Behaviour printHey2 = new Print("Hey!2", 0);
+    Behaviour findAgents = new FindAgents("wall-street-investor");
+    Behaviour printSuccess = new Print("Agents Found!");
+    Behaviour printFailure = new Print("Agents not found!");
+    Behaviour end = new Print("FSM END!");
 
-    Transition t1 = new Transition(printHW, printHey, 1);
-    Transition t2 = new Transition(printHey, printBye, 3);
-    Transition t3 = new Transition(printBye, printHey2, 2);
+    Transition t1 = new Transition(findAgents, printSuccess, 0);
+    Transition t2 = new Transition(findAgents, printFailure, 1);
+    Transition t3 = new Transition(printSuccess, end, 0);
+    Transition t4 = new Transition(printFailure, end);
 
-    StateMachine sm = new StateMachine(this, printHW, printBye, t1, t2, t3);
+    StateMachine sm = new StateMachine(this, findAgents, end, t1, t2, t3, t4);
 
     addBehaviour(sm);
   }
@@ -66,8 +68,6 @@ public class AgentManager extends Agent {
     // Printout a dismissal message
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
   }
-
-
 
 
   private class SellCompanies extends ContractNetInitiator {
@@ -89,8 +89,7 @@ public class AgentManager extends Agent {
         // FAILURE notification from the JADE runtime: the receiver
         // does not exist
         System.out.println("Responder does not exist");
-      }
-      else {
+      } else {
         System.out.println("Agent "+failure.getSender().getName()+" failed");
       }
     }
