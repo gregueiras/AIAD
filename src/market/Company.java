@@ -1,3 +1,5 @@
+package market;
+
 public class Company {
 
   private COMPANY_RISK type;

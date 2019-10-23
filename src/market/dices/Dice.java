@@ -1,12 +1,14 @@
-package Market.Dices;
-
-import com.sun.jdi.connect.Connector;
+package market.dices;
 
 import java.util.List;
 import java.util.Random;
 
-public abstract class Dice {
-    protected List<Integer> faces;
+public class Dice {
+    private List<Integer> faces;
+
+    Dice(List<Integer> faces){
+        this.faces = faces;
+    }
 
     //This function returns a random number from the faces of a dice.
     public int launchDice(){
