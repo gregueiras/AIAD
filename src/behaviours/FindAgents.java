@@ -30,7 +30,7 @@ public class FindAgents extends OneShotBehaviour {
       System.out.println("Found the following " + typeToSearch + " agents:");
       AID[] sellerAgents = new AID[result.length];
       for (int i = 0; i < result.length; ++i) {
-
+        agentsFound = true;
         sellerAgents[i] = result[i].getName();
         System.out.println(sellerAgents[i].getName());
       }

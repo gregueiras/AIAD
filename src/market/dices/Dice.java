@@ -1,6 +1,4 @@
-package Market.Dices;
-
-import com.sun.jdi.connect.Connector;
+package market.dices;
 
 import java.util.List;
 import java.util.Random;

@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Full" type="Application" factoryName="Application">
+  <configuration default="false" name="Core" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="jade.Boot" />
     <module name="AIAD" />
-    <option name="PROGRAM_PARAMETERS" value="-gui -agents rui:BookSellerAgent;joana:BookBuyerAgent(&quot;Lusiadas&quot;)" />
+    <option name="PROGRAM_PARAMETERS" value="-gui" />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
     <method v="2">
