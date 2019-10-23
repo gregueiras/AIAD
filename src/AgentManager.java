@@ -1,3 +1,5 @@
+import market.Company;
+import market.WalletExamples;
 import behaviours.Print;
 import helper.StateMachine;
 import helper.Transition;
