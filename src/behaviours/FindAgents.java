@@ -1,20 +1,24 @@
 package behaviours;
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
 
 public class FindAgents extends OneShotBehaviour {
 
   private String typeToSearch; // type of agent to search
   private boolean agentsFound;
+  private Agent agent;
 
-  public FindAgents(String typeToSearch) {
+  public FindAgents(String typeToSearch, Agent agent) {
     this.typeToSearch = typeToSearch;
     this.agentsFound = false;
+    this.agent = agent;
 
     super.setBehaviourName("Find_" + typeToSearch);
   }
@@ -29,11 +33,20 @@ public class FindAgents extends OneShotBehaviour {
       DFAgentDescription[] result = DFService.search(myAgent, template);
       System.out.println("Found the following " + typeToSearch + " agents:");
       AID[] sellerAgents = new AID[result.length];
+
+      ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+      msg.setSender(this.agent.getAID());
+      msg.setContent("Hello");
+
       for (int i = 0; i < result.length; ++i) {
         agentsFound = true;
         sellerAgents[i] = result[i].getName();
+
+        msg.addReceiver(sellerAgents[i]);
         System.out.println(sellerAgents[i].getName());
       }
+      this.agent.send(msg);
+
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }

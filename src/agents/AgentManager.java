@@ -1,8 +1,7 @@
 package agents;
 
 import behaviours.FindAgents;
-import market.Company;
-import market.WalletExamples;
+import behaviours.OurAgent;
 import behaviours.Print;
 import helper.StateMachine;
 import helper.Transition;
@@ -18,8 +17,10 @@ import jade.proto.ContractNetInitiator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import market.Company;
+import market.WalletExamples;
 
-public class AgentManager extends Agent {
+public class AgentManager extends OurAgent {
 
   // The companies that the manager has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
@@ -42,7 +43,7 @@ public class AgentManager extends Agent {
       fe.printStackTrace();
     }
 
-    Behaviour findAgents = new FindAgents("wall-street-investor");
+    Behaviour findAgents = new FindAgents("wall-street-investor", this);
     Behaviour printSuccess = new Print("Agents Found!");
     Behaviour printFailure = new Print("Agents not found!");
     Behaviour end = new Print("FSM END!");
@@ -54,9 +55,14 @@ public class AgentManager extends Agent {
 
     StateMachine sm = new StateMachine(this, findAgents, end, t1, t2, t3, t4);
 
-    addBehaviour(sm);
+    //addBehaviour(sm);
+    addBehaviour(findAgents);
   }
 
+  @Override
+  public void handleMessage(ACLMessage msg) {
+    System.out.println(msg.getPerformative() + ": " + msg.getContent());
+  }
 
   // Put agent clean-up operations here
   protected void takeDown() {
@@ -79,11 +85,12 @@ public class AgentManager extends Agent {
     }
 
     protected void handlePropose(ACLMessage propose, Vector v) {
-      System.out.println("Agent "+propose.getSender().getName()+" proposed "+propose.getContent());
+      System.out
+          .println("Agent " + propose.getSender().getName() + " proposed " + propose.getContent());
     }
 
     protected void handleRefuse(ACLMessage refuse) {
-      System.out.println("Agent "+refuse.getSender().getName()+" refused");
+      System.out.println("Agent " + refuse.getSender().getName() + " refused");
     }
 
     protected void handleFailure(ACLMessage failure) {
@@ -92,7 +99,7 @@ public class AgentManager extends Agent {
         // does not exist
         System.out.println("Responder does not exist");
       } else {
-        System.out.println("Agent "+failure.getSender().getName()+" failed");
+        System.out.println("Agent " + failure.getSender().getName() + " failed");
       }
     }
 
@@ -119,13 +126,15 @@ public class AgentManager extends Agent {
       }
       // Accept the proposal of the best proposer
       if (accept != null) {
-        System.out.println("Accepting proposal "+bestProposal+" from responder "+bestProposer.getName());
+        System.out.println(
+            "Accepting proposal " + bestProposal + " from responder " + bestProposer.getName());
         accept.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
       }
     }
 
     protected void handleInform(ACLMessage inform) {
-      System.out.println("Agent "+inform.getSender().getName()+" successfully performed the requested action");
+      System.out.println(
+          "Agent " + inform.getSender().getName() + " successfully performed the requested action");
     }
   }
 

@@ -1,10 +1,12 @@
 package agents;
 
-import market.Company;
+import behaviours.OurAgent;
+import behaviours.Print;
+import behaviours.WaitForMessage;
+import helper.StateMachine;
+import helper.Transition;
 import jade.core.AID;
-import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -12,8 +14,9 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.Hashtable;
+import market.Company;
 
-public class AgentInvestor extends Agent {
+public class AgentInvestor extends OurAgent {
 
   // The companies that the investor has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
@@ -28,7 +31,6 @@ public class AgentInvestor extends Agent {
     // Printout a welcome message
     System.out.println("Hallo! Buyer-agent " + getAID().getName() + " is ready.");
 
-
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
@@ -41,7 +43,6 @@ public class AgentInvestor extends Agent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
-
 
     // Get the title of the book to buy as a start-up argument
     Object[] args = getArguments();
@@ -75,9 +76,16 @@ public class AgentInvestor extends Agent {
       });
        */
     } else {
-      // Make the agent terminate
-      System.out.println("No target book title specified");
-      doDelete();
+      Behaviour printStart = new Print("Waiting for msg");
+      Behaviour waitInform = new WaitForMessage(this,
+          MessageTemplate.MatchPerformative(ACLMessage.INFORM), this, 0);
+      Behaviour printEnd = new Print("MSG Received");
+
+      Transition t1 = new Transition(printStart, waitInform);
+      Transition t2 = new Transition(waitInform, printEnd);
+
+      StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
+      addBehaviour(sm);
     }
   }
 
@@ -85,6 +93,13 @@ public class AgentInvestor extends Agent {
   protected void takeDown() {
     // Printout a dismissal message
     System.out.println("Buyer-agent " + getAID().getName() + " terminating.");
+  }
+
+  @Override
+  public void handleMessage(ACLMessage msg) {
+    if (msg != null) {
+      System.out.println(msg.getPerformative() + ": " + msg.getContent());
+    }
   }
 
   /**
