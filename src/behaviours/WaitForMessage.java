@@ -1,28 +1,26 @@
 package behaviours;
 
-import jade.core.Agent;
+import agents.OurAgent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.states.MsgReceiver;
 
 public class WaitForMessage extends MsgReceiver {
 
-  private Agent agent;
-  private OurAgent function;
+  private OurAgent agent;
   private int onEnd;
 
-  public WaitForMessage(Agent a, MessageTemplate template, OurAgent function, int onEnd) {
+  public WaitForMessage(OurAgent a, MessageTemplate template, int onEnd) {
     super(a, template, INFINITE, null, null);
 
-    this.function = function;
     this.onEnd = onEnd;
-
+    this.agent = a;
   }
 
   @Override
   protected void handleMessage(ACLMessage msg) {
     try {
-      this.function.handleMessage(msg);
+      this.agent.handleMessage(msg);
     } catch (Exception e) {
       e.printStackTrace();
     }

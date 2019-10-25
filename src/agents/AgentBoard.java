@@ -1,32 +1,64 @@
 package agents;
 
-import jade.core.Agent;
+import behaviours.*;
+import helper.Transition;
+import jade.core.AID;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import java.util.Hashtable;
 
-public class AgentBoard extends Agent {
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+
+public class AgentBoard extends OurAgent {
 
   // The catalogue of books for sale (maps the title of a book to its price)
   private Hashtable<String, Integer> catalogue;
   // The GUI by means of which the user can add books in the catalogue
 
+  private List<AID> investors;
+
+  private List<AID> managers;
+
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
     catalogue = new Hashtable<>();
+    investors = new LinkedList<>();
+    managers = new LinkedList<>();
 
     // Register the book-selling service in the yellow pages
+    registerDFS();
+    stateMachine();
+
+  }
+
+  private void stateMachine() {
+    Behaviour findManagers = new FindAgents(AgentType.MANAGER, this);
+    Behaviour findInvestors = new FindAgents(AgentType.INVESTOR, this);
+    Behaviour printEnd = new Print("MSG Received");
+
+    Transition t1 = new Transition(findManagers, findInvestors);
+    Transition t2 = new Transition(findInvestors, printEnd);
+
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2);
+    addBehaviour(sm);
+  }
+
+  private void registerDFS() {
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
     ServiceDescription sd = new ServiceDescription();
-    sd.setType("board");
+    sd.setType(String.valueOf(AgentType.BOARD));
     sd.setName("JADE-Panic-Wall-Street");
     dfd.addServices(sd);
     try {
@@ -34,13 +66,8 @@ public class AgentBoard extends Agent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
-
-    // Add the behaviour serving queries from buyer agents
-    addBehaviour(new OfferRequestsServer());
-
-    // Add the behaviour serving purchase orders from buyer agents
-    addBehaviour(new PurchaseOrdersServer());
   }
+
 
   // Put agent clean-up operations here
   protected void takeDown() {
@@ -53,6 +80,28 @@ public class AgentBoard extends Agent {
     // Close the GUI
     // Printout a dismissal message
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
+  }
+
+  @Override
+  public void registerAgent(AID[] agents, AgentType type) {
+    switch (type){
+      case INVESTOR:
+        this.investors = Arrays.asList(agents);
+        System.out.println("THIS IS MY LIS OF INVESTORS " + this.investors);
+        break;
+      case MANAGER:
+        this.managers = Arrays.asList(agents);
+        System.out.println("THIS IS MY LIS OF MANAGERS " + this.managers);
+        break;
+      default:
+        System.err.println("Invalid agent type");
+        break;
+    }
+  }
+
+  @Override
+  public void handleMessage(ACLMessage msg) {
+    //TODO
   }
 
   /**

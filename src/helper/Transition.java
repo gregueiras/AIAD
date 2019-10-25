@@ -25,23 +25,23 @@ public class Transition {
     this.isDefault = true;
   }
 
-  Behaviour getInitialState() {
+  public Behaviour getInitialState() {
     return initialState;
   }
 
-  String getInitialName() {
+  public String getInitialName() {
     return initialState.getBehaviourName();
   }
 
-  String getFinalName() {
+  public String getFinalName() {
     return finalState.getBehaviourName();
   }
 
-  int getEvent() {
+  public int getEvent() {
     return event;
   }
 
-  boolean isDefault() {
+  public boolean isDefault() {
     return isDefault;
   }
 

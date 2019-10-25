@@ -1,9 +1,8 @@
 package agents;
 
-import behaviours.OurAgent;
 import behaviours.Print;
 import behaviours.WaitForMessage;
-import helper.StateMachine;
+import behaviours.StateMachine;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -13,6 +12,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
 import java.util.Hashtable;
 import market.Company;
 
@@ -26,6 +26,8 @@ public class AgentInvestor extends OurAgent {
 
   private String companyToBuy;
 
+  private AID board;
+
   // Put agent initializations here
   protected void setup() {
     // Printout a welcome message
@@ -35,7 +37,7 @@ public class AgentInvestor extends OurAgent {
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
     ServiceDescription sd = new ServiceDescription();
-    sd.setType("wall-street-investor");
+    sd.setType(String.valueOf(AgentType.INVESTOR));
     sd.setName("wall-Street-investor_" + getAID().getName());
     dfd.addServices(sd);
     try {
@@ -78,7 +80,7 @@ public class AgentInvestor extends OurAgent {
     } else {
       Behaviour printStart = new Print("Waiting for msg");
       Behaviour waitInform = new WaitForMessage(this,
-          MessageTemplate.MatchPerformative(ACLMessage.INFORM), this, 0);
+          MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
       Behaviour printEnd = new Print("MSG Received");
 
       Transition t1 = new Transition(printStart, waitInform);
@@ -99,6 +101,23 @@ public class AgentInvestor extends OurAgent {
   public void handleMessage(ACLMessage msg) {
     if (msg != null) {
       System.out.println(msg.getPerformative() + ": " + msg.getContent());
+    }
+  }
+
+  @Override
+  public void registerAgent(AID[] agents, AgentType type) {
+    switch (type){
+      case BOARD:
+        try {
+          this.board = agents[0];
+        }
+        catch(Exception e){
+          System.err.println(e);
+        }
+        break;
+      default:
+        System.err.println("Invalid agent type");
+        break;
     }
   }
 

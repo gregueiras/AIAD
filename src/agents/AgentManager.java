@@ -1,9 +1,9 @@
 package agents;
 
 import behaviours.FindAgents;
-import behaviours.OurAgent;
 import behaviours.Print;
-import helper.StateMachine;
+import behaviours.StateMachine;
+import behaviours.WaitForMessage;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
@@ -13,7 +13,9 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetInitiator;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -25,6 +27,7 @@ public class AgentManager extends OurAgent {
   // The companies that the manager has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
 
+  private AID board;
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
@@ -34,7 +37,7 @@ public class AgentManager extends OurAgent {
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
     ServiceDescription sd = new ServiceDescription();
-    sd.setType("wall-street-manager");
+    sd.setType(String.valueOf(AgentType.MANAGER));
     sd.setName("wall-Street-manager_" + getAID().getName());
     dfd.addServices(sd);
     try {
@@ -43,20 +46,16 @@ public class AgentManager extends OurAgent {
       fe.printStackTrace();
     }
 
-    Behaviour findAgents = new FindAgents("wall-street-investor", this);
-    Behaviour printSuccess = new Print("Agents Found!");
-    Behaviour printFailure = new Print("Agents not found!");
-    Behaviour end = new Print("FSM END!");
+    Behaviour printStart = new Print("Waiting for msg");
+    Behaviour waitInform = new WaitForMessage(this,
+            MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
+    Behaviour printEnd = new Print("MSG Received");
 
-    Transition t1 = new Transition(findAgents, printSuccess, 0);
-    Transition t2 = new Transition(findAgents, printFailure, 1);
-    Transition t3 = new Transition(printSuccess, end, 0);
-    Transition t4 = new Transition(printFailure, end);
+    Transition t1 = new Transition(printStart, waitInform);
+    Transition t2 = new Transition(waitInform, printEnd);
 
-    StateMachine sm = new StateMachine(this, findAgents, end, t1, t2, t3, t4);
-
-    //addBehaviour(sm);
-    addBehaviour(findAgents);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
+    addBehaviour(sm);
   }
 
   @Override
@@ -135,6 +134,23 @@ public class AgentManager extends OurAgent {
     protected void handleInform(ACLMessage inform) {
       System.out.println(
           "Agent " + inform.getSender().getName() + " successfully performed the requested action");
+    }
+  }
+
+  @Override
+  public void registerAgent(AID[] agents, AgentType type) {
+    switch (type){
+      case BOARD:
+        try {
+          this.board = agents[0];
+        }
+        catch(Exception e){
+          System.err.println(e);
+        }
+        break;
+      default:
+        System.err.println("Invalid agent type");
+        break;
     }
   }
 

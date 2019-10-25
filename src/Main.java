@@ -1,3 +1,4 @@
+import agents.AgentBoard;
 import agents.AgentInvestor;
 import agents.AgentManager;
 import jade.core.Profile;
@@ -25,11 +26,17 @@ public class Main {
           .createNewAgent("Nerd", AgentInvestor.class.getName(), null);
       AgentController ac3 = mainController
           .createNewAgent("Nerd_2", AgentInvestor.class.getName(), null);
+      AgentController ac4 = mainController
+              .createNewAgent("Nerd_3", AgentManager.class.getName(), null);
 
+      AgentController board = mainController.createNewAgent("BOARD", AgentBoard.class.getName(), null);
       ac1.start();
 
       ac2.start();
       ac3.start();
+      ac4.start();
+
+      board.start();
 
     } catch (StaleProxyException e) {
       e.printStackTrace();
