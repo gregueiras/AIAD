@@ -1,5 +1,6 @@
 package agents;
 
+import behaviours.FindAgents;
 import behaviours.Print;
 import behaviours.WaitForMessage;
 import behaviours.StateMachine;
@@ -110,6 +111,7 @@ public class AgentInvestor extends OurAgent {
       case BOARD:
         try {
           this.board = agents[0];
+          System.out.println("THIS IS MY BOARD " + this.board);
         }
         catch(Exception e){
           System.err.println(e);

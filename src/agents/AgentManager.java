@@ -143,6 +143,7 @@ public class AgentManager extends OurAgent {
       case BOARD:
         try {
           this.board = agents[0];
+          System.out.println("THIS IS MY BOARD " + this.board);
         }
         catch(Exception e){
           System.err.println(e);
