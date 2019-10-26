@@ -4,10 +4,12 @@ import agents.AgentBoard;
 import agents.AgentType;
 import helper.NegotiationPair;
 import helper.Shift;
-import helper.ShiftTable;
+import helper.Round;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PairAgents extends OneShotBehaviour {
@@ -20,10 +22,10 @@ public class PairAgents extends OneShotBehaviour {
         super.setBehaviourName("Pair_Agents");
     }
 
-    private ShiftTable pairAgents(List<AID> a1, List<AID> a2, AgentType a1Type, AgentType a2Type){
+    private Round createRound(List<AID> a1, List<AID> a2, AgentType a1Type, AgentType a2Type){
         int start = 0;
         int size = a1.size();
-        ShiftTable shiftTable = new ShiftTable();
+        Round round = new Round();
         while(start < size) {
             int count = 0;
             Shift shift = new Shift();
@@ -57,24 +59,28 @@ public class PairAgents extends OneShotBehaviour {
                 }
             }
             start++;
-            shiftTable.addShift(shift);
+            round.addShift(shift);
         }
 
-        return shiftTable;
+        return round;
     }
+
 
     @Override
     public void action() {
-        ShiftTable rt;
-       if(this.agent.getManagers().size() >= this.agent.getInvestors().size())
-          rt = this.pairAgents(this.agent.getManagers(), this.agent.getInvestors(), AgentType.MANAGER, AgentType.INVESTOR);
-       else
-          rt = this.pairAgents(this.agent.getInvestors(), this.agent.getManagers(), AgentType.INVESTOR,  AgentType.MANAGER);
+        Round r;
+        List<AID> managers = this.agent.getManagers();
+        List<AID> investors = this.agent.getInvestors();
+        Collections.shuffle(managers);
+        Collections.shuffle(investors);
+        if(this.agent.getManagers().size() >= this.agent.getInvestors().size())
+            r = this.createRound(managers, investors, AgentType.MANAGER, AgentType.INVESTOR);
+        else
+            r = this.createRound(investors, managers, AgentType.INVESTOR,  AgentType.MANAGER);
+        if(r != null)
+            this.agent.setRound(r);
 
-       if(rt != null)
-           this.agent.setShiftTable(rt);
-
-        System.out.println("ROUND TABLE: " + this.agent.getShiftTable());
+        System.out.println("ROUND TABLE: " + this.agent.getRound());
 
     }
 }

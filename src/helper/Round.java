@@ -3,11 +3,11 @@ package helper;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ShiftTable {
+public class Round {
 
     private List<Shift> shifts;
 
-    public ShiftTable() {
+    public Round() {
         this.shifts = new LinkedList<>();
     }
 
@@ -15,9 +15,13 @@ public class ShiftTable {
         this.shifts.add(shift);
     }
 
+    public List<Shift> getShifts() {
+        return shifts;
+    }
+
     @Override
     public String toString() {
-        return "ShiftTable{" +
+        return "Round{" +
                 "shifts=" + shifts +
                 '}';
     }

@@ -1,7 +1,7 @@
 package agents;
 
 import behaviours.*;
-import helper.ShiftTable;
+import helper.Round;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -28,7 +28,7 @@ public class AgentBoard extends OurAgent {
 
   private List<AID> managers;
 
-  private ShiftTable shiftTable;
+  private Round round;
 
   public List<AID> getInvestors() {
     return investors;
@@ -38,12 +38,12 @@ public class AgentBoard extends OurAgent {
     return managers;
   }
 
-  public ShiftTable getShiftTable() {
-    return shiftTable;
+  public Round getRound() {
+    return round;
   }
 
-  public void setShiftTable(ShiftTable shiftTable) {
-    this.shiftTable = shiftTable;
+  public void setRound(Round round) {
+    this.round = round;
   }
 
   // Put agent initializations here
