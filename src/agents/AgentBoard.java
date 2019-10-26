@@ -1,12 +1,11 @@
 package agents;
 
 import behaviours.*;
+import helper.ShiftTable;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -29,6 +28,24 @@ public class AgentBoard extends OurAgent {
 
   private List<AID> managers;
 
+  private ShiftTable shiftTable;
+
+  public List<AID> getInvestors() {
+    return investors;
+  }
+
+  public List<AID> getManagers() {
+    return managers;
+  }
+
+  public ShiftTable getShiftTable() {
+    return shiftTable;
+  }
+
+  public void setShiftTable(ShiftTable shiftTable) {
+    this.shiftTable = shiftTable;
+  }
+
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
@@ -45,12 +62,15 @@ public class AgentBoard extends OurAgent {
   private void stateMachine() {
     Behaviour findManagers = new FindAgents(AgentType.MANAGER, this);
     Behaviour findInvestors = new FindAgents(AgentType.INVESTOR, this);
+    Behaviour pairAgents = new PairAgents(this);
     Behaviour printEnd = new Print("MSG Received");
 
     Transition t1 = new Transition(findManagers, findInvestors);
-    Transition t2 = new Transition(findInvestors, printEnd);
+    Transition t2 = new Transition(findInvestors, pairAgents);
+    Transition t3 = new Transition(pairAgents, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2);
+
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3);
     addBehaviour(sm);
   }
 
@@ -81,6 +101,8 @@ public class AgentBoard extends OurAgent {
     // Printout a dismissal message
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
   }
+
+
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
