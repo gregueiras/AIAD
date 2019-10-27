@@ -1,9 +1,11 @@
 package market.dices;
 
+import market.InvestmentType;
+
 import java.util.Arrays;
 
 public class DiceFactory {
-    public Dice createDice(DiceType type)
+    public Dice createDice(InvestmentType type)
     {
         Dice retDice;
         switch(type){
@@ -20,6 +22,7 @@ public class DiceFactory {
                 retDice = new Dice(Arrays.asList(0,2,-1,1,2,-2));
                 break;
             default:
+                System.err.println("Invalid dice type.");
                 retDice = null;
         }
         return retDice;

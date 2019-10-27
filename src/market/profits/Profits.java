@@ -4,10 +4,15 @@ import market.dices.Dice;
 
 import java.util.List;
 
-public abstract class Profits {
+public class Profits {
     protected List<Integer> lineOfProfits;
-    protected int profitsPosition = 3;
+    protected int profitsPosition;
     private Dice dice;
+
+    public Profits(List<Integer> line){
+        profitsPosition = 3;
+        lineOfProfits = line;
+    }
 
     public void roll_dice(){
         int res = dice.launchDice();
@@ -16,6 +21,10 @@ public abstract class Profits {
             profitsPosition = 0;
         else if(profitsPosition > 7)
             profitsPosition = 7;
+    }
+
+    public int getActualProfit(){
+        return lineOfProfits.get(profitsPosition);
     }
 
     public List<Integer> getLineOfProfits() {
