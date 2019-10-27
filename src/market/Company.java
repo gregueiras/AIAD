@@ -1,17 +1,23 @@
 package market;
 
+import agents.OurAgent;
+
 public class Company {
 
-  private COMPANY_RISK type;
+  private CompanyRisk type;
+  private InvestmentType invType; // One of these might be redundant
   private String name;
   private boolean closed;
   private Integer price;
+  private OurAgent currentOwner;
+  private boolean doubleValue;
+  private int actualBid; //Might not be needed, its here just in case
 
-  public COMPANY_RISK getType() {
+  public CompanyRisk getType() {
     return type;
   }
 
-  public void setType(COMPANY_RISK type) {
+  public void setType(CompanyRisk type) {
     this.type = type;
   }
 
@@ -39,10 +45,12 @@ public class Company {
     this.price = price;
   }
 
-  public Company(COMPANY_RISK type, String name, Integer price) {
+  public Company(CompanyRisk type, String name, Integer price, InvestmentType invType, boolean doubleValue) {
     this.type = type;
     this.name = name;
     this.price = price;
     this.closed = true;
+    this.invType = invType;
+    this.doubleValue = doubleValue;
   }
 }

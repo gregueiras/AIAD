@@ -4,10 +4,10 @@ import java.util.Hashtable;
 
 public class WalletExamples {
   public static Hashtable<String, Company> getEx1() {
-    var c1 = new Company(COMPANY_RISK.HIGH, "Talho", 200);
-    var c2 = new Company(COMPANY_RISK.HIGH, "Padaria", 150);
-    var c3 = new Company(COMPANY_RISK.NORMAL, "Peixaria", 100);
-    var c4 = new Company(COMPANY_RISK.LOW, "Serralharia", 50);
+    var c1 = new Company(CompanyRisk.HIGH, "Talho", 200, InvestmentType.RED, false);
+    var c2 = new Company(CompanyRisk.HIGH, "Padaria", 150, InvestmentType.RED, true);
+    var c3 = new Company(CompanyRisk.NORMAL, "Peixaria", 100, InvestmentType.YELLOW, false);
+    var c4 = new Company(CompanyRisk.LOW, "Serralharia", 50, InvestmentType.BLUE, false);
 
     var table = new Hashtable<String, Company>();
     table.put(c1.getName(), c1);
