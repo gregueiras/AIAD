@@ -3,6 +3,8 @@ package market.dices;
 import market.InvestmentType;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DiceFactory {
     public Dice createDice(InvestmentType type)
@@ -26,5 +28,17 @@ public class DiceFactory {
                 retDice = null;
         }
         return retDice;
+    }
+
+    public Map<InvestmentType, Dice> createAllDice(){
+
+        Map<InvestmentType,Dice> allDices = new HashMap<InvestmentType,Dice>();
+
+        allDices.put(InvestmentType.RED, createDice(InvestmentType.RED));
+        allDices.put(InvestmentType.BLUE, createDice(InvestmentType.BLUE));
+        allDices.put(InvestmentType.GREEN, createDice(InvestmentType.GREEN));
+        allDices.put(InvestmentType.YELLOW, createDice(InvestmentType.YELLOW));
+
+        return allDices;
     }
 }

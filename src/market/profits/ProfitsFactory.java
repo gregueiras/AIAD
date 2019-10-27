@@ -4,6 +4,8 @@ import market.InvestmentType;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfitsFactory {
 
@@ -30,5 +32,17 @@ public class ProfitsFactory {
 
         }
         return ret;
+    }
+
+    public Map<InvestmentType, Profits> createAllProfits(){
+
+        Map<InvestmentType,Profits> allProfits = new HashMap<InvestmentType,Profits>();
+
+        allProfits.put(InvestmentType.RED, createProfits(InvestmentType.RED));
+        allProfits.put(InvestmentType.BLUE, createProfits(InvestmentType.BLUE));
+        allProfits.put(InvestmentType.GREEN, createProfits(InvestmentType.GREEN));
+        allProfits.put(InvestmentType.YELLOW, createProfits(InvestmentType.YELLOW));
+
+        return allProfits;
     }
 }
