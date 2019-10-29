@@ -2,6 +2,7 @@ package agents;
 
 import behaviours.*;
 import helper.Round;
+import helper.Shift;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -30,6 +31,10 @@ public class AgentBoard extends OurAgent {
 
   private Round round;
 
+  private Integer currentShift;
+
+  private Integer currentRound;
+
   public List<AID> getInvestors() {
     return investors;
   }
@@ -42,8 +47,17 @@ public class AgentBoard extends OurAgent {
     return round;
   }
 
+  public Shift getCurrentShift() {
+    return this.round.getShift(this.currentShift);
+  }
+
+  public void setCurrentShift(Integer currentShift) {
+    this.currentShift = currentShift;
+  }
+
   public void setRound(Round round) {
     this.round = round;
+    this.currentShift = 0;
   }
 
   // Put agent initializations here
@@ -52,6 +66,7 @@ public class AgentBoard extends OurAgent {
     catalogue = new Hashtable<>();
     investors = new LinkedList<>();
     managers = new LinkedList<>();
+    currentShift = 0;
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -62,15 +77,17 @@ public class AgentBoard extends OurAgent {
   private void stateMachine() {
     Behaviour findManagers = new FindAgents(AgentType.MANAGER, this);
     Behaviour findInvestors = new FindAgents(AgentType.INVESTOR, this);
-    Behaviour pairAgents = new PairAgents(this);
+    Behaviour createRound = new CreateRound(this);
+    Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
 
     Transition t1 = new Transition(findManagers, findInvestors);
-    Transition t2 = new Transition(findInvestors, pairAgents);
-    Transition t3 = new Transition(pairAgents, printEnd);
+    Transition t2 = new Transition(findInvestors, createRound);
+    Transition t3 = new Transition(createRound, assignInvestors);
+    Transition t4 = new Transition(assignInvestors, printEnd);
 
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4);
     addBehaviour(sm);
   }
 

@@ -12,14 +12,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PairAgents extends OneShotBehaviour {
+public class CreateRound extends OneShotBehaviour {
 
     private AgentBoard agent;
 
 
-    public PairAgents( AgentBoard agent) {
+    public CreateRound(AgentBoard agent) {
         this.agent = agent;
-        super.setBehaviourName("Pair_Agents");
+        super.setBehaviourName("Create_Round");
     }
 
     private Round createRound(List<AID> a1, List<AID> a2, AgentType a1Type, AgentType a2Type){

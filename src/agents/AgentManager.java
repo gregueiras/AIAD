@@ -14,6 +14,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
 
 import java.util.Enumeration;
@@ -22,12 +23,16 @@ import java.util.Vector;
 import market.Company;
 import market.WalletExamples;
 
+import javax.sound.midi.SysexMessage;
+
 public class AgentManager extends OurAgent {
 
   // The companies that the manager has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
 
   private AID board;
+
+  private AID investor;
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
@@ -47,19 +52,43 @@ public class AgentManager extends OurAgent {
     }
 
     Behaviour printStart = new Print("Waiting for msg");
+
+    Behaviour findBoard = new FindAgents(AgentType.BOARD, this);
+
     Behaviour waitInform = new WaitForMessage(this,
             MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
+
+    Behaviour waitAssignInvestor = new WaitForMessage(this,
+            MessageTemplate.MatchConversationId("assign-investor"), 0);
+
     Behaviour printEnd = new Print("MSG Received");
 
-    Transition t1 = new Transition(printStart, waitInform);
-    Transition t2 = new Transition(waitInform, printEnd);
+    Transition t1 = new Transition(printStart, findBoard);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
+    Transition t2 = new Transition(findBoard, waitInform);
+
+    Transition t3 = new Transition(waitInform, waitAssignInvestor);
+
+    Transition t4 = new Transition(waitAssignInvestor, printEnd);
+
+
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4);
     addBehaviour(sm);
   }
 
   @Override
   public void handleMessage(ACLMessage msg) {
+    if(msg.getConversationId().equalsIgnoreCase("assign-investor")){
+      String name = "unknown";
+      try {
+        AID investor = (AID) msg.getContentObject();
+        name = investor.getName();
+        this.investor = investor;
+      } catch (UnreadableException e) {
+        e.printStackTrace();
+      }
+      System.out.println(getAID().getName() + "assign investor:  " + name);
+    } else
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
   }
 

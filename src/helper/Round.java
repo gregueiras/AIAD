@@ -19,6 +19,10 @@ public class Round {
         return shifts;
     }
 
+    public Shift getShift(Integer index){
+        return this.shifts.get(index);
+    }
+
     @Override
     public String toString() {
         return "Round{" +

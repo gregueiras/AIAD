@@ -16,6 +16,14 @@ public class Shift {
         this.pairs.add(pair);
     }
 
+    public List<NegotiationPair> getPairs() {
+        return pairs;
+    }
+
+    public void setPairs(List<NegotiationPair> pairs) {
+        this.pairs = pairs;
+    }
+
     @Override
     public String toString() {
         return "Shift{" +
