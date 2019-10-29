@@ -8,6 +8,7 @@ import helper.Round;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +57,13 @@ public class CreateRound extends OneShotBehaviour {
 
                     NegotiationPair pair = new NegotiationPair(manager,investor);
                     shift.addPair(pair);
+                }
+                else {
+                    System.out.println("more managers than investors");
+                    if(a1Type == AgentType.MANAGER){
+                        NegotiationPair pair = new NegotiationPair(a1.get(i),null);
+                        shift.addPair(pair);
+                    }
                 }
             }
             start++;
