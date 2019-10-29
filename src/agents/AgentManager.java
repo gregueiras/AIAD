@@ -33,11 +33,13 @@ public class AgentManager extends OurAgent {
   private AID board;
 
   private AID investor;
+
+  private boolean skipShift;
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
     wallet = WalletExamples.getEx1();
-
+    skipShift = false;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
@@ -81,13 +83,19 @@ public class AgentManager extends OurAgent {
     if(msg.getConversationId().equalsIgnoreCase("assign-investor")){
       String name = "unknown";
       try {
-        AID investor = (AID) msg.getContentObject();
-        name = investor.getName();
-        this.investor = investor;
+        if(msg.getContentObject() != null) {
+          AID investor = (AID) msg.getContentObject();
+          name = investor.getName();
+          this.investor = investor;
+          this.skipShift = false;
+        } else {
+          this.skipShift = true;
+        }
+
       } catch (UnreadableException e) {
         e.printStackTrace();
       }
-      System.out.println(getAID().getName() + "assign investor:  " + name);
+      System.out.println(getAID().getName() + " assign investor:  " + name);
     } else
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
   }
