@@ -24,15 +24,5 @@ public class ProposeInitiator extends OneShotBehaviour {
         msg.addReceiver(this.agent.getInvestor());
         msg.setConversationId("negotiate");
         this.agent.send(msg);
-
-        MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchConversationId("negotiate"),
-                MessageTemplate.MatchInReplyTo("negotiate"));
-        ACLMessage reply = this.agent.receive(mt);
-
-        while (reply == null) {
-            reply = this.agent.receive(mt);
-        }
-        System.out.println("received : " + reply.getContent());
-
     }
 }

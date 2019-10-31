@@ -5,6 +5,7 @@ import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -60,7 +61,16 @@ public class AgentManager extends OurAgent {
     Behaviour waitAssignInvestor = new WaitForMessage(this,
             MessageTemplate.MatchConversationId("assign-investor"), 0);
 
-    Behaviour negotiation = new ProposeInitiator(this);
+    Behaviour proposeInitiator = new ProposeInitiator(this);
+
+    Behaviour proposeReply = new WaitForMessage(this,
+            MessageTemplate.and(MessageTemplate.MatchConversationId("negotiate"),
+                    MessageTemplate.MatchInReplyTo("negotiate")), 0);
+
+
+    SequentialBehaviour negotiation = new SequentialBehaviour();
+    negotiation.addSubBehaviour(proposeInitiator);
+    negotiation.addSubBehaviour(proposeReply);
 
     Behaviour printEnd = new Print("MSG Received");
 
