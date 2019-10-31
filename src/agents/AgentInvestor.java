@@ -1,9 +1,6 @@
 package agents;
 
-import behaviours.FindAgents;
-import behaviours.Print;
-import behaviours.WaitForMessage;
-import behaviours.StateMachine;
+import behaviours.*;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -51,8 +48,7 @@ public class AgentInvestor extends OurAgent {
     Behaviour waitInform = new WaitForMessage(this,
         MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
 
-    Behaviour negotiation = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId("negotiate"), 0);
+    Behaviour negotiation = new ProposeReceiver(this);
 
     Behaviour printEnd = new Print("MSG Received");
 

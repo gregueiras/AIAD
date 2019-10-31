@@ -7,7 +7,7 @@ import jade.proto.states.MsgReceiver;
 
 public class WaitForMessage extends MsgReceiver {
 
-  private OurAgent agent;
+  protected OurAgent agent;
   private int onEnd;
 
   public WaitForMessage(OurAgent a, MessageTemplate template, int onEnd) {
