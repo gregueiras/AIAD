@@ -47,49 +47,21 @@ public class AgentInvestor extends OurAgent {
       fe.printStackTrace();
     }
 
-    // Get the title of the book to buy as a start-up argument
-    Object[] args = getArguments();
-    if (args != null && args.length > 0) {
-      var targetBookTitle = (String) args[0];
-      System.out.println("Target book is " + targetBookTitle);
+    Behaviour printStart = new Print("Waiting for msg");
+    Behaviour waitInform = new WaitForMessage(this,
+        MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
 
-      // Add a TickerBehaviour that schedules a request to seller agents every minute
-      /*
-      addBehaviour(new TickerBehaviour(this, 60000) {
-        protected void onTick() {
-          System.out.println("Trying to buy " + targetBookTitle);
-          // Update the list of seller agents
-          DFAgentDescription template = new DFAgentDescription();
-          ServiceDescription sd = new ServiceDescription();
-          sd.setType("wall-street-manager");
-          template.addServices(sd);
-          try {
-            DFAgentDescription[] result = DFService.search(myAgent, template);
-            System.out.println("Found the following seller agents:");
-            sellerAgents = new AID[result.length];
-            for (int i = 0; i < result.length; ++i) {
-              sellerAgents[i] = result[i].getName();
-              System.out.println(sellerAgents[i].getName());
-            }
-          } catch (FIPAException fe) {
-            fe.printStackTrace();
-          }
+    Behaviour negotiation = new WaitForMessage(this,
+            MessageTemplate.MatchConversationId("negotiate"), 0);
 
-        }
-      });
-       */
-    } else {
-      Behaviour printStart = new Print("Waiting for msg");
-      Behaviour waitInform = new WaitForMessage(this,
-          MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
-      Behaviour printEnd = new Print("MSG Received");
+    Behaviour printEnd = new Print("MSG Received");
 
-      Transition t1 = new Transition(printStart, waitInform);
-      Transition t2 = new Transition(waitInform, printEnd);
+    Transition t1 = new Transition(printStart,waitInform );
+    Transition t2 = new Transition(waitInform, negotiation);
+    Transition t3 = new Transition(negotiation, printEnd);
 
-      StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
-      addBehaviour(sm);
-    }
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3);
+    addBehaviour(sm);
   }
 
   // Put agent clean-up operations here
@@ -100,9 +72,8 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public void handleMessage(ACLMessage msg) {
-    if (msg != null) {
+      System.out.println("here");
       System.out.println(msg.getPerformative() + ": " + msg.getContent());
-    }
   }
 
   @Override

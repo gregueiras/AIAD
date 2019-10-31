@@ -24,7 +24,6 @@ public class AssignInvestors extends OneShotBehaviour {
         Shift shift = agent.getCurrentShift();
 
         for(NegotiationPair np: shift.getPairs()){
-            System.out.println("AssignInvestors.action");
             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
             msg.setSender(this.agent.getAID());
             try {

@@ -126,11 +126,9 @@ public class AgentBoard extends OurAgent {
     switch (type){
       case INVESTOR:
         this.investors = Arrays.asList(agents);
-        System.out.println("THIS IS MY LIS OF INVESTORS " + this.investors);
         break;
       case MANAGER:
         this.managers = Arrays.asList(agents);
-        System.out.println("THIS IS MY LIS OF MANAGERS " + this.managers);
         break;
       default:
         System.err.println("Invalid agent type");

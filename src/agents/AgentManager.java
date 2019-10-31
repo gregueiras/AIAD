@@ -1,9 +1,6 @@
 package agents;
 
-import behaviours.FindAgents;
-import behaviours.Print;
-import behaviours.StateMachine;
-import behaviours.WaitForMessage;
+import behaviours.*;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
@@ -63,6 +60,8 @@ public class AgentManager extends OurAgent {
     Behaviour waitAssignInvestor = new WaitForMessage(this,
             MessageTemplate.MatchConversationId("assign-investor"), 0);
 
+    Behaviour negotiation = new ProposeInitiator(this);
+
     Behaviour printEnd = new Print("MSG Received");
 
     Transition t1 = new Transition(printStart, findBoard);
@@ -71,34 +70,41 @@ public class AgentManager extends OurAgent {
 
     Transition t3 = new Transition(waitInform, waitAssignInvestor);
 
-    Transition t4 = new Transition(waitAssignInvestor, printEnd);
+    Transition t4 = new Transition(waitAssignInvestor, negotiation);
+
+    Transition t5 = new Transition(negotiation, printEnd);
 
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4, t5);
     addBehaviour(sm);
   }
 
   @Override
   public void handleMessage(ACLMessage msg) {
     if(msg.getConversationId().equalsIgnoreCase("assign-investor")){
-      String name = "unknown";
-      try {
-        if(msg.getContentObject() != null) {
-          AID investor = (AID) msg.getContentObject();
-          name = investor.getName();
-          this.investor = investor;
-          this.skipShift = false;
-        } else {
-          this.skipShift = true;
-        }
-
-      } catch (UnreadableException e) {
-        e.printStackTrace();
-      }
-      System.out.println(getAID().getName() + " assign investor:  " + name);
+      handleAssignInvestorMsg(msg);
     } else
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
   }
+
+  private void handleAssignInvestorMsg(ACLMessage msg) {
+    String name = "unknown";
+    try {
+      if(msg.getContentObject() != null) {
+        AID investor = (AID) msg.getContentObject();
+        name = investor.getName();
+        this.investor = investor;
+        this.skipShift = false;
+      } else {
+        this.skipShift = true;
+      }
+
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+    System.out.println(getAID().getName() + " assign investor:  " + name);
+  }
+
 
   // Put agent clean-up operations here
   protected void takeDown() {
@@ -113,6 +119,9 @@ public class AgentManager extends OurAgent {
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
   }
 
+  public AID getInvestor() {
+    return investor;
+  }
 
   private class SellCompanies extends ContractNetInitiator {
 
@@ -180,7 +189,6 @@ public class AgentManager extends OurAgent {
       case BOARD:
         try {
           this.board = agents[0];
-          System.out.println("THIS IS MY BOARD " + this.board);
         }
         catch(Exception e){
           System.err.println(e);
