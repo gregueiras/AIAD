@@ -244,7 +244,7 @@ public class AgentManager extends OurAgent {
     msg.setSender(getAID());
     msg.setContent("end of negotiation");
     msg.addReceiver(getBoard());
-    msg.setConversationId("Negotiation-end");
+    msg.setConversationId("negotiation-end");
     send(msg);
     System.out.println("Informing board");
   }

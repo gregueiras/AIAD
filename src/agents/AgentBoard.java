@@ -81,14 +81,16 @@ public class AgentBoard extends OurAgent {
     Behaviour createRound = new CreateRound(this);
     Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
+    Behaviour endNegotiation = new EndNegotiation(this);
 
     Transition t1 = new Transition(findManagers, findInvestors);
     Transition t2 = new Transition(findInvestors, createRound);
     Transition t3 = new Transition(createRound, assignInvestors);
-    Transition t4 = new Transition(assignInvestors, printEnd);
+    Transition t4 = new Transition(assignInvestors, endNegotiation );
+    Transition t5 = new Transition(endNegotiation, printEnd);
 
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t5);
     addBehaviour(sm);
   }
 
