@@ -1,6 +1,7 @@
 package agents;
 
 import behaviours.*;
+import helper.MessageType;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
@@ -61,16 +62,17 @@ public class AgentManager extends OurAgent {
     Behaviour waitAssignInvestor = new WaitForMessage(this,
             MessageTemplate.MatchConversationId("assign-investor"), 0);
 
-    Behaviour proposeInitiator = new ProposeInitiator(this);
+    Behaviour proposeInitiator = new SendMessage(this, MessageType.NEGOTIATE);
 
     Behaviour proposeReply = new WaitForMessage(this,
             MessageTemplate.and(MessageTemplate.MatchConversationId("negotiate"),
                     MessageTemplate.MatchInReplyTo("negotiate")), 0);
 
-
     SequentialBehaviour negotiation = new SequentialBehaviour();
     negotiation.addSubBehaviour(proposeInitiator);
     negotiation.addSubBehaviour(proposeReply);
+
+    Behaviour informBoard = new SendMessage(this, MessageType.INFORM_BOARD);
 
     Behaviour printEnd = new Print("MSG Received");
 
@@ -82,10 +84,12 @@ public class AgentManager extends OurAgent {
 
     Transition t4 = new Transition(waitAssignInvestor, negotiation);
 
-    Transition t5 = new Transition(negotiation, printEnd);
+    Transition t5 = new Transition(negotiation, informBoard);
+
+    Transition t6 = new Transition(informBoard, printEnd);
 
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4, t5);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4, t5, t6);
     addBehaviour(sm);
   }
 
@@ -131,6 +135,10 @@ public class AgentManager extends OurAgent {
 
   public AID getInvestor() {
     return investor;
+  }
+
+  public AID getBoard() {
+    return board;
   }
 
   private class SellCompanies extends ContractNetInitiator {
@@ -208,6 +216,37 @@ public class AgentManager extends OurAgent {
         System.err.println("Invalid agent type");
         break;
     }
+  }
+
+  @Override
+  public void sendMessage(MessageType type) {
+    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+    switch (type) {
+      case INFORM_BOARD:
+        sendMsgInformBoard(msg);
+        break;
+      case NEGOTIATE:
+        sendMsgNegotiate(msg);
+        break;
+    }
+  }
+
+  private void sendMsgNegotiate(ACLMessage msg) {
+    System.out.println("ProposeInitiator.action " + getInvestor());
+    msg.setSender(getAID());
+    msg.setContent("ola ola");
+    msg.addReceiver(getInvestor());
+    msg.setConversationId("negotiate");
+    send(msg);
+  }
+
+  private void sendMsgInformBoard(ACLMessage msg) {
+    msg.setSender(getAID());
+    msg.setContent("end of negotiation");
+    msg.addReceiver(getBoard());
+    msg.setConversationId("Negotiation-end");
+    send(msg);
+    System.out.println("Informing board");
   }
 
 }

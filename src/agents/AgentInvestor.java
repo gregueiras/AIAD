@@ -1,6 +1,7 @@
 package agents;
 
 import behaviours.*;
+import helper.MessageType;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -48,7 +49,7 @@ public class AgentInvestor extends OurAgent {
     Behaviour waitInform = new WaitForMessage(this,
         MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
 
-    Behaviour negotiation = new ProposeReceiver(this);
+    Behaviour negotiation = new WaitForMessage(this, MessageTemplate.MatchConversationId("negotiate"), 0);
 
     Behaviour printEnd = new Print("MSG Received");
 
@@ -68,9 +69,22 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public void handleMessage(ACLMessage msg) {
-      System.out.println("here");
+    if(msg.getConversationId().equalsIgnoreCase("negotiate")){
+      handleNegotiateMsg(msg);
+    } else
       System.out.println(msg.getPerformative() + ": " + msg.getContent());
   }
+
+  private void handleNegotiateMsg(ACLMessage msg) {
+    System.out.println("i am receiving: " + msg.getContent());
+    ACLMessage reply = msg.createReply();
+    reply.setInReplyTo("negotiate");
+    reply.setPerformative( ACLMessage.INFORM );
+    reply.setContent("oi oi");
+    send(reply);
+    System.out.println("sent reply");
+  }
+
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
@@ -88,6 +102,11 @@ public class AgentInvestor extends OurAgent {
         System.err.println("Invalid agent type");
         break;
     }
+  }
+
+  @Override
+  public void sendMessage(MessageType type) {
+
   }
 
   /**

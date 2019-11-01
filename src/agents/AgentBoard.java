@@ -1,6 +1,7 @@
 package agents;
 
 import behaviours.*;
+import helper.MessageType;
 import helper.Round;
 import helper.Shift;
 import helper.Transition;
@@ -134,6 +135,11 @@ public class AgentBoard extends OurAgent {
         System.err.println("Invalid agent type");
         break;
     }
+  }
+
+  @Override
+  public void sendMessage(MessageType type) {
+
   }
 
   @Override
