@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.AgentBoard;
+import helper.State;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -18,7 +19,7 @@ public class EndNegotiation extends SimpleBehaviour {
     @Override
     public void action() {
         System.out.println("endNegotiation.action");
-        MessageTemplate mt = MessageTemplate.MatchConversationId("negotiation-end");
+        MessageTemplate mt = MessageTemplate.MatchConversationId(State.INFORM_BOARD.toString());
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
             System.out.println("board received msg with content: " + msg.getContent());
@@ -30,7 +31,8 @@ public class EndNegotiation extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-        if(this.nrResponses > 1) {
+        int maxNrResponses = this.agent.getManagers().size();
+        if(this.nrResponses >= maxNrResponses ) {
             return true;
         } else return false;
     }

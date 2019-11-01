@@ -1,21 +1,20 @@
 package behaviours;
 
 import agents.OurAgent;
-import helper.MessageType;
+import helper.State;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.lang.acl.ACLMessage;
 
 public class SendMessage extends OneShotBehaviour {
 
     private OurAgent agent;
-    private MessageType messageType;
-    public SendMessage(OurAgent agent, MessageType messageType) {
+    private State state;
+    public SendMessage(OurAgent agent, State state) {
         this.agent = agent;
-        this.messageType = messageType;
+        this.state = state;
     }
 
     @Override
     public void action() {
-        this.agent.sendMessage(this.messageType);
+        this.agent.sendMessage(this.state);
     }
 }

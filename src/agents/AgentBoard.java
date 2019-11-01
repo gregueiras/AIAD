@@ -1,7 +1,7 @@
 package agents;
 
 import behaviours.*;
-import helper.MessageType;
+import helper.State;
 import helper.Round;
 import helper.Shift;
 import helper.Transition;
@@ -140,8 +140,13 @@ public class AgentBoard extends OurAgent {
   }
 
   @Override
-  public void sendMessage(MessageType type) {
+  public void sendMessage(State type) {
 
+  }
+
+  @Override
+  public int onEnd(State state) {
+    return 0;
   }
 
   @Override

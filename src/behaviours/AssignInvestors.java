@@ -3,6 +3,7 @@ package behaviours;
 import agents.AgentBoard;
 import helper.NegotiationPair;
 import helper.Shift;
+import helper.State;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -32,7 +33,7 @@ public class AssignInvestors extends OneShotBehaviour {
                 e.printStackTrace();
             }
             msg.addReceiver(np.getManager());
-            msg.setConversationId("assign-investor");
+            msg.setConversationId(State.ASSIGN_INVESTOR.toString());
             agent.send(msg);
         }
     }

@@ -1,7 +1,7 @@
 package agents;
 
 import behaviours.*;
-import helper.MessageType;
+import helper.State;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.Agent;
@@ -21,8 +21,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 import market.Company;
 import market.WalletExamples;
-
-import javax.sound.midi.SysexMessage;
 
 public class AgentManager extends OurAgent {
 
@@ -57,22 +55,22 @@ public class AgentManager extends OurAgent {
     Behaviour findBoard = new FindAgents(AgentType.BOARD, this);
 
     Behaviour waitInform = new WaitForMessage(this,
-            MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
+            MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 
     Behaviour waitAssignInvestor = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId("assign-investor"), 0);
+            MessageTemplate.MatchConversationId(State.ASSIGN_INVESTOR.toString()), State.ASSIGN_INVESTOR);
 
-    Behaviour proposeInitiator = new SendMessage(this, MessageType.NEGOTIATE);
+    Behaviour proposeInitiator = new SendMessage(this, State.NEGOTIATE);
 
     Behaviour proposeReply = new WaitForMessage(this,
-            MessageTemplate.and(MessageTemplate.MatchConversationId("negotiate"),
-                    MessageTemplate.MatchInReplyTo("negotiate")), 0);
+            MessageTemplate.and(MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()),
+                    MessageTemplate.MatchInReplyTo(State.NEGOTIATE.toString())));
 
     SequentialBehaviour negotiation = new SequentialBehaviour();
     negotiation.addSubBehaviour(proposeInitiator);
     negotiation.addSubBehaviour(proposeReply);
 
-    Behaviour informBoard = new SendMessage(this, MessageType.INFORM_BOARD);
+    Behaviour informBoard = new SendMessage(this, State.INFORM_BOARD);
 
     Behaviour printEnd = new Print("MSG Received");
 
@@ -82,20 +80,21 @@ public class AgentManager extends OurAgent {
 
     Transition t3 = new Transition(waitInform, waitAssignInvestor);
 
-    Transition t4 = new Transition(waitAssignInvestor, negotiation);
+    Transition t41 = new Transition(waitAssignInvestor, negotiation, 0);
+
+    Transition t42 = new Transition(waitAssignInvestor, informBoard, 1);
 
     Transition t5 = new Transition(negotiation, informBoard);
 
     Transition t6 = new Transition(informBoard, printEnd);
 
-
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t4, t5, t6);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t41, t42, t5, t6);
     addBehaviour(sm);
   }
 
   @Override
   public void handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equalsIgnoreCase("assign-investor")){
+    if(msg.getConversationId().equalsIgnoreCase(State.ASSIGN_INVESTOR.toString())){
       handleAssignInvestorMsg(msg);
     } else
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
@@ -139,6 +138,10 @@ public class AgentManager extends OurAgent {
 
   public AID getBoard() {
     return board;
+  }
+
+  public boolean isSkipShift() {
+    return skipShift;
   }
 
   private class SellCompanies extends ContractNetInitiator {
@@ -219,34 +222,43 @@ public class AgentManager extends OurAgent {
   }
 
   @Override
-  public void sendMessage(MessageType type) {
+  public void sendMessage(State type) {
     ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
     switch (type) {
       case INFORM_BOARD:
         sendMsgInformBoard(msg);
         break;
       case NEGOTIATE:
-        sendMsgNegotiate(msg);
+          sendMsgNegotiate(msg);
         break;
     }
   }
 
+  @Override
+  public int onEnd(State state) {
+    if(state == State.ASSIGN_INVESTOR){
+      if(this.skipShift) return 1;
+      else return 0;
+    }else
+      return 0;
+  }
+
   private void sendMsgNegotiate(ACLMessage msg) {
-    System.out.println("ProposeInitiator.action " + getInvestor());
-    msg.setSender(getAID());
-    msg.setContent("ola ola");
-    msg.addReceiver(getInvestor());
-    msg.setConversationId("negotiate");
-    send(msg);
+      System.out.println("ProposeInitiator.action " + getInvestor());
+      msg.setSender(getAID());
+      msg.setContent("ola ola");
+      msg.addReceiver(getInvestor());
+      msg.setConversationId(State.NEGOTIATE.toString());
+      send(msg);
   }
 
   private void sendMsgInformBoard(ACLMessage msg) {
     msg.setSender(getAID());
     msg.setContent("end of negotiation");
     msg.addReceiver(getBoard());
-    msg.setConversationId("negotiation-end");
+    msg.setConversationId(State.INFORM_BOARD.toString());
     send(msg);
-    System.out.println("Informing board");
+    System.out.println("agent " + getName()+ " Informing board");
   }
 
 }

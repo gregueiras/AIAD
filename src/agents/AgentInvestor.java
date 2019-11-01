@@ -1,7 +1,7 @@
 package agents;
 
 import behaviours.*;
-import helper.MessageType;
+import helper.State;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -47,9 +47,9 @@ public class AgentInvestor extends OurAgent {
 
     Behaviour printStart = new Print("Waiting for msg");
     Behaviour waitInform = new WaitForMessage(this,
-        MessageTemplate.MatchPerformative(ACLMessage.INFORM), 0);
+        MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 
-    Behaviour negotiation = new WaitForMessage(this, MessageTemplate.MatchConversationId("negotiate"), 0);
+    Behaviour negotiation = new WaitForMessage(this, MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()));
 
     Behaviour printEnd = new Print("MSG Received");
 
@@ -69,7 +69,7 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public void handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equalsIgnoreCase("negotiate")){
+    if(msg.getConversationId().equalsIgnoreCase(State.NEGOTIATE.toString())){
       handleNegotiateMsg(msg);
     } else
       System.out.println(msg.getPerformative() + ": " + msg.getContent());
@@ -78,7 +78,7 @@ public class AgentInvestor extends OurAgent {
   private void handleNegotiateMsg(ACLMessage msg) {
     System.out.println("i am receiving: " + msg.getContent());
     ACLMessage reply = msg.createReply();
-    reply.setInReplyTo("negotiate");
+    reply.setInReplyTo(State.NEGOTIATE.toString());
     reply.setPerformative( ACLMessage.INFORM );
     reply.setContent("oi oi");
     send(reply);
@@ -105,8 +105,13 @@ public class AgentInvestor extends OurAgent {
   }
 
   @Override
-  public void sendMessage(MessageType type) {
+  public void sendMessage(State type) {
 
+  }
+
+  @Override
+  public int onEnd(State state) {
+    return 0;
   }
 
   /**
