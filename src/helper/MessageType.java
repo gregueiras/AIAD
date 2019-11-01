@@ -1,7 +1,7 @@
 package helper;
 
 public enum MessageType {
-    INFORM_BOARD("Investor"), NEGOTIATE("Manager");
+    INFORM_BOARD("inform_board"), NEGOTIATE("negotiate");
 
     private final String val;
 
