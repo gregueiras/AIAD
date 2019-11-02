@@ -52,8 +52,15 @@ public class AgentBoard extends OurAgent {
     return this.round.getShift(this.currentShift);
   }
 
+  public void incCurrentShift() {this.setCurrentShift(this.currentShift + 1);}
+
   public void setCurrentShift(Integer currentShift) {
     this.currentShift = currentShift;
+  }
+
+  public boolean isEndRound() {
+    System.out.println("CS: " + this.currentShift + "  rs: " + this.round.getShifts().size() );
+    return this.currentShift >= (this.round.getShifts().size() - 1);
   }
 
   public void setRound(Round round) {
@@ -82,15 +89,21 @@ public class AgentBoard extends OurAgent {
     Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
     Behaviour endNegotiation = new EndNegotiation(this);
+    Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
+    Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
+
 
     Transition t1 = new Transition(findManagers, findInvestors);
     Transition t2 = new Transition(findInvestors, createRound);
     Transition t3 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation );
-    Transition t5 = new Transition(endNegotiation, printEnd);
 
+    Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
+    Transition t52 = new Transition(endNegotiation, sendRoundEnd, 1);
+    Transition t61 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t62 = new Transition(sendRoundEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t5);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t51, t52, t61, t62);
     addBehaviour(sm);
   }
 
@@ -141,11 +154,35 @@ public class AgentBoard extends OurAgent {
 
   @Override
   public void sendMessage(State type) {
+    System.out.println("stet:: " + type);
+    switch (type) {
+      case ROUND_END:
+      case SHIFT_END:
+        sendEndStateMsg(type);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void sendEndStateMsg(State state) {
+    ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+    msg.setSender(getAID());
+    for (AID manager : this.managers) {
+      msg.addReceiver(manager);
+    }
+    for (AID investor : this.investors) {
+      msg.addReceiver(investor);
+    }
+    msg.setContent(state.toString());
+    msg.setConversationId(State.WAIT_END_SHIFT_ROUND.toString());
+    send(msg);
+    System.out.println("send message: " + msg.getContent());
 
   }
 
   @Override
-  public int onEnd(State state) {
+  public int onEnd(State state, String content) {
     return 0;
   }
 

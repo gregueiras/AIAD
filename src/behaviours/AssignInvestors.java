@@ -36,5 +36,6 @@ public class AssignInvestors extends OneShotBehaviour {
             msg.setConversationId(State.ASSIGN_INVESTOR.toString());
             agent.send(msg);
         }
+        System.out.println("AssignInvestors.action");
     }
 }

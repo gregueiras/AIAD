@@ -1,7 +1,9 @@
 package helper;
 
 public enum State {
-    ASSIGN_INVESTOR("assign_investor"), INFORM_BOARD("inform_board"), NEGOTIATE("negotiate"), DEFAULT("default");
+    ASSIGN_INVESTOR("assign_investor"), INFORM_BOARD("inform_board"),
+    NEGOTIATE("negotiate"), DEFAULT("default"), ROUND_END("round_end"),
+    SHIFT_END("shift_end"), WAIT_END_SHIFT_ROUND("wait_end_shift_round");
 
     private final String val;
 

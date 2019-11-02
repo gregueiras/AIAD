@@ -55,7 +55,7 @@ public class AgentManager extends OurAgent {
     Behaviour findBoard = new FindAgents(AgentType.BOARD, this);
 
     Behaviour waitInform = new WaitForMessage(this,
-            MessageTemplate.MatchPerformative(ACLMessage.INFORM));
+            MessageTemplate.MatchConversationId("hello"));
 
     Behaviour waitAssignInvestor = new WaitForMessage(this,
             MessageTemplate.MatchConversationId(State.ASSIGN_INVESTOR.toString()), State.ASSIGN_INVESTOR);
@@ -72,21 +72,24 @@ public class AgentManager extends OurAgent {
 
     Behaviour informBoard = new SendMessage(this, State.INFORM_BOARD);
 
+    Behaviour waitForEndShiftRound = new WaitForMessage(this,
+            MessageTemplate.MatchConversationId(State.WAIT_END_SHIFT_ROUND.toString()), State.WAIT_END_SHIFT_ROUND);
+
     Behaviour printEnd = new Print("MSG Received");
 
     Transition t1 = new Transition(printStart, findBoard);
-
     Transition t2 = new Transition(findBoard, waitInform);
-
     Transition t3 = new Transition(waitInform, waitAssignInvestor);
-
     Transition t41 = new Transition(waitAssignInvestor, negotiation, 0);
-
     Transition t42 = new Transition(waitAssignInvestor, informBoard, 1);
-
     Transition t5 = new Transition(negotiation, informBoard);
 
     Transition t6 = new Transition(informBoard, printEnd);
+    Transition t7 = new Transition(waitForEndShiftRound, printEnd);
+    /*
+    Transition t6 = new Transition(informBoard, waitForEndShiftRound);
+    Transition t71 = new Transition(waitForEndShiftRound, waitAssignInvestor, 0);
+    Transition t72 = new Transition(waitForEndShiftRound, printEnd, 1);*/
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t41, t42, t5, t6);
     addBehaviour(sm);
@@ -235,12 +238,18 @@ public class AgentManager extends OurAgent {
   }
 
   @Override
-  public int onEnd(State state) {
-    if(state == State.ASSIGN_INVESTOR){
-      if(this.skipShift) return 1;
-      else return 0;
-    }else
-      return 0;
+  public int onEnd(State state, String content) {
+    switch (state) {
+      case WAIT_END_SHIFT_ROUND:
+        if(content.equalsIgnoreCase(State.ROUND_END.toString()))
+          return 1;
+        else return 0;
+      case ASSIGN_INVESTOR:
+        if(this.skipShift) return 1;
+        else return 0;
+      default:
+        return 0;
+    }
   }
 
   private void sendMsgNegotiate(ACLMessage msg) {

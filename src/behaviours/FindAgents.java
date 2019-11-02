@@ -38,6 +38,7 @@ public class FindAgents extends OneShotBehaviour {
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
       msg.setSender(this.agent.getAID());
       msg.setContent("Hello");
+      msg.setConversationId("Hello");
 
       for (int i = 0; i < result.length; ++i) {
         agentsFound = true;

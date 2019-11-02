@@ -87,5 +87,7 @@ public class CreateRound extends OneShotBehaviour {
             r = this.createRound(investors, managers, AgentType.INVESTOR,  AgentType.MANAGER);
         if(r != null)
             this.agent.setRound(r);
+
+        System.out.println(this.agent.getRound().toString());
     }
 }
