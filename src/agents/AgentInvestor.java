@@ -12,6 +12,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.lang.reflect.AccessibleObject;
 import java.util.Hashtable;
 import market.Company;
 
@@ -47,24 +48,27 @@ public class AgentInvestor extends OurAgent {
 
     Behaviour printStart = new Print("Waiting for msg");
     Behaviour waitInform = new WaitForMessage(this,
-            MessageTemplate.MatchPerformative(ACLMessage.INFORM));
+            MessageTemplate.MatchConversationId("Hello"));
 
     Behaviour negotiation = new WaitForMessage(this, MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()));
 
     Behaviour waitForEndShiftRound = new WaitForMessage(this,
             MessageTemplate.MatchConversationId(State.WAIT_END_SHIFT_ROUND.toString()));
 
+    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 3);
+
     Behaviour printEnd = new Print("MSG Received");
 
-    Transition t1 = new Transition(printStart,waitInform );
-    Transition t2 = new Transition(waitInform, negotiation);
-    Transition t3 = new Transition(negotiation, printEnd);
-    /*
-    Transition t3 = new Transition(negotiation, waitForEndShiftRound);
-    Transition t41 = new Transition(waitForEndShiftRound, negotiation, 0);
-    Transition t42 = new Transition(waitForEndShiftRound, printEnd, 1);*/
+    //Transition t1 = new Transition(printStart,waitInform );
+    //Transition t2 = new Transition(waitInform, negotiation);
+    //Transition t3 = new Transition(negotiation, printEnd);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3);
+    Transition t1 = new Transition(printStart,wms );
+
+    Transition t41 = new Transition(wms, printEnd, 0);
+    Transition t42 = new Transition(waitForEndShiftRound, printEnd, 1);
+
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t41);
     addBehaviour(sm);
   }
 

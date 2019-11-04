@@ -26,6 +26,8 @@ public class FindAgents extends OneShotBehaviour {
 
   @Override
   public void action() {
+    System.out.println("FindAgents.action");
+
     DFAgentDescription template = new DFAgentDescription();
     ServiceDescription sd = new ServiceDescription();
     sd.setType(String.valueOf(typeToSearch));

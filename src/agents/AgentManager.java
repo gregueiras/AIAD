@@ -77,21 +77,24 @@ public class AgentManager extends OurAgent {
 
     Behaviour printEnd = new Print("MSG Received");
 
+    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 2);
+
+
     Transition t1 = new Transition(printStart, findBoard);
-    Transition t2 = new Transition(findBoard, waitInform);
-    Transition t3 = new Transition(waitInform, waitAssignInvestor);
-    Transition t41 = new Transition(waitAssignInvestor, negotiation, 0);
-    Transition t42 = new Transition(waitAssignInvestor, informBoard, 1);
+    Transition t2 = new Transition(findBoard, wms);
+
+    Transition t41 = new Transition(wms, negotiation);
+    //Transition t42 = new Transition(waitAssignInvestor, informBoard, 1);
     Transition t5 = new Transition(negotiation, informBoard);
 
-    Transition t6 = new Transition(informBoard, printEnd);
-    Transition t7 = new Transition(waitForEndShiftRound, printEnd);
-    /*
-    Transition t6 = new Transition(informBoard, waitForEndShiftRound);
-    Transition t71 = new Transition(waitForEndShiftRound, waitAssignInvestor, 0);
-    Transition t72 = new Transition(waitForEndShiftRound, printEnd, 1);*/
+   // Transition t6 = new Transition(informBoard, printEnd);
+    //Transition t7 = new Transition(waitForEndShiftRound, printEnd);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3, t41, t42, t5, t6);
+      Transition t6 = new Transition(informBoard, waitForEndShiftRound);
+    //Transition t71 = new Transition(waitForEndShiftRound, waitAssignInvestor, 0);
+    Transition t72 = new Transition(waitForEndShiftRound, printEnd);
+
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t41,  t5, t6, t72);
     addBehaviour(sm);
   }
 

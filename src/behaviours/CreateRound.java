@@ -76,6 +76,8 @@ public class CreateRound extends OneShotBehaviour {
 
     @Override
     public void action() {
+        System.out.println("CreateRound.action");
+
         Round r;
         List<AID> managers = this.agent.getManagers();
         List<AID> investors = this.agent.getInvestors();

@@ -30,6 +30,8 @@ public class WaitForMessage extends MsgReceiver {
   @Override
   protected void handleMessage(ACLMessage msg) {
     try {
+      System.out.println("WaitForMessage.action: " + msg.getConversationId());
+
       if(this.state == State.WAIT_END_SHIFT_ROUND)
         this.content = msg.getContent();
       this.agent.handleMessage(msg);

@@ -22,6 +22,8 @@ public class AssignInvestors extends OneShotBehaviour {
 
     @Override
     public void action() {
+
+        System.out.println("AssignInvestors.action");
         Shift shift = agent.getCurrentShift();
 
         for(NegotiationPair np: shift.getPairs()){
