@@ -30,7 +30,7 @@ public class Main {
               .createNewAgent("Nerd_3", AgentManager.class.getName(), null);
 
       AgentController board = mainController.createNewAgent("BOARD", AgentBoard.class.getName(), null);
-      //ac1.start();
+      ac1.start();
 
       ac2.start();
       ac3.start();
