@@ -26,6 +26,8 @@ public class FindAgents extends OneShotBehaviour {
 
   @Override
   public void action() {
+    System.out.println("FindAgents.action");
+
     DFAgentDescription template = new DFAgentDescription();
     ServiceDescription sd = new ServiceDescription();
     sd.setType(String.valueOf(typeToSearch));
@@ -38,6 +40,7 @@ public class FindAgents extends OneShotBehaviour {
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
       msg.setSender(this.agent.getAID());
       msg.setContent("Hello");
+      msg.setConversationId("Hello");
 
       for (int i = 0; i < result.length; ++i) {
         agentsFound = true;

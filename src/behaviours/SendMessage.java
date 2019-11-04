@@ -15,6 +15,8 @@ public class SendMessage extends OneShotBehaviour {
 
     @Override
     public void action() {
+        System.out.println("SendMessage.action: " + state.toString());
+
         this.agent.sendMessage(this.state);
     }
 }

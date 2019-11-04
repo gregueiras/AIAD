@@ -36,4 +36,16 @@ public class EndNegotiation extends SimpleBehaviour {
             return true;
         } else return false;
     }
+
+    @Override
+    public int onEnd() {
+        if(!this.agent.isEndRound()) {
+            this.agent.incCurrentShift();
+            return 0;
+        }
+        else {
+            return 1;
+        }
+
+    }
 }
