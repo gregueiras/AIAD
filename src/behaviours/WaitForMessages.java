@@ -13,12 +13,22 @@ public class WaitForMessages extends SimpleBehaviour {
     private int nrMessages;
     private int maxNrMessages;
     private int type;
+    private State state;
+
+    public WaitForMessages(OurAgent agent, int type, int maxNrMessages, State state) {
+        this.agent = agent;
+        this.nrMessages = 0;
+        this.maxNrMessages = maxNrMessages;
+        this.type = type;
+        this.state = state;
+    }
 
     public WaitForMessages(OurAgent agent, int type, int maxNrMessages) {
         this.agent = agent;
         this.nrMessages = 0;
         this.maxNrMessages = maxNrMessages;
         this.type = type;
+        this.state = State.DEFAULT;
     }
 
     @Override
@@ -43,8 +53,6 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public int onEnd() {
-        return 0;
-
-
+        return this.agent.onEnd(this.state, "");
     }
 }
