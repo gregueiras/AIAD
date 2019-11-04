@@ -89,8 +89,9 @@ public class AgentBoard extends OurAgent {
     Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
     Behaviour endNegotiation = new EndNegotiation(this);
-    Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
+    Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
+
 
 
     Transition t1 = new Transition(findManagers, findInvestors);
@@ -98,12 +99,14 @@ public class AgentBoard extends OurAgent {
     Transition t3 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation );
 
-    Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
     Transition t52 = new Transition(endNegotiation, sendRoundEnd, 1);
+    Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
+
+
     Transition t61 = new Transition(sendShiftEnd, assignInvestors);
     Transition t62 = new Transition(sendRoundEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t51, t52, t61, t62);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t52,t51, t61, t62);
     addBehaviour(sm);
   }
 

@@ -39,13 +39,15 @@ public class EndNegotiation extends SimpleBehaviour {
 
     @Override
     public int onEnd() {
+        int ret = 0;
         if(!this.agent.isEndRound()) {
             this.agent.incCurrentShift();
-            return 0;
+            ret = 0;
         }
         else {
-            return 1;
+            ret = 1;
         }
-
+        System.out.println("return " + ret);
+        return ret;
     }
 }
