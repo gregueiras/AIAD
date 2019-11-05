@@ -1,9 +1,15 @@
 package agents;
 
-import behaviours.*;
-import helper.State;
+import behaviours.AssignInvestors;
+import behaviours.CreateRound;
+import behaviours.EndNegotiation;
+import behaviours.FindAgents;
+import behaviours.Print;
+import behaviours.SendMessage;
+import behaviours.StateMachine;
 import helper.Round;
 import helper.Shift;
+import helper.State;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -14,7 +20,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.LinkedList;

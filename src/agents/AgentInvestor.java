@@ -1,6 +1,9 @@
 package agents;
 
-import behaviours.*;
+import behaviours.Print;
+import behaviours.StateMachine;
+import behaviours.WaitForMessage;
+import behaviours.WaitForMessages;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -11,8 +14,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
-import java.lang.reflect.AccessibleObject;
 import java.util.Hashtable;
 import market.Company;
 

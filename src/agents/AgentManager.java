@@ -1,6 +1,11 @@
 package agents;
 
-import behaviours.*;
+import behaviours.FindAgents;
+import behaviours.Print;
+import behaviours.SendMessage;
+import behaviours.StateMachine;
+import behaviours.WaitForMessage;
+import behaviours.WaitForMessages;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -15,7 +20,6 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
