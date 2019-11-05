@@ -20,14 +20,14 @@ public class Main {
 
       ContainerController mainController = rt.createAgentContainer(p1);
       AgentController ac1 = mainController
-          .createNewAgent("Jeff", AgentManager.class.getName(), null);
+          .createNewAgent("Manager1", AgentManager.class.getName(), null);
 
       AgentController ac2 = mainController
-          .createNewAgent("Nerd", AgentInvestor.class.getName(), null);
+          .createNewAgent("Investor1", AgentInvestor.class.getName(), null);
       AgentController ac3 = mainController
-          .createNewAgent("Nerd_2", AgentInvestor.class.getName(), null);
+          .createNewAgent("Investor2", AgentInvestor.class.getName(), null);
       AgentController ac4 = mainController
-              .createNewAgent("Nerd_3", AgentManager.class.getName(), null);
+          .createNewAgent("Manager3", AgentManager.class.getName(), null);
 
       AgentController board = mainController.createNewAgent("BOARD", AgentBoard.class.getName(), null);
       ac1.start();

@@ -1,6 +1,5 @@
 package behaviours;
 
-import agents.AgentBoard;
 import agents.OurAgent;
 import helper.State;
 import jade.core.behaviours.SimpleBehaviour;
@@ -46,9 +45,7 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-        if(this.nrMessages >= this.maxNrMessages ) {
-            return true;
-        } else return false;
+      return this.nrMessages >= this.maxNrMessages;
     }
 
     @Override
