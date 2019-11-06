@@ -1,5 +1,7 @@
 package market;
 
-public enum InvestmentType {
+import java.io.Serializable;
+
+public enum InvestmentType implements Serializable {
     RED, BLUE, YELLOW, GREEN
 }

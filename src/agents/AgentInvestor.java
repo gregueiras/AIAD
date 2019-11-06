@@ -46,6 +46,11 @@ public class AgentInvestor extends OurAgent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     Behaviour printStart = new Print("Waiting for msg");
     Behaviour waitInform = new WaitForMessage(this,

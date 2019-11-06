@@ -53,6 +53,11 @@ public class AgentManager extends OurAgent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     Behaviour printStart = new Print("Waiting for msg");
 

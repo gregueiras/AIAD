@@ -1,11 +1,11 @@
 package market;
 
 import agents.OurAgent;
+import java.io.Serializable;
 
-public class Company {
+public class Company implements Serializable {
 
-  private CompanyRisk type;
-  private InvestmentType invType; // One of these might be redundant
+  private InvestmentType type;
   private String name;
   private boolean closed;
   private Integer price;
@@ -13,12 +13,16 @@ public class Company {
   private boolean doubleValue;
   private int actualBid; //Might not be needed, its here just in case
 
-  public CompanyRisk getType() {
-    return type;
+  public Company(String name, Integer price, InvestmentType type, boolean doubleValue) {
+    this.type = type;
+    this.name = name;
+    this.price = price;
+    this.closed = true;
+    this.doubleValue = doubleValue;
   }
 
-  public void setType(CompanyRisk type) {
-    this.type = type;
+  public InvestmentType getType() {
+    return type;
   }
 
   public String getName() {
@@ -45,12 +49,7 @@ public class Company {
     this.price = price;
   }
 
-  public Company(CompanyRisk type, String name, Integer price, InvestmentType invType, boolean doubleValue) {
+  public void setType(InvestmentType type) {
     this.type = type;
-    this.name = name;
-    this.price = price;
-    this.closed = true;
-    this.invType = invType;
-    this.doubleValue = doubleValue;
   }
 }
