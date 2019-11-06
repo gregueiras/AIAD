@@ -47,7 +47,7 @@ public class AgentInvestor extends OurAgent {
       fe.printStackTrace();
     }
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -61,7 +61,7 @@ public class AgentInvestor extends OurAgent {
     Behaviour waitForEndShiftRound = new WaitForMessage(this,
             MessageTemplate.MatchConversationId(State.WAIT_END_SHIFT_ROUND.toString()));
 
-    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 3);
+    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 10);
 
     Behaviour printEnd = new Print("MSG Received");
 
@@ -71,8 +71,8 @@ public class AgentInvestor extends OurAgent {
 
     Transition t1 = new Transition(printStart,wms );
 
-    Transition t41 = new Transition(wms, printEnd, 0);
-    Transition t42 = new Transition(waitForEndShiftRound, printEnd, 1);
+    Transition t41 = new Transition(wms, printEnd);
+    //Transition t42 = new Transition(wms, printEnd, 1);
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t41);
     addBehaviour(sm);

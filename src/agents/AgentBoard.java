@@ -44,6 +44,8 @@ public class AgentBoard extends OurAgent {
 
   private Integer currentRound;
 
+  public static int maxNrRounds = 2;
+
   public List<AID> getInvestors() {
     return investors;
   }
@@ -64,13 +66,29 @@ public class AgentBoard extends OurAgent {
     this.setCurrentShift(this.currentShift + 1);
   }
 
+  public void incCurrentRound() {
+    this.setCurrentRound(this.currentRound + 1);
+  }
+
   public void setCurrentShift(Integer currentShift) {
     this.currentShift = currentShift;
   }
 
+  public void setCurrentRound(Integer currentRound) {
+    this.currentRound = currentRound;
+  }
+
+  public void resetCurrentShift() {
+    this.currentShift = 0;
+  }
+
+
   public boolean isEndRound() {
-    System.out.println("CS: " + this.currentShift + "  rs: " + this.round.getShifts().size());
     return this.currentShift >= (this.round.getShifts().size() - 1);
+  }
+
+  public boolean isEndGame() {
+    return this.currentRound >= (maxNrRounds - 1);
   }
 
   public void setRound(Round round) {
@@ -84,7 +102,8 @@ public class AgentBoard extends OurAgent {
     catalogue = new HashMap<>();
     investors = new LinkedList<>();
     managers = new LinkedList<>();
-    currentShift = 0;
+    this.resetCurrentShift();
+    this.currentRound = 0;
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -102,22 +121,25 @@ public class AgentBoard extends OurAgent {
     Behaviour endNegotiation = new EndNegotiation(this);
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
+    Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
 
     Transition t1 = new Transition(findManagers, findInvestors);
     Transition t2 = new Transition(findInvestors, createRound);
-    Transition t2_1 = new Transition(createRound, assignCompanies);
-    Transition t3 = new Transition(assignCompanies, assignInvestors);
+    //Transition t2_1 = new Transition(createRound, assignCompanies);
+    Transition t3 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
-    Transition t52 = new Transition(endNegotiation, sendRoundEnd, 1);
-    Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
+    Transition t5_1 = new Transition(endNegotiation, sendShiftEnd, 0);
+    Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
+    Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
-    Transition t61 = new Transition(sendShiftEnd, assignInvestors);
-    Transition t62 = new Transition(sendRoundEnd, printEnd);
+    Transition t6_1 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t6_2 = new Transition(sendRoundEnd, createRound);
+    Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t2_1, t3, t4, t52, t51,
-        t61,
-        t62);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t5_1, t5_2, t5_3,
+        t6_1,
+        t6_2, t6_3);
     addBehaviour(sm);
   }
 
@@ -135,7 +157,7 @@ public class AgentBoard extends OurAgent {
     }
 
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -174,7 +196,6 @@ public class AgentBoard extends OurAgent {
 
   @Override
   public void sendMessage(State type) {
-    System.out.println("stet:: " + type);
     switch (type) {
       case ROUND_END:
       case SHIFT_END:

@@ -13,6 +13,8 @@ public class WaitForMessages extends SimpleBehaviour {
     private int maxNrMessages;
     private int type;
     private State state;
+    private boolean stop;
+    private String content;
 
     public WaitForMessages(OurAgent agent, int type, int maxNrMessages, State state) {
         this.agent = agent;
@@ -20,6 +22,8 @@ public class WaitForMessages extends SimpleBehaviour {
         this.maxNrMessages = maxNrMessages;
         this.type = type;
         this.state = state;
+        this.stop = false;
+        this.content = "";
     }
 
     public WaitForMessages(OurAgent agent, int type, int maxNrMessages) {
@@ -37,6 +41,11 @@ public class WaitForMessages extends SimpleBehaviour {
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
             this.nrMessages++;
+            if(msg.getConversationId().equals(State.WAIT_END_SHIFT_ROUND.toString()) && msg.getContent().equals(State.GAME_END.toString()))
+            {
+                this.stop = true;
+                this.content = msg.getContent();
+            }
             this.agent.handleMessage(msg);
         } else {
             block();
@@ -45,11 +54,11 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-      return this.nrMessages >= this.maxNrMessages;
+      return (this.nrMessages >= this.maxNrMessages || this.stop);
     }
 
     @Override
     public int onEnd() {
-        return this.agent.onEnd(this.state, "");
+        return this.agent.onEnd(this.state, this.content);
     }
 }

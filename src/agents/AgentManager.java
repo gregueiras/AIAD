@@ -54,7 +54,7 @@ public class AgentManager extends OurAgent {
       fe.printStackTrace();
     }
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -92,24 +92,24 @@ public class AgentManager extends OurAgent {
     Transition t1 = new Transition(printStart, findBoard);
     Transition t2 = new Transition(findBoard, wms);
 
-    Transition t41 = new Transition(wms, negotiation, 0);
-    Transition t42 = new Transition(wms, informBoard, 1);
+    Transition t4_1 = new Transition(wms, negotiation, 0);
+    Transition t4_2 = new Transition(wms, informBoard, 1);
     Transition t5 = new Transition(negotiation, informBoard);
 
    // Transition t6 = new Transition(informBoard, printEnd);
     //Transition t7 = new Transition(waitForEndShiftRound, printEnd);
 
-      Transition t6 = new Transition(informBoard, waitForEndShiftRound);
+      Transition t6 = new Transition(informBoard, wms);
     //Transition t71 = new Transition(waitForEndShiftRound, waitAssignInvestor, 0);
-    Transition t72 = new Transition(waitForEndShiftRound, printEnd);
+    Transition t7_2 = new Transition(wms, printEnd, 3);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t41, t42,  t5, t6, t72);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t4_1, t4_2,  t5, t6, t7_2);
     addBehaviour(sm);
   }
 
   @Override
   public void handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equalsIgnoreCase(State.ASSIGN_INVESTOR.toString())){
+    if(msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString())){
       handleAssignInvestorMsg(msg);
     } else
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
@@ -253,11 +253,15 @@ public class AgentManager extends OurAgent {
   public int onEnd(State state, String content) {
     switch (state) {
       case WAIT_END_SHIFT_ROUND:
-        if(content.equalsIgnoreCase(State.ROUND_END.toString()))
-          return 1;
-        else return 0;
+        if(content.equals(State.ROUND_END.toString()))
+          return 2;
+        else  if(content.equals(State.GAME_END.toString()))
+          return 3;
+        else
+          return 0;
       case ASSIGN_INVESTOR:
-        if(this.skipShift) return 1;
+        if(this.skipShift)
+          return 1;
         else return 0;
       default:
         return 0;

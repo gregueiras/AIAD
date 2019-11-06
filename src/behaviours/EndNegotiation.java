@@ -39,15 +39,18 @@ public class EndNegotiation extends SimpleBehaviour {
 
     @Override
     public int onEnd() {
-        int ret = 0;
-        if(!this.agent.isEndRound()) {
+        if(!this.agent.isEndRound()) { // is not end round, so it should update the current shift to the next in the round
             this.agent.incCurrentShift();
-            ret = 0;
+            return 0;
         }
         else {
-            ret = 1;
+            if(!this.agent.isEndGame()) { // is not end game, so it should update the current round to the next in the game
+                this.agent.incCurrentRound();
+                this.agent.resetCurrentShift(); //sets the current shift to 0
+                return 1;
+            }
+
+            return 2; // is end of game
         }
-        System.out.println("return " + ret);
-        return ret;
     }
 }
