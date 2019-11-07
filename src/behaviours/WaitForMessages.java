@@ -9,35 +9,25 @@ import jade.lang.acl.MessageTemplate;
 public class WaitForMessages extends SimpleBehaviour {
 
     private OurAgent agent;
-    private int nrMessages;
-    private int maxNrMessages;
     private int type;
-    private State state;
+    private int done;
 
-    public WaitForMessages(OurAgent agent, int type, int maxNrMessages, State state) {
-        this.agent = agent;
-        this.nrMessages = 0;
-        this.maxNrMessages = maxNrMessages;
-        this.type = type;
-        this.state = state;
-    }
 
-    public WaitForMessages(OurAgent agent, int type, int maxNrMessages) {
+    public WaitForMessages(OurAgent agent, int type) {
         this.agent = agent;
-        this.nrMessages = 0;
-        this.maxNrMessages = maxNrMessages;
         this.type = type;
-        this.state = State.DEFAULT;
+        this.done = -1;
+        super.setBehaviourName("WaitMultipleMessage_" + this.agent.getName());
     }
 
     @Override
     public void action() {
         System.out.println("waifForMessages.action");
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+        MessageTemplate mt = MessageTemplate.MatchPerformative(type);
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
-            this.nrMessages++;
-            this.agent.handleMessage(msg);
+            this.done = this.agent.handleMessage(msg);
+            System.out.println(agent.getName() + " handling message: " + msg.getConversationId() + " done: " + this.done);
         } else {
             block();
         }
@@ -45,11 +35,16 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-      return this.nrMessages >= this.maxNrMessages;
+        System.out.println(agent.getName() + " done: " + this.done);
+        return (this.done != -1);
     }
 
     @Override
     public int onEnd() {
-        return this.agent.onEnd(this.state, "");
+        //return this.agent.onEnd(this.state, "");
+        System.out.println(this.agent.getName() + " end: " + done);
+        if(this.done == -1)
+            this.done = 0;
+        return this.done;
     }
 }

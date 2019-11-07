@@ -54,7 +54,7 @@ public class AgentManager extends OurAgent {
       fe.printStackTrace();
     }
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -86,37 +86,32 @@ public class AgentManager extends OurAgent {
 
     Behaviour printEnd = new Print("MSG Received");
 
-    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 2, State.ASSIGN_INVESTOR);
+    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
 
     Transition t1 = new Transition(printStart, findBoard);
     Transition t2 = new Transition(findBoard, wms);
-
-    Transition t41 = new Transition(wms, negotiation, 0);
-    Transition t42 = new Transition(wms, informBoard, 1);
+    Transition t3_1 = new Transition(wms, negotiation, 0);
+    Transition t3_2 = new Transition(wms, informBoard, 1);
     Transition t5 = new Transition(negotiation, informBoard);
+    Transition t6 = new Transition(informBoard, waitForEndShiftRound);
+    Transition t7 = new Transition(waitForEndShiftRound, printEnd);
 
-   // Transition t6 = new Transition(informBoard, printEnd);
-    //Transition t7 = new Transition(waitForEndShiftRound, printEnd);
-
-      Transition t6 = new Transition(informBoard, waitForEndShiftRound);
-    //Transition t71 = new Transition(waitForEndShiftRound, waitAssignInvestor, 0);
-    Transition t72 = new Transition(waitForEndShiftRound, printEnd);
-
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t41, t42,  t5, t6, t72);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t3_1, t3_2,  t5, t6, t7);
     addBehaviour(sm);
   }
 
   @Override
-  public void handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equalsIgnoreCase(State.ASSIGN_INVESTOR.toString())){
-      handleAssignInvestorMsg(msg);
-    } else
+  public int handleMessage(ACLMessage msg) {
+    if(msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString()))
+      return handleAssignInvestorMsg(msg);
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
+    return -1;
   }
 
-  private void handleAssignInvestorMsg(ACLMessage msg) {
+  private int handleAssignInvestorMsg(ACLMessage msg) {
     String name = "unknown";
+    int ret = 0;
     try {
       if(msg.getContentObject() != null) {
         AID investor = (AID) msg.getContentObject();
@@ -125,12 +120,13 @@ public class AgentManager extends OurAgent {
         this.skipShift = false;
       } else {
         this.skipShift = true;
+        ret = 1; //the manager will skip this shift so it should send an inform message to the board (skips negotiate state)
       }
-
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
     System.out.println(getAID().getName() + " assign investor:  " + name);
+    return ret;
   }
 
 
@@ -159,65 +155,6 @@ public class AgentManager extends OurAgent {
     return skipShift;
   }
 
-  private class SellCompanies extends ContractNetInitiator {
-
-    public SellCompanies(Agent a, ACLMessage cfp) {
-      super(a, cfp);
-    }
-
-    protected void handlePropose(ACLMessage propose, Vector v) {
-      System.out
-          .println("Agent " + propose.getSender().getName() + " proposed " + propose.getContent());
-    }
-
-    protected void handleRefuse(ACLMessage refuse) {
-      System.out.println("Agent " + refuse.getSender().getName() + " refused");
-    }
-
-    protected void handleFailure(ACLMessage failure) {
-      if (failure.getSender().equals(myAgent.getAMS())) {
-        // FAILURE notification from the JADE runtime: the receiver
-        // does not exist
-        System.out.println("Responder does not exist");
-      } else {
-        System.out.println("Agent " + failure.getSender().getName() + " failed");
-      }
-    }
-
-    protected void handleAllResponses(Vector responses, Vector acceptances) {
-
-      // Evaluate proposals.
-      int bestProposal = -1;
-      AID bestProposer = null;
-      ACLMessage accept = null;
-      Enumeration e = responses.elements();
-      while (e.hasMoreElements()) {
-        ACLMessage msg = (ACLMessage) e.nextElement();
-        if (msg.getPerformative() == ACLMessage.PROPOSE) {
-          ACLMessage reply = msg.createReply();
-          reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-          acceptances.addElement(reply);
-          int proposal = Integer.parseInt(msg.getContent());
-          if (proposal > bestProposal) {
-            bestProposal = proposal;
-            bestProposer = msg.getSender();
-            accept = reply;
-          }
-        }
-      }
-      // Accept the proposal of the best proposer
-      if (accept != null) {
-        System.out.println(
-            "Accepting proposal " + bestProposal + " from responder " + bestProposer.getName());
-        accept.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-      }
-    }
-
-    protected void handleInform(ACLMessage inform) {
-      System.out.println(
-          "Agent " + inform.getSender().getName() + " successfully performed the requested action");
-    }
-  }
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {

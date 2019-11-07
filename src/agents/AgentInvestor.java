@@ -47,23 +47,16 @@ public class AgentInvestor extends OurAgent {
       fe.printStackTrace();
     }
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    Behaviour printStart = new Print("Waiting for msg");
-    Behaviour waitInform = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId("Hello"));
+     Behaviour printStart = new Print("Waiting for msg");
 
-    Behaviour negotiation = new WaitForMessage(this, MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()));
+      Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
-    Behaviour waitForEndShiftRound = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId(State.WAIT_END_SHIFT_ROUND.toString()));
-
-    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM, 3);
-
-    Behaviour printEnd = new Print("MSG Received");
+      Behaviour printEnd = new Print("MSG Received");
 
     //Transition t1 = new Transition(printStart,waitInform );
     //Transition t2 = new Transition(waitInform, negotiation);
@@ -71,10 +64,10 @@ public class AgentInvestor extends OurAgent {
 
     Transition t1 = new Transition(printStart,wms );
 
-    Transition t41 = new Transition(wms, printEnd, 0);
-    Transition t42 = new Transition(waitForEndShiftRound, printEnd, 1);
+    Transition t2 = new Transition(wms, printEnd);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t41);
+
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
     addBehaviour(sm);
   }
 
@@ -85,14 +78,16 @@ public class AgentInvestor extends OurAgent {
   }
 
   @Override
-  public void handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equalsIgnoreCase(State.NEGOTIATE.toString())){
-      handleNegotiateMsg(msg);
-    } else
-      System.out.println(msg.getPerformative() + ": " + msg.getContent());
+  public int handleMessage(ACLMessage msg){
+      System.out.println(this.getName() + ": " + msg.getContent());
+
+      if(msg.getConversationId().equalsIgnoreCase(State.NEGOTIATE.toString()))
+       return handleNegotiateMsg(msg);
+
+    return -1;
   }
 
-  private void handleNegotiateMsg(ACLMessage msg) {
+  private int handleNegotiateMsg(ACLMessage msg) {
     System.out.println("i am receiving: " + msg.getContent());
     ACLMessage reply = msg.createReply();
     reply.setInReplyTo(State.NEGOTIATE.toString());
@@ -100,6 +95,7 @@ public class AgentInvestor extends OurAgent {
     reply.setContent("oi oi");
     send(reply);
     System.out.println("sent reply");
+    return -1;
   }
 
 
@@ -128,15 +124,9 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public int onEnd(State state, String content) {
-    switch (state) {
-      case WAIT_END_SHIFT_ROUND:
-        if(content.equalsIgnoreCase(State.ROUND_END.toString()))
-          return 1;
-        else return 0;
-      default:
         return 0;
-    }
   }
+
 
   /**
    * Inner class RequestPerformer. This is the behaviour used by Book-buyer agents to request seller

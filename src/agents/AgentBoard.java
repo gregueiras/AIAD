@@ -105,17 +105,17 @@ public class AgentBoard extends OurAgent {
 
     Transition t1 = new Transition(findManagers, findInvestors);
     Transition t2 = new Transition(findInvestors, createRound);
-    Transition t2_1 = new Transition(createRound, assignCompanies);
-    Transition t3 = new Transition(assignCompanies, assignInvestors);
+    // Transition t2_1 = new Transition(createRound, assignCompanies);
+    Transition t3 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
     Transition t52 = new Transition(endNegotiation, sendRoundEnd, 1);
     Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
 
-    Transition t61 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t61 = new Transition(sendShiftEnd, printEnd);
     Transition t62 = new Transition(sendRoundEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t2_1, t3, t4, t52, t51,
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t52, t51,
         t61,
         t62);
     addBehaviour(sm);
@@ -135,7 +135,7 @@ public class AgentBoard extends OurAgent {
     }
 
     try {
-      Thread.sleep(5000);
+      Thread.sleep(10000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -230,7 +230,8 @@ public class AgentBoard extends OurAgent {
   }
 
   @Override
-  public void handleMessage(ACLMessage msg) {
+  public int handleMessage(ACLMessage msg) {
     //TODO
+      return -1;
   }
 }
