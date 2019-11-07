@@ -23,7 +23,6 @@ public class AssignInvestors extends OneShotBehaviour {
     @Override
     public void action() {
 
-        System.out.println("AssignInvestors.action");
         Shift shift = agent.getCurrentShift();
 
         for(NegotiationPair np: shift.getPairs()){
@@ -37,7 +36,6 @@ public class AssignInvestors extends OneShotBehaviour {
             msg.addReceiver(np.getManager());
             msg.setConversationId(State.ASSIGN_INVESTOR.toString());
             agent.send(msg);
-            System.out.println("assign investors: " + np.getManager().getName() + " , " + np.getInvestor().getName());
         }
 
     }

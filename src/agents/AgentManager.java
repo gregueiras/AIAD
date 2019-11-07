@@ -62,30 +62,15 @@ public class AgentManager extends OurAgent {
     Behaviour printStart = new Print("Waiting for msg");
 
     Behaviour findBoard = new FindAgents(AgentType.BOARD, this);
-
-    Behaviour waitInform = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId("hello"));
-
-    Behaviour waitAssignInvestor = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId(State.ASSIGN_INVESTOR.toString()), State.ASSIGN_INVESTOR);
-
     Behaviour proposeInitiator = new SendMessage(this, State.NEGOTIATE);
-
     Behaviour proposeReply = new WaitForMessage(this,
             MessageTemplate.and(MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()),
                     MessageTemplate.MatchInReplyTo(State.NEGOTIATE.toString())));
-
     SequentialBehaviour negotiation = new SequentialBehaviour();
     negotiation.addSubBehaviour(proposeInitiator);
     negotiation.addSubBehaviour(proposeReply);
-
     Behaviour informBoard = new SendMessage(this, State.INFORM_BOARD);
-
-    Behaviour waitForEndShiftRound = new WaitForMessage(this,
-            MessageTemplate.MatchConversationId(State.WAIT_END_SHIFT_ROUND.toString()), State.WAIT_END_SHIFT_ROUND);
-
     Behaviour printEnd = new Print("MSG Received");
-
     Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
 
@@ -94,8 +79,8 @@ public class AgentManager extends OurAgent {
     Transition t3_1 = new Transition(wms, negotiation, 0);
     Transition t3_2 = new Transition(wms, informBoard, 1);
     Transition t5 = new Transition(negotiation, informBoard);
-    Transition t6 = new Transition(informBoard, waitForEndShiftRound);
-    Transition t7 = new Transition(waitForEndShiftRound, printEnd);
+    Transition t6 = new Transition(informBoard, wms);
+    Transition t7 = new Transition(wms, printEnd, 2);
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t3_1, t3_2,  t5, t6, t7);
     addBehaviour(sm);
@@ -105,6 +90,8 @@ public class AgentManager extends OurAgent {
   public int handleMessage(ACLMessage msg) {
     if(msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString()))
       return handleAssignInvestorMsg(msg);
+    if(msg.getConversationId().equals(State.GAME_END.toString()))
+      return 2;
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
     return -1;
   }
@@ -187,12 +174,8 @@ public class AgentManager extends OurAgent {
   }
 
   @Override
-  public int onEnd(State state, String content) {
+  public int onEnd(State state) {
     switch (state) {
-      case WAIT_END_SHIFT_ROUND:
-        if(content.equalsIgnoreCase(State.ROUND_END.toString()))
-          return 1;
-        else return 0;
       case ASSIGN_INVESTOR:
         if(this.skipShift) return 1;
         else return 0;

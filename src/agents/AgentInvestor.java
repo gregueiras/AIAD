@@ -64,7 +64,7 @@ public class AgentInvestor extends OurAgent {
 
     Transition t1 = new Transition(printStart,wms );
 
-    Transition t2 = new Transition(wms, printEnd);
+    Transition t2 = new Transition(wms, printEnd, 2);
 
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
@@ -80,9 +80,10 @@ public class AgentInvestor extends OurAgent {
   @Override
   public int handleMessage(ACLMessage msg){
       System.out.println(this.getName() + ": " + msg.getContent());
-
-      if(msg.getConversationId().equalsIgnoreCase(State.NEGOTIATE.toString()))
+      if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
        return handleNegotiateMsg(msg);
+      if(msg.getConversationId().equals(State.GAME_END.toString()))
+          return 2;
 
     return -1;
   }
@@ -123,7 +124,7 @@ public class AgentInvestor extends OurAgent {
   }
 
   @Override
-  public int onEnd(State state, String content) {
+  public int onEnd(State statE) {
         return 0;
   }
 

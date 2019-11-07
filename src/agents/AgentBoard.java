@@ -31,6 +31,9 @@ import market.InvestmentType;
 public class AgentBoard extends OurAgent {
 
   private static final int COMPANY_NUMBER = 15;
+
+  private static final int NR_ROUNDS = 1;
+
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
 
@@ -43,6 +46,7 @@ public class AgentBoard extends OurAgent {
   private Integer currentShift;
 
   private Integer currentRound;
+
 
   public List<AID> getInvestors() {
     return investors;
@@ -64,18 +68,31 @@ public class AgentBoard extends OurAgent {
     this.setCurrentShift(this.currentShift + 1);
   }
 
+  public void incCurrentRound() { this.setCurrentRound(this.currentRound + 1); }
+
   public void setCurrentShift(Integer currentShift) {
     this.currentShift = currentShift;
   }
 
+  public void setCurrentRound(Integer currentRound) {
+      this.currentRound = currentRound;
+  }
+
+  public void resetCurrentShift() {
+      this.currentShift = 0;
+  }
+
   public boolean isEndRound() {
-    System.out.println("CS: " + this.currentShift + "  rs: " + this.round.getShifts().size());
-    return this.currentShift >= (this.round.getShifts().size() - 1);
+      return this.currentShift >= (this.round.getShifts().size() - 1);
+  }
+
+  public boolean isEndGame() {
+      return this.currentRound >= (NR_ROUNDS - 1);
   }
 
   public void setRound(Round round) {
-    this.round = round;
-    this.currentShift = 0;
+      this.round = round;
+      this.currentShift = 0;
   }
 
   // Put agent initializations here
@@ -84,7 +101,8 @@ public class AgentBoard extends OurAgent {
     catalogue = new HashMap<>();
     investors = new LinkedList<>();
     managers = new LinkedList<>();
-    currentShift = 0;
+    this.resetCurrentShift();
+    this.currentRound = 0;
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -102,22 +120,25 @@ public class AgentBoard extends OurAgent {
     Behaviour endNegotiation = new EndNegotiation(this);
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
+    Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
 
     Transition t1 = new Transition(findManagers, findInvestors);
-    Transition t2 = new Transition(findInvestors, createRound);
-    // Transition t2_1 = new Transition(createRound, assignCompanies);
-    Transition t3 = new Transition(createRound, assignInvestors);
+    Transition t2 = new Transition(findInvestors, assignCompanies);
+    Transition t3_1 = new Transition(assignCompanies,createRound );
+    Transition t3_2 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
-    Transition t52 = new Transition(endNegotiation, sendRoundEnd, 1);
-    Transition t51 = new Transition(endNegotiation, sendShiftEnd, 0);
+    Transition t5_1 = new Transition(endNegotiation, sendShiftEnd, 0);
+    Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
+    Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
-    Transition t61 = new Transition(sendShiftEnd, printEnd);
-    Transition t62 = new Transition(sendRoundEnd, printEnd);
+    Transition t6_1 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t6_2 = new Transition(sendRoundEnd, createRound);
+    Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3, t4, t52, t51,
-        t61,
-        t62);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1, t5_2, t5_3,
+        t6_1,
+        t6_2, t6_3);
     addBehaviour(sm);
   }
 
@@ -176,8 +197,7 @@ public class AgentBoard extends OurAgent {
   public void sendMessage(State type) {
     System.out.println("stet:: " + type);
     switch (type) {
-      case ROUND_END:
-      case SHIFT_END:
+      case ROUND_END: case SHIFT_END: case GAME_END:
         sendEndStateMsg(type);
         break;
       default:
@@ -195,7 +215,7 @@ public class AgentBoard extends OurAgent {
       msg.addReceiver(investor);
     }
     msg.setContent(state.toString());
-    msg.setConversationId(State.WAIT_END_SHIFT_ROUND.toString());
+    msg.setConversationId(state.toString());
     send(msg);
     System.out.println("send message: " + msg.getContent());
 
@@ -225,7 +245,7 @@ public class AgentBoard extends OurAgent {
 
 
   @Override
-  public int onEnd(State state, String content) {
+  public int onEnd(State state) {
     return 0;
   }
 

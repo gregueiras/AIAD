@@ -22,7 +22,6 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public void action() {
-        System.out.println("waifForMessages.action");
         MessageTemplate mt = MessageTemplate.MatchPerformative(type);
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
@@ -36,15 +35,12 @@ public class WaitForMessages extends SimpleBehaviour {
     @Override
     public boolean done() {
         System.out.println(agent.getName() + " done: " + this.done);
+
         return (this.done != -1);
     }
 
     @Override
     public int onEnd() {
-        //return this.agent.onEnd(this.state, "");
-        System.out.println(this.agent.getName() + " end: " + done);
-        if(this.done == -1)
-            this.done = 0;
         return this.done;
     }
 }

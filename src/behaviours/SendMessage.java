@@ -11,7 +11,7 @@ public class SendMessage extends OneShotBehaviour {
     public SendMessage(OurAgent agent, State state) {
         this.agent = agent;
         this.state = state;
-        super.setBehaviourName("Create_Round_" + state.toString());
+        super.setBehaviourName("SendMessage" + state.toString() + this.agent.getName());
     }
 
     @Override
