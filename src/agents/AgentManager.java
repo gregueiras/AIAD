@@ -1,6 +1,11 @@
 package agents;
 
-import behaviours.*;
+import behaviours.FindAgents;
+import behaviours.Print;
+import behaviours.SendMessage;
+import behaviours.StateMachine;
+import behaviours.WaitForMessage;
+import behaviours.WaitForMessages;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -13,10 +18,9 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import java.util.Hashtable;
 import market.Company;
 import market.WalletExamples;
-
-import java.util.Hashtable;
 
 public class AgentManager extends OurAgent {
 
@@ -44,11 +48,6 @@ public class AgentManager extends OurAgent {
       DFService.register(this, dfd);
     } catch (FIPAException fe) {
       fe.printStackTrace();
-    }
-    try {
-      Thread.sleep(10000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
     }
 
     Behaviour printStart = new Print("Waiting for msg");
@@ -122,11 +121,11 @@ public class AgentManager extends OurAgent {
     System.out.println("Seller-agent " + getAID().getName() + " terminating.");
   }
 
-  public AID getInvestor() {
+  private AID getInvestor() {
     return investor;
   }
 
-  public AID getBoard() {
+  private AID getBoard() {
     return board;
   }
 

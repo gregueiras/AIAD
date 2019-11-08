@@ -9,9 +9,7 @@ import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 
 public class Main {
-
   public static void main(String[] args) {
-
     try {
       Runtime rt = Runtime.instance();
 
@@ -30,6 +28,21 @@ public class Main {
           .createNewAgent("Manager3", AgentManager.class.getName(), null);
 
       AgentController board = mainController.createNewAgent("BOARD", AgentBoard.class.getName(), null);
+
+      String[] agents = {"Investor1", "Manager1", "BOARD", "Investor2", "Manager3"};
+      StringBuilder agentsBuilder = new StringBuilder();
+      for (String s : agents) {
+        String agent = s + "@10.0.75.1:1099/JADE;";
+        agentsBuilder.append(agent);
+      }
+      agentsBuilder.deleteCharAt(agentsBuilder.length() - 1);
+      String agentsArgs = agentsBuilder.toString();
+      System.err.println(agentsArgs);
+
+      AgentController sniff = mainController.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer",
+          new Object[]{agentsArgs});
+      sniff.start();
+
       ac1.start();
 
       ac2.start();
