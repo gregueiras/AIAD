@@ -18,14 +18,20 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import market.Company;
+import market.InvestmentType;
 import market.WalletExamples;
 
 public class AgentManager extends OurAgent {
 
   // The companies that the manager has in it's wallet, mapped by title
-  private Hashtable<String, Company> wallet;
+  private Map<InvestmentType, List<Company>> wallet;
 
   private AID board;
 
@@ -35,7 +41,8 @@ public class AgentManager extends OurAgent {
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
-    wallet = WalletExamples.getEx1();
+    //wallet = WalletExamples.getEx1();
+    wallet = new HashMap<>();
     skipShift = false;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
@@ -82,6 +89,8 @@ public class AgentManager extends OurAgent {
   public int handleMessage(ACLMessage msg) {
     if(msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString()))
       return handleAssignInvestorMsg(msg);
+    if(msg.getConversationId().equals(State.ASSIGN_COMPANIES.toString()))
+      return handleAssignCompaniesMsg(msg);
     if(msg.getConversationId().equals(State.GAME_END.toString()))
       return 2;
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
@@ -108,6 +117,17 @@ public class AgentManager extends OurAgent {
     return ret;
   }
 
+  private int handleAssignCompaniesMsg(ACLMessage msg) {
+    try {
+      Map<InvestmentType, List<Company>> companies  = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      this.wallet = companies;
+      System.out.println(getAID().getName() + " assign companies:  " + this.wallet);
+
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+    return -1;
+  }
 
   // Put agent clean-up operations here
   protected void takeDown() {
