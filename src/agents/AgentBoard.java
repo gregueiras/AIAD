@@ -70,11 +70,11 @@ public class AgentBoard extends OurAgent {
 
   public void incCurrentRound() { this.setCurrentRound(this.currentRound + 1); }
 
-  public void setCurrentShift(Integer currentShift) {
+  private void setCurrentShift(Integer currentShift) {
     this.currentShift = currentShift;
   }
 
-  public void setCurrentRound(Integer currentRound) {
+  private void setCurrentRound(Integer currentRound) {
       this.currentRound = currentRound;
   }
 
@@ -154,13 +154,6 @@ public class AgentBoard extends OurAgent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
-
-    try {
-      Thread.sleep(10000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
   }
 
 

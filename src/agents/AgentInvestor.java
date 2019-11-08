@@ -12,18 +12,13 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import market.Company;
-
 import java.util.Hashtable;
+import market.Company;
 
 public class AgentInvestor extends OurAgent {
 
   // The companies that the investor has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
-
-  // The list of known seller agents
-  private AID[] sellerAgents;
 
   private String companyToBuy;
 
@@ -46,13 +41,7 @@ public class AgentInvestor extends OurAgent {
     } catch (FIPAException fe) {
       fe.printStackTrace();
     }
-    try {
-      Thread.sleep(10000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-     Behaviour printStart = new Print("Waiting for msg");
+    Behaviour printStart = new Print("Waiting for msg");
 
       Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
