@@ -2,7 +2,6 @@ package agents;
 
 import behaviours.Print;
 import behaviours.StateMachine;
-import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
 import helper.State;
 import helper.Transition;
@@ -14,8 +13,9 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import java.util.Hashtable;
 import market.Company;
+
+import java.util.Hashtable;
 
 public class AgentInvestor extends OurAgent {
 
@@ -65,6 +65,7 @@ public class AgentInvestor extends OurAgent {
     Transition t1 = new Transition(printStart,wms );
 
     Transition t2 = new Transition(wms, printEnd, 2);
+      Transition t3 = new Transition(wms, printEnd);
 
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);

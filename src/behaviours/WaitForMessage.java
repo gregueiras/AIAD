@@ -23,6 +23,7 @@ public class WaitForMessage extends MsgReceiver {
 
     this.state = State.DEFAULT;
     this.agent = a;
+      super.setBehaviourName("waitMessage_" + state.toString() + this.agent.getName());
   }
 
   @Override

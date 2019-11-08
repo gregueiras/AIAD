@@ -1,15 +1,9 @@
 package agents;
 
-import behaviours.FindAgents;
-import behaviours.Print;
-import behaviours.SendMessage;
-import behaviours.StateMachine;
-import behaviours.WaitForMessage;
-import behaviours.WaitForMessages;
+import behaviours.*;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
-import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
@@ -19,12 +13,10 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import jade.proto.ContractNetInitiator;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
 import market.Company;
 import market.WalletExamples;
+
+import java.util.Hashtable;
 
 public class AgentManager extends OurAgent {
 
@@ -191,6 +183,7 @@ public class AgentManager extends OurAgent {
       msg.addReceiver(getInvestor());
       msg.setConversationId(State.NEGOTIATE.toString());
       send(msg);
+    msg.reset();
   }
 
   private void sendMsgInformBoard(ACLMessage msg) {
@@ -200,6 +193,7 @@ public class AgentManager extends OurAgent {
     msg.setConversationId(State.INFORM_BOARD.toString());
     send(msg);
     System.out.println("agent " + getName()+ " Informing board");
+    msg.reset();
   }
 
 }

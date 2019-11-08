@@ -1,7 +1,6 @@
 package behaviours;
 
 import agents.OurAgent;
-import helper.State;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -12,11 +11,13 @@ public class WaitForMessages extends SimpleBehaviour {
     private int type;
     private int done;
 
+    private final static int INITIAL_DONE = -1;
+
 
     public WaitForMessages(OurAgent agent, int type) {
         this.agent = agent;
         this.type = type;
-        this.done = -1;
+        this.done = INITIAL_DONE;
         super.setBehaviourName("WaitMultipleMessage_" + this.agent.getName());
     }
 
@@ -41,6 +42,11 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public int onEnd() {
-        return this.done;
+        int done = this.done;
+        System.err.println("wfm: " + done);
+        this.done = INITIAL_DONE;
+        this.reset();
+
+        return done;
     }
 }

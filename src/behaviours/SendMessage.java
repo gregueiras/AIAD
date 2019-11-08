@@ -11,17 +11,20 @@ public class SendMessage extends OneShotBehaviour {
     public SendMessage(OurAgent agent, State state) {
         this.agent = agent;
         this.state = state;
-        super.setBehaviourName("SendMessage" + state.toString() + this.agent.getName());
+        super.setBehaviourName("SendMessage" + state.toString() + this.agent.getAID().getName());
+        System.err.println(super.getBehaviourName());
     }
 
     @Override
     public void action() {
-        System.out.println("SendMessage.action: " + state.toString());
+        System.out.println(this.agent.getName() + " SendMessage.action: " + state.toString());
         this.agent.sendMessage(this.state);
     }
 
     @Override
     public int onEnd(){
+        this.reset();
+
         return 0;
     }
 }
