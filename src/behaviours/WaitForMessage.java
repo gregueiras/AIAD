@@ -38,8 +38,11 @@ public class WaitForMessage extends MsgReceiver {
 
   @Override
   public int onEnd() {
-    if(this.state != State.DEFAULT) {
-        return this.agent.onEnd(state);
+    State state = this.state;
+    this.reset();
+    OurAgent agent = this.agent;
+    if(state != State.DEFAULT) {
+        return agent.onEnd(state);
     }
     return 0;
   }

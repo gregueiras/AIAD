@@ -43,7 +43,7 @@ public class WaitForMessages extends SimpleBehaviour {
     @Override
     public int onEnd() {
         int done = this.done;
-        System.err.println("wfm: " + done);
+        System.err.println(agent.getName() + " wfm: " + done);
         this.done = INITIAL_DONE;
         this.reset();
 

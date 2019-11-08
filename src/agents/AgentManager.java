@@ -68,13 +68,14 @@ public class AgentManager extends OurAgent {
 
     Transition t1 = new Transition(printStart, findBoard);
     Transition t2 = new Transition(findBoard, wms);
-    Transition t3_1 = new Transition(wms, negotiation, 0);
+    Transition t3_1 = new Transition(wms, proposeInitiator, 0);
     Transition t3_2 = new Transition(wms, informBoard, 1);
-    Transition t5 = new Transition(negotiation, informBoard);
-    Transition t6 = new Transition(informBoard, wms);
-    Transition t7 = new Transition(wms, printEnd, 2);
+    Transition t8 = new Transition(wms, printEnd, 2);
+    Transition t5 = new Transition(proposeInitiator, proposeReply);
+    Transition t6 = new Transition(proposeReply, informBoard);
+    Transition t7 = new Transition(informBoard, wms);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t3_1, t3_2,  t5, t6, t7);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t3_1, t3_2,  t5, t6, t7, t8);
     addBehaviour(sm);
   }
 
