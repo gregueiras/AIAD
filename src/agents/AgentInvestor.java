@@ -24,11 +24,16 @@ public class AgentInvestor extends OurAgent {
 
   private AID board;
 
-  // Put agent initializations here
+  private int currentCapital;
+
+  private final static int INITIAL_CAPITAL = 120; //mil
+
+
+    // Put agent initializations here
   protected void setup() {
     // Printout a welcome message
     System.out.println("Hallo! Buyer-agent " + getAID().getName() + " is ready.");
-
+    this.currentCapital = INITIAL_CAPITAL;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
