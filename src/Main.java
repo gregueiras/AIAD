@@ -34,7 +34,7 @@ public class Main {
       String[] agents = {"Investor1", "Manager1", "BOARD", "Investor2", "Manager3"};
       StringBuilder agentsBuilder = new StringBuilder();
       for (String s : agents) {
-        String agent = s + "@10.227.152.201:1099/JADE;";
+        String agent = s + "@192.168.1.5:1099/JADE;";
         agentsBuilder.append(agent);
       }
       agentsBuilder.deleteCharAt(agentsBuilder.length() - 1);

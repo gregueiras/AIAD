@@ -37,6 +37,8 @@ public class AgentBoard extends OurAgent {
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
 
+  private Map<InvestmentType, Integer> diceResults;
+
   private List<AID> investors;
 
   private List<AID> managers;
@@ -90,6 +92,18 @@ public class AgentBoard extends OurAgent {
       return this.currentRound >= (NR_ROUNDS - 1);
   }
 
+  private void initializeDiceResults(){
+      this.diceResults = new HashMap<>();
+      this.diceResults.put(InvestmentType.YELLOW, 0);
+      this.diceResults.put(InvestmentType.BLUE, 0);
+      this.diceResults.put(InvestmentType.GREEN, 0);
+      this.diceResults.put(InvestmentType.RED, 0);
+  }
+
+  public void setDiceResult(InvestmentType type, Integer result){
+      this.diceResults.put(type, result);
+  }
+
   public void setRound(Round round) {
       this.round = round;
       this.currentShift = 0;
@@ -103,6 +117,7 @@ public class AgentBoard extends OurAgent {
     managers = new LinkedList<>();
     this.resetCurrentShift();
     this.currentRound = 0;
+    this.initializeDiceResults();
 
     // Register the book-selling service in the yellow pages
     registerDFS();
