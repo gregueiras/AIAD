@@ -35,7 +35,7 @@ public class AssignCompanies extends OneShotBehaviour {
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
       msg.setSender(this.agent.getAID());
 
-      Map<InvestmentType, List<Company>> catalogue = this.agent.generateCatalogue();
+      Map<InvestmentType, List<Company>> catalogue = this.agent.getCatalogue();
 
       for (AID aid : this.agent.getManagers()) {
 
@@ -44,23 +44,19 @@ public class AssignCompanies extends OneShotBehaviour {
         Random rand = new Random();
 
         for (InvestmentType type : InvestmentType.values()) {
-          List<Company> existingCompanies = catalogue.get(type);
           List<Company> newCompanies = new LinkedList<>();
 
           for (int i = 0; i < COMPANY_NUMBER; i++) {
-            int index = rand.nextInt(existingCompanies.size());
-            Company c = existingCompanies.remove(index);
+            Company c = agent.drawCompany(type);
             newCompanies.add(c);
           }
 
-          catalogue.put(type, existingCompanies);
           companies.put(type, newCompanies);
         }
 
         try {
           msg.setConversationId(State.ASSIGN_COMPANIES.toString());
-          msg.setContentObject(
-              (Serializable) companies); //TODO: How to send companies? Serializable, JSON or other method?
+          msg.setContentObject((Serializable) companies);
           msg.addReceiver(aid);
           this.agent.send(msg);
           msg.removeReceiver(aid);

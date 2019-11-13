@@ -1,13 +1,12 @@
 package agents;
 
 import behaviours.FindAgents;
+import behaviours.NegotiateCompanies;
 import behaviours.Print;
 import behaviours.SendMessage;
 import behaviours.StateMachine;
 import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
-import personalities.Normal;
-import personalities.Personality;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -20,17 +19,14 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-
-
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
 import market.Company;
 import market.InvestmentType;
-import market.WalletExamples;
+import personalities.Normal;
+import personalities.Personality;
 
 public class AgentManager extends OurAgent {
 
@@ -40,10 +36,11 @@ public class AgentManager extends OurAgent {
   private AID board;
 
   private AID investor;
-  
+
   private Personality person;
 
   private boolean skipShift;
+
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
@@ -69,37 +66,47 @@ public class AgentManager extends OurAgent {
     Behaviour findBoard = new FindAgents(AgentType.BOARD, this);
     Behaviour proposeInitiator = new SendMessage(this, State.NEGOTIATE);
     Behaviour proposeReply = new WaitForMessage(this,
-            MessageTemplate.and(MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()),
-                    MessageTemplate.MatchInReplyTo(State.NEGOTIATE.toString())));
+        MessageTemplate.and(MessageTemplate.MatchConversationId(State.NEGOTIATE.toString()),
+            MessageTemplate.MatchInReplyTo(State.NEGOTIATE.toString())));
     SequentialBehaviour negotiation = new SequentialBehaviour();
     negotiation.addSubBehaviour(proposeInitiator);
     negotiation.addSubBehaviour(proposeReply);
     Behaviour informBoard = new SendMessage(this, State.INFORM_BOARD);
     Behaviour printEnd = new Print("MSG Received");
     Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
-
+    Behaviour negotiate = new NegotiateCompanies(this);
 
     Transition t1 = new Transition(printStart, findBoard);
     Transition t2 = new Transition(findBoard, wms);
     Transition t3_1 = new Transition(wms, proposeInitiator, 0);
     Transition t3_2 = new Transition(wms, informBoard, 1);
     Transition t8 = new Transition(wms, printEnd, 2);
+    Transition t9 = new Transition(wms, negotiate, State.SHIFT_END.ordinal());
+    Transition t10 = new Transition(negotiate, wms);
     Transition t5 = new Transition(proposeInitiator, proposeReply);
     Transition t6 = new Transition(proposeReply, informBoard);
     Transition t7 = new Transition(informBoard, wms);
 
-    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2,  t3_1, t3_2,  t5, t6, t7, t8);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2, t3_1, t3_2, t5, t6, t7,
+        t8, t9, t10);
     addBehaviour(sm);
   }
 
   @Override
   public int handleMessage(ACLMessage msg) {
-    if(msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString()))
+    if (msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString())) {
       return handleAssignInvestorMsg(msg);
-    if(msg.getConversationId().equals(State.ASSIGN_COMPANIES.toString()))
+    }
+    if (msg.getConversationId().equals(State.ASSIGN_COMPANIES.toString())) {
       return handleAssignCompaniesMsg(msg);
-    if(msg.getConversationId().equals(State.GAME_END.toString()))
+    }
+    if (msg.getConversationId().equals(State.GAME_END.toString())) {
       return 2;
+    }
+    if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
+      return State.SHIFT_END.ordinal();
+    }
+
     System.out.println(msg.getPerformative() + ": " + msg.getContent());
     return -1;
   }
@@ -108,7 +115,7 @@ public class AgentManager extends OurAgent {
     String name = "unknown";
     int ret = 0;
     try {
-      if(msg.getContentObject() != null) {
+      if (msg.getContentObject() != null) {
         AID investor = (AID) msg.getContentObject();
         name = investor.getName();
         this.investor = investor;
@@ -126,7 +133,8 @@ public class AgentManager extends OurAgent {
 
   private int handleAssignCompaniesMsg(ACLMessage msg) {
     try {
-      Map<InvestmentType, List<Company>> companies  = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      Map<InvestmentType, List<Company>> companies = (HashMap<InvestmentType, List<Company>>) msg
+          .getContentObject();
       this.wallet = companies;
       System.out.println(getAID().getName() + " assign companies:  " + this.wallet);
 
@@ -164,12 +172,11 @@ public class AgentManager extends OurAgent {
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
-    switch (type){
+    switch (type) {
       case BOARD:
         try {
           this.board = agents[0];
-        }
-        catch(Exception e){
+        } catch (Exception e) {
           System.err.println(e);
         }
         break;
@@ -200,22 +207,24 @@ public class AgentManager extends OurAgent {
   public int onEnd(State state) {
     switch (state) {
       case ASSIGN_INVESTOR:
-        if(this.skipShift) return 1;
-        else return 0;
+        if (this.skipShift) {
+          return 1;
+        } else {
+          return 0;
+        }
       default:
         return 0;
     }
   }
 
 
-
   private void sendMsgNegotiate(ACLMessage msg) throws IOException {
-      System.out.println("ProposeInitiator.action " + getInvestor());
-      msg.setSender(getAID());
-      msg.setContentObject((HashMap<InvestmentType, List<Company>>) this.wallet);
-      msg.addReceiver(getInvestor());
-      msg.setConversationId(State.NEGOTIATE.toString());
-      send(msg);
+    System.out.println("ProposeInitiator.action " + getInvestor());
+    msg.setSender(getAID());
+    msg.setContentObject((HashMap<InvestmentType, List<Company>>) this.wallet);
+    msg.addReceiver(getInvestor());
+    msg.setConversationId(State.NEGOTIATE.toString());
+    send(msg);
     msg.reset();
   }
 
@@ -225,8 +234,20 @@ public class AgentManager extends OurAgent {
     msg.addReceiver(getBoard());
     msg.setConversationId(State.INFORM_BOARD.toString());
     send(msg);
-    System.out.println("agent " + getName()+ " Informing board");
+    System.out.println("agent " + getName() + " Informing board");
     msg.reset();
   }
 
+  public Personality getPerson() {
+    return person;
+  }
+
+  public void addCompany(Company c) {
+    InvestmentType type = c.getType();
+
+    List<Company> companies = this.wallet.get(type);
+    companies.add(c);
+
+    this.wallet.put(type, companies);
+  }
 }
