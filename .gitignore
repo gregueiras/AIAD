@@ -8,5 +8,7 @@ MTPs-Main-Container.txt
 AIAD.iml
 
 .idea/runConfigurations/Main.xml
+.idea/libraries
 
 target/
+logs/

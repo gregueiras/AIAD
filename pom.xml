@@ -20,16 +20,6 @@
 
   <dependencies>
     <dependency>
-      <artifactId>log4j-api</artifactId>
-      <groupId>org.apache.logging.log4j</groupId>
-      <version>2.12.1</version>
-    </dependency>
-    <dependency>
-      <artifactId>log4j-core</artifactId>
-      <groupId>org.apache.logging.log4j</groupId>
-      <version>2.12.1</version>
-    </dependency>
-    <dependency>
       <artifactId>jade</artifactId>
       <groupId>com.tilab.jade</groupId>
       <version>4.5.0</version>

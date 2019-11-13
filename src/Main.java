@@ -1,6 +1,7 @@
 import agents.AgentBoard;
 import agents.AgentInvestor;
 import agents.AgentManager;
+import helper.Logger;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -59,6 +60,10 @@ public class Main {
       ac4.start();
 
       board.start();
+
+      Logger.setup("main");
+      Logger.print("main", "This is a test");
+      Logger.print("main", "Huge Success");
 
     } catch (StaleProxyException | UnknownHostException e) {
       e.printStackTrace();
