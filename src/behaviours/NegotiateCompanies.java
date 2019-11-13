@@ -80,6 +80,10 @@ public class NegotiateCompanies extends ContractNetResponder {
   @Override
   public int onEnd() {
     System.out.println("END NEGOTIATE");
+
+    this.finished = false;
+    this.reset();
+
     return super.onEnd();
   }
 }

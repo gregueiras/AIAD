@@ -19,7 +19,7 @@ public class OfferCompanies extends ContractNetInitiator {
   private boolean finished;
 
   public OfferCompanies(AgentBoard agent) {
-    super(agent, createMessage(agent));
+    super(agent, createMessage());
     this.agent = agent;
     nResponders = this.agent.getManagers().size();
     this.finished = false;
@@ -27,12 +27,19 @@ public class OfferCompanies extends ContractNetInitiator {
     super.setBehaviourName("Offer_" + Math.random());
   }
 
-  private static ACLMessage createMessage(AgentBoard agent) {
+  private static ACLMessage createMessage() {
     System.out.println("HEH Offer");
 
     ACLMessage msg = new ACLMessage(ACLMessage.CFP);
     msg.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
     msg.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
+
+    return msg;
+  }
+
+  @Override
+  public Vector prepareCfps(ACLMessage message) {
+    ACLMessage msg = createMessage();
     Company company = agent.drawCompany(InvestmentType.YELLOW);
     try {
       msg.setContentObject(company);
@@ -40,16 +47,12 @@ public class OfferCompanies extends ContractNetInitiator {
       e.printStackTrace();
     }
 
-    return msg;
-  }
-
-  @Override
-  public Vector prepareCfps(ACLMessage message) {
     for (AID manager : agent.getManagers()) {
-      message.addReceiver(manager);
+      msg.addReceiver(manager);
     }
+
     Vector<ACLMessage> vector = new Vector<>();
-    vector.add(message);
+    vector.add(msg);
 
     return vector;
   }
@@ -127,6 +130,10 @@ public class OfferCompanies extends ContractNetInitiator {
   @Override
   public int onEnd() {
     System.out.println("END OFFER");
+
+    this.finished = false;
+    this.reset();
+
     return super.onEnd();
   }
 }
