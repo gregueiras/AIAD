@@ -1,14 +1,6 @@
 package agents;
 
-import behaviours.AssignCompanies;
-import behaviours.AssignInvestors;
-import behaviours.CreateRound;
-import behaviours.EndNegotiation;
-import behaviours.FindAgents;
-import behaviours.OfferCompanies;
-import behaviours.Print;
-import behaviours.SendMessage;
-import behaviours.StateMachine;
+import behaviours.*;
 import helper.Round;
 import helper.Shift;
 import helper.State;
@@ -106,7 +98,11 @@ public class AgentBoard extends OurAgent {
       this.diceResults.put(InvestmentType.RED, 0);
   }
 
-  public void setDiceResult(InvestmentType type, Integer result){
+  public Map<InvestmentType, Integer> getDiceResults() {
+      return diceResults;
+  }
+
+    public void setDiceResult(InvestmentType type, Integer result){
       this.diceResults.put(type, result);
   }
 
@@ -143,7 +139,7 @@ public class AgentBoard extends OurAgent {
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
-
+    Behaviour rollDices = new RollDices(this);
     Behaviour offerCompanies = new OfferCompanies(this);
 
     Transition t1 = new Transition(findManagers, findInvestors);
