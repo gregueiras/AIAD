@@ -21,6 +21,14 @@ public class Company implements Serializable {
     this.doubleValue = doubleValue;
   }
 
+  public Company(Company c){
+    this.type = c.type;
+    this.name = c.name;
+    this.price = c.price;
+    this.closed = c.closed;
+    this.doubleValue = c.doubleValue;
+  }
+
 
 
   public InvestmentType getType() {

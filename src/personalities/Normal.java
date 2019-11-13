@@ -2,6 +2,8 @@ package personalities;
 
 import market.Company;
 
+import java.util.Random;
+
 public class Normal extends Personality {
 
   protected int minCounterPriceSell = 70; // the min price an agent can propose a counter offer to sell
@@ -20,8 +22,8 @@ public class Normal extends Personality {
 
   Company counterBuyOffer(Company c) {
     if (c.getPrice() < (maxCounterPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0))) {
-      Company counter = new Company(c.getName(), (int) (c.getPrice() * (2 - tit4tatRatio)),
-          c.getType(), c.isDoubleValue());
+      Company counter = new Company(c);
+      counter.setPrice((int)(c.getPrice() * (2 - tit4tatRatio)));
       return counter;
     }
     return null;
@@ -33,10 +35,20 @@ public class Normal extends Personality {
 
   Company counterSellOffer(Company c) {
     if (c.getPrice() > (minPriceSell * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0))) {
-      Company counter = new Company(c.getName(), (int) (c.getPrice() * (tit4tatRatio)), c.getType(),
-          c.isDoubleValue());
+      Company counter = new Company(c);
+      counter.setPrice((int) (c.getPrice() * (tit4tatRatio)));
       return counter;
     }
     return null;
   }
+
+  Company randomOffer(Company c, double floor){
+    double rand =  Math.random() + floor;
+    int newValue = (int) (rand * c.getPrice());
+    Company offer = new Company(c);
+    offer.setPrice(newValue);
+    return offer;
+  }
+
+
 }

@@ -1,6 +1,7 @@
 package market.profits;
 
 import market.InvestmentType;
+import market.dices.DiceFactory;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -15,15 +16,19 @@ public class ProfitsFactory {
         switch (type) {
             case RED:
                 ret = new Profits(Arrays.asList(-20,-10,0,30,40,50,60,70));
+                ret.setDice(DiceFactory.createDice(InvestmentType.RED));
                 break;
             case YELLOW:
                 ret = new Profits(Arrays.asList(-10,0,0,30,40,40,60,60));
+                ret.setDice(DiceFactory.createDice(InvestmentType.YELLOW));
                 break;
             case GREEN:
                 ret = new Profits(Arrays.asList(0,10,20,30,30,40,50,60));
+                ret.setDice(DiceFactory.createDice(InvestmentType.GREEN));
                 break;
             case BLUE:
                 ret = new Profits(Arrays.asList(20,20,20,30,30,30,40,40));
+                ret.setDice(DiceFactory.createDice(InvestmentType.BLUE));
                 break;
             default:
                 ret = null;
