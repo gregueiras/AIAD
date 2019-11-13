@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DiceFactory {
-    public Dice createDice(InvestmentType type)
+    public static Dice createDice(InvestmentType type)
     {
         Dice retDice;
         switch(type){
