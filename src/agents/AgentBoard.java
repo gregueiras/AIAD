@@ -7,11 +7,15 @@ import helper.State;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -149,16 +153,17 @@ public class AgentBoard extends OurAgent {
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
     Transition t5_1 = new Transition(endNegotiation, sendShiftEnd, 0);
-    Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
+    Transition t5_2 = new Transition(endNegotiation, rollDices, 1);
     Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
     Transition t6_1 = new Transition(sendShiftEnd, offerCompanies);
     Transition t6_11 = new Transition(offerCompanies, assignInvestors);
-    Transition t6_2 = new Transition(sendRoundEnd, createRound);
+    Transition t6_2 = new Transition(rollDices, sendRoundEnd);
+    Transition t6_22 = new Transition(sendRoundEnd, createRound);
     Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
     StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1,
-        t5_2, t5_3, t6_1, t6_2, t6_3, t6_11);
+        t5_2, t5_3, t6_1, t6_2, t6_3, t6_11, t6_22);
     addBehaviour(sm);
   }
 
@@ -229,11 +234,17 @@ public class AgentBoard extends OurAgent {
     for (AID investor : this.investors) {
       msg.addReceiver(investor);
     }
-    msg.setContent(state.toString());
+    if(state.equals(State.ROUND_END)){
+        try {
+            msg.setContentObject((Serializable) this.diceResults);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    } else
+         msg.setContent(state.toString());
     msg.setConversationId(state.toString());
     send(msg);
-    System.out.println("send message: " + msg.getContent());
-
+    System.out.println("send message: " + state.toString() + " -> "+ msg.getContent());
   }
 
   public Map<InvestmentType, List<Company>> getCatalogue() {

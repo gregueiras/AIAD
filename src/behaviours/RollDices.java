@@ -7,6 +7,7 @@ import market.InvestmentType;
 import market.dices.Dice;
 import market.dices.DiceFactory;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Map;
 
 public class RollDices extends OneShotBehaviour {
@@ -30,5 +31,6 @@ public class RollDices extends OneShotBehaviour {
             int result = dice.launchDice();
             this.agent.setDiceResult(type, result);
         }
+        System.out.println("ROLL DICES: " + this.agent.getDiceResults());
     }
 }

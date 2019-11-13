@@ -103,6 +103,9 @@ public class AgentManager extends OurAgent {
     if (msg.getConversationId().equals(State.GAME_END.toString())) {
       return 2;
     }
+    if (msg.getConversationId().equals(State.ROUND_END.toString())) {
+      return handleRoundEndMsg(msg);
+    }
     if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
       return State.SHIFT_END.ordinal();
     }
@@ -137,6 +140,18 @@ public class AgentManager extends OurAgent {
           .getContentObject();
       this.wallet = companies;
       System.out.println(getAID().getName() + " assign companies:  " + this.wallet);
+
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+    return -1;
+  }
+
+  private int handleRoundEndMsg(ACLMessage msg) {
+    try {
+      Map<InvestmentType, Integer> dicesResult = (HashMap<InvestmentType, Integer>) msg
+              .getContentObject();
+      System.out.println(getAID().getName() + " dices result:  " + dicesResult);
 
     } catch (UnreadableException e) {
       e.printStackTrace();
