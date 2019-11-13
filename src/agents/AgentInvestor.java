@@ -3,6 +3,8 @@ package agents;
 import behaviours.Print;
 import behaviours.StateMachine;
 import behaviours.WaitForMessages;
+import personalities.Normal;
+import personalities.Personality;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -25,6 +27,8 @@ public class AgentInvestor extends OurAgent {
 
   // The companies that the investor has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
+  
+  private Personality person = new Normal();
 
   private String companyToBuy;
 
