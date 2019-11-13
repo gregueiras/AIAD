@@ -16,11 +16,13 @@ public class OfferCompanies extends ContractNetInitiator {
 
   private int nResponders;
   private AgentBoard agent;
+  private boolean finished;
 
   public OfferCompanies(AgentBoard agent) {
     super(agent, createMessage(agent));
     this.agent = agent;
     nResponders = this.agent.getManagers().size();
+    this.finished = false;
 
     super.setBehaviourName("Offer_" + Math.random());
   }
@@ -112,8 +114,14 @@ public class OfferCompanies extends ContractNetInitiator {
 
   @Override
   protected void handleInform(ACLMessage inform) {
+    this.finished = true;
     System.out.println(
         "Agent " + inform.getSender().getName() + " successfully performed the requested action");
+  }
+
+  @Override
+  protected boolean checkTermination(boolean currentDone, int currentResult) {
+    return this.finished;
   }
 
   @Override

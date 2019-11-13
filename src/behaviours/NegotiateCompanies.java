@@ -61,6 +61,7 @@ public class NegotiateCompanies extends ContractNetResponder {
 
     ACLMessage inform = accept.createReply();
     inform.setPerformative(ACLMessage.INFORM);
+    this.agent.send(inform); //TODO: Use proper methods, this is hacky
     this.finished = true;
     return inform;
   }
