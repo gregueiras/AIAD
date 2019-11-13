@@ -115,4 +115,10 @@ public class OfferCompanies extends ContractNetInitiator {
     System.out.println(
         "Agent " + inform.getSender().getName() + " successfully performed the requested action");
   }
+
+  @Override
+  public int onEnd() {
+    System.out.println("END OFFER");
+    return super.onEnd();
+  }
 }

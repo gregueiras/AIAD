@@ -13,10 +13,12 @@ public class NegotiateCompanies extends ContractNetResponder {
 
   private AgentManager agent;
   private Company offeredCompany;
+  private boolean finished;
 
   public NegotiateCompanies(AgentManager a) {
     super(a, createTemplate());
     this.agent = a;
+    this.finished = false;
     super.setBehaviourName("Negotiate_" + Math.random());
   }
 
@@ -59,12 +61,19 @@ public class NegotiateCompanies extends ContractNetResponder {
 
     ACLMessage inform = accept.createReply();
     inform.setPerformative(ACLMessage.INFORM);
+    this.finished = true;
     return inform;
   }
 
   @Override
   protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
+    this.finished = true;
     System.out.println("Agent " + myAgent.getName() + ": Proposal rejected");
+  }
+
+  @Override
+  protected boolean checkTermination(boolean currentDone, int currentResult) {
+    return this.finished;
   }
 
   @Override
