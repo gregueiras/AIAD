@@ -21,6 +21,8 @@ public class Company implements Serializable {
     this.doubleValue = doubleValue;
   }
 
+
+
   public InvestmentType getType() {
     return type;
   }
@@ -47,6 +49,10 @@ public class Company implements Serializable {
 
   public void setPrice(Integer price) {
     this.price = price;
+  }
+
+  public boolean isDoubleValue() {
+    return doubleValue;
   }
 
   public void setType(InvestmentType type) {
