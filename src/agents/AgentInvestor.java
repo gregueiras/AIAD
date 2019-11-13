@@ -28,7 +28,7 @@ public class AgentInvestor extends OurAgent {
   // The companies that the investor has in it's wallet, mapped by title
   private Hashtable<String, Company> wallet;
   
-  private Personality person = new Normal();
+  private Personality person;
 
   private String companyToBuy;
 
@@ -44,6 +44,7 @@ public class AgentInvestor extends OurAgent {
     // Printout a welcome message
     System.out.println("Hallo! Buyer-agent " + getAID().getName() + " is ready.");
     this.currentCapital = INITIAL_CAPITAL;
+    person = new Normal();
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
