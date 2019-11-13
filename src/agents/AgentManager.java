@@ -19,6 +19,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -180,7 +182,11 @@ public class AgentManager extends OurAgent {
         sendMsgInformBoard(msg);
         break;
       case NEGOTIATE:
+        try {
           sendMsgNegotiate(msg);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         break;
     }
   }
@@ -196,10 +202,12 @@ public class AgentManager extends OurAgent {
     }
   }
 
-  private void sendMsgNegotiate(ACLMessage msg) {
+
+
+  private void sendMsgNegotiate(ACLMessage msg) throws IOException {
       System.out.println("ProposeInitiator.action " + getInvestor());
       msg.setSender(getAID());
-      msg.setContent("ola ola");
+      msg.setContentObject((HashMap<InvestmentType, List<Company>>) this.wallet);
       msg.addReceiver(getInvestor());
       msg.setConversationId(State.NEGOTIATE.toString());
       send(msg);

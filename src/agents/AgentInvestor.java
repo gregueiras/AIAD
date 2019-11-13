@@ -12,8 +12,14 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+
+import jade.lang.acl.UnreadableException;
 import market.Company;
+import market.InvestmentType;
 
 public class AgentInvestor extends OurAgent {
 
@@ -70,7 +76,7 @@ public class AgentInvestor extends OurAgent {
   @Override
   public int handleMessage(ACLMessage msg){
       System.out.println(this.getName() + ": " + msg.getContent());
-      if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
+    if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
        return handleNegotiateMsg(msg);
       if(msg.getConversationId().equals(State.GAME_END.toString()))
           return 2;
@@ -79,7 +85,14 @@ public class AgentInvestor extends OurAgent {
   }
 
   private int handleNegotiateMsg(ACLMessage msg) {
-    System.out.println("i am receiving: " + msg.getContent());
+    //System.out.println("i am receiving: " + msg.getContent());
+    try {
+      HashMap<InvestmentType, List<Company>> offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      System.out.println("offer:" + offer);
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+
     ACLMessage reply = msg.createReply();
     reply.setInReplyTo(State.NEGOTIATE.toString());
     reply.setPerformative( ACLMessage.INFORM );
@@ -89,6 +102,9 @@ public class AgentInvestor extends OurAgent {
     return -1;
   }
 
+  List<Company> processOffer(HashMap<InvestmentType, List<Company>> offer){
+    return null;
+  }
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
