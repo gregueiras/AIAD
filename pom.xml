@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>AIAD</artifactId>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.11</source>
+          <target>1.11</target>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.5.1</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <artifactId>log4j-api</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <version>2.12.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>log4j-core</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <version>2.12.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>jade</artifactId>
+      <groupId>com.tilab.jade</groupId>
+      <version>4.5.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>commons-codec</artifactId>
+      <groupId>commons-codec</groupId>
+      <version>1.13</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>feup</groupId>
+  <modelVersion>4.0.0</modelVersion>
+
+  <repositories>
+    <repository>
+      <id>tilab</id>
+      <url>https://jade.tilab.com/maven/</url>
+    </repository>
+  </repositories>
+
+  <version>1.0-SNAPSHOT</version>
+</project>
