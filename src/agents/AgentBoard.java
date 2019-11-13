@@ -5,6 +5,7 @@ import behaviours.AssignInvestors;
 import behaviours.CreateRound;
 import behaviours.EndNegotiation;
 import behaviours.FindAgents;
+import behaviours.OfferCompanies;
 import behaviours.Print;
 import behaviours.SendMessage;
 import behaviours.StateMachine;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
@@ -47,6 +49,8 @@ public class AgentBoard extends OurAgent {
 
   private Integer currentRound;
 
+  private Random rand;
+
 
   public List<AID> getInvestors() {
     return investors;
@@ -68,39 +72,42 @@ public class AgentBoard extends OurAgent {
     this.setCurrentShift(this.currentShift + 1);
   }
 
-  public void incCurrentRound() { this.setCurrentRound(this.currentRound + 1); }
+  public void incCurrentRound() {
+    this.setCurrentRound(this.currentRound + 1);
+  }
 
   private void setCurrentShift(Integer currentShift) {
     this.currentShift = currentShift;
   }
 
   private void setCurrentRound(Integer currentRound) {
-      this.currentRound = currentRound;
+    this.currentRound = currentRound;
   }
 
   public void resetCurrentShift() {
-      this.currentShift = 0;
+    this.currentShift = 0;
   }
 
   public boolean isEndRound() {
-      return this.currentShift >= (this.round.getShifts().size() - 1);
+    return this.currentShift >= (this.round.getShifts().size() - 1);
   }
 
   public boolean isEndGame() {
-      return this.currentRound >= (NR_ROUNDS - 1);
+    return this.currentRound >= (NR_ROUNDS - 1);
   }
 
   public void setRound(Round round) {
-      this.round = round;
-      this.currentShift = 0;
+    this.round = round;
+    this.currentShift = 0;
   }
 
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
-    catalogue = new HashMap<>();
+    catalogue = generateCatalogue();
     investors = new LinkedList<>();
     managers = new LinkedList<>();
+    rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
 
@@ -122,9 +129,11 @@ public class AgentBoard extends OurAgent {
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
 
+    Behaviour offerCompanies = new OfferCompanies(this);
+
     Transition t1 = new Transition(findManagers, findInvestors);
     Transition t2 = new Transition(findInvestors, assignCompanies);
-    Transition t3_1 = new Transition(assignCompanies,createRound );
+    Transition t3_1 = new Transition(assignCompanies, createRound);
     Transition t3_2 = new Transition(createRound, assignInvestors);
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
@@ -132,13 +141,13 @@ public class AgentBoard extends OurAgent {
     Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
     Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
-    Transition t6_1 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t6_1 = new Transition(sendShiftEnd, offerCompanies);
+    Transition t6_11 = new Transition(offerCompanies, assignInvestors);
     Transition t6_2 = new Transition(sendRoundEnd, createRound);
     Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
-    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1, t5_2, t5_3,
-        t6_1,
-        t6_2, t6_3);
+    StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1,
+        t5_2, t5_3, t6_1, t6_2, t6_3, t6_11);
     addBehaviour(sm);
   }
 
@@ -190,7 +199,9 @@ public class AgentBoard extends OurAgent {
   public void sendMessage(State type) {
     System.out.println("stet:: " + type);
     switch (type) {
-      case ROUND_END: case SHIFT_END: case GAME_END:
+      case ROUND_END:
+      case SHIFT_END:
+      case GAME_END:
         sendEndStateMsg(type);
         break;
       default:
@@ -222,8 +233,20 @@ public class AgentBoard extends OurAgent {
     this.catalogue = catalogue;
   }
 
-  public Map<InvestmentType, List<Company>> generateCatalogue() {
-    final int companyNumber = this.managers.size() * 4;
+  public Company drawCompany(InvestmentType type) {
+    List<Company> existingCompanies = catalogue.get(type);
+
+    int index = rand.nextInt(existingCompanies.size());
+    Company company = existingCompanies.remove(index);
+
+    catalogue.put(type, existingCompanies);
+
+    return company;
+  }
+
+  private Map<InvestmentType, List<Company>> generateCatalogue() {
+    final int companyNumber = COMPANY_NUMBER * 4;
+    HashMap<InvestmentType, List<Company>> catalogue = new HashMap<>();
 
     for (InvestmentType type : InvestmentType.values()) {
       List<Company> list = new LinkedList<>();
@@ -245,6 +268,6 @@ public class AgentBoard extends OurAgent {
   @Override
   public int handleMessage(ACLMessage msg) {
     //TODO
-      return -1;
+    return -1;
   }
 }

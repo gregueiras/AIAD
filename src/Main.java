@@ -7,10 +7,12 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
+
   public static void main(String[] args) {
     try {
       Runtime rt = Runtime.instance();
@@ -29,12 +31,13 @@ public class Main {
       AgentController ac4 = mainController
           .createNewAgent("Manager3", AgentManager.class.getName(), null);
 
-      AgentController board = mainController.createNewAgent("BOARD", AgentBoard.class.getName(), null);
+      AgentController board = mainController
+          .createNewAgent("BOARD", AgentBoard.class.getName(), null);
 
       String[] agents = {"Investor1", "Manager1", "BOARD", "Investor2", "Manager3"};
       StringBuilder agentsBuilder = new StringBuilder();
       for (String s : agents) {
-        String agent = s + "@10.227.152.201:1099/JADE;";
+        String agent = s + "@" + InetAddress.getLocalHost().getHostAddress() + ":1099/JADE;";
         agentsBuilder.append(agent);
       }
       agentsBuilder.deleteCharAt(agentsBuilder.length() - 1);
@@ -57,7 +60,7 @@ public class Main {
 
       board.start();
 
-    } catch (StaleProxyException e) {
+    } catch (StaleProxyException | UnknownHostException e) {
       e.printStackTrace();
     }
   }
