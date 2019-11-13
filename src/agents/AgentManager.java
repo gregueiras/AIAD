@@ -6,6 +6,8 @@ import behaviours.SendMessage;
 import behaviours.StateMachine;
 import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
+import personalities.Normal;
+import personalities.Personality;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -38,6 +40,8 @@ public class AgentManager extends OurAgent {
   private AID board;
 
   private AID investor;
+  
+  private Personality person;
 
   private boolean skipShift;
   // Put agent initializations here
@@ -46,6 +50,7 @@ public class AgentManager extends OurAgent {
     //wallet = WalletExamples.getEx1();
     wallet = new HashMap<>();
     skipShift = false;
+    person = new Normal();
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
