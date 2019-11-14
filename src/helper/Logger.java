@@ -15,9 +15,7 @@ public class Logger {
     return Paths.get("logs", fileName);
   }
 
-  public static boolean setup(String name) {
-    boolean ret = false;
-
+  private static void setup(String name) {
     Path path = getFileName(name);
     if (path.toFile().exists()) {
       path.toFile().delete();
@@ -31,13 +29,19 @@ public class Logger {
       e.printStackTrace();
     }
 
-    return ret;
+  }
+
+  public static void print(String name, Object content) {
+    print(name, content.toString());
   }
 
   public static void print(String name, String content) {
     try {
       final Path path = getFileName(name);
-      System.err.println(path);
+
+      if (!path.toFile().exists()) {
+        setup(name);
+      }
 
       content += "\n";
       Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);

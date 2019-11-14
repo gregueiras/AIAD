@@ -1,5 +1,6 @@
 package market.dices;
 
+import helper.Logger;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +15,7 @@ public class Dice {
     public int launchDice(){
         Random rand = new Random();
         int res = rand.nextInt(6);
-        System.out.println(this.faces.get(res));
+        Logger.print("dice", this.faces.get(res));
         return this.faces.get(res);
     }
     public List<Integer> getFaces() {

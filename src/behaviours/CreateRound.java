@@ -2,15 +2,13 @@ package behaviours;
 
 import agents.AgentBoard;
 import agents.AgentType;
+import helper.Logger;
 import helper.NegotiationPair;
-import helper.Shift;
 import helper.Round;
+import helper.Shift;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
-
-import javax.sound.midi.SysexMessage;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class CreateRound extends OneShotBehaviour {
@@ -51,7 +49,7 @@ public class CreateRound extends OneShotBehaviour {
                         investor = a1.get(i);
                         manager = a2.get(index);
                     } else {
-                        System.err.println("Invalid pairing");
+                        Logger.print(this.agent.getLocalName(), "Invalid pairing");
                         return null;
                     }
 
@@ -59,7 +57,7 @@ public class CreateRound extends OneShotBehaviour {
                     shift.addPair(pair);
                 }
                 else {
-                    System.out.println("more managers than investors");
+                    Logger.print(this.agent.getLocalName(), "more managers than investors");
                     if(a1Type == AgentType.MANAGER){
                         NegotiationPair pair = new NegotiationPair(a1.get(i),null);
                         shift.addPair(pair);
@@ -76,7 +74,7 @@ public class CreateRound extends OneShotBehaviour {
 
     @Override
     public void action() {
-        System.out.println("CreateRound.action");
+        Logger.print(this.agent.getLocalName(), "CreateRound.action");
 
         Round r;
         List<AID> managers = this.agent.getListManagers();
@@ -90,6 +88,6 @@ public class CreateRound extends OneShotBehaviour {
         if(r != null)
             this.agent.setRound(r);
 
-        System.out.println(this.agent.getRound().toString());
+        Logger.print(this.agent.getLocalName(), this.agent.getRound().toString());
     }
 }

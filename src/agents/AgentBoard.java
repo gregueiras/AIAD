@@ -1,6 +1,15 @@
 package agents;
 
-import behaviours.*;
+import behaviours.AssignCompanies;
+import behaviours.AssignInvestors;
+import behaviours.CreateRound;
+import behaviours.EndNegotiation;
+import behaviours.FindAgents;
+import behaviours.OfferCompanies;
+import behaviours.Print;
+import behaviours.SendMessage;
+import behaviours.StateMachine;
+import helper.Logger;
 import helper.Round;
 import helper.Shift;
 import helper.State;
@@ -120,7 +129,7 @@ public class AgentBoard extends OurAgent {
       this.profitsResults = ProfitsFactory.createAllProfits();
   }
 
-  public Map<InvestmentType, Profits> getProfitsResults() {
+  private Map<InvestmentType, Profits> getProfitsResults() {
       return profitsResults;
   }
 
@@ -206,7 +215,7 @@ public class AgentBoard extends OurAgent {
     }
     // Close the GUI
     // Printout a dismissal message
-    System.out.println("Seller-agent " + getAID().getName() + " terminating.");
+    Logger.print(this.getLocalName(), "Seller-agent " + getAID().getName() + " terminating.");
   }
 
 
@@ -224,7 +233,7 @@ public class AgentBoard extends OurAgent {
         }
         break;
       default:
-        System.err.println("Invalid agent type");
+        Logger.print(this.getLocalName(), "Invalid agent type");
         break;
     }
   }
@@ -274,7 +283,8 @@ public class AgentBoard extends OurAgent {
          msg.setContent(state.toString());
     msg.setConversationId(state.toString());
     send(msg);
-    System.out.println("send message: " + state.toString() + " -> "+ msg.getContent());
+    Logger.print(this.getLocalName(),
+        "send message: " + state.toString() + " -> " + msg.getContent());
   }
 
   public Map<InvestmentType, List<Company>> getCatalogue() {
@@ -316,7 +326,7 @@ public class AgentBoard extends OurAgent {
       Profits profits = entry.getValue();
       profits.roll_dice();
     }
-    System.out.println("ROLL DICES: " + this.profitsResults);
+    Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsResults);
   }
 
   public void handleEndNegotiationMsg(ACLMessage msg) {

@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.OurAgent;
+import helper.Logger;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -27,7 +28,9 @@ public class WaitForMessages extends SimpleBehaviour {
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
             this.done = this.agent.handleMessage(msg);
-            System.out.println(agent.getName() + " handling message: " + msg.getConversationId() + " done: " + this.done);
+            Logger.print(this.agent.getLocalName(),
+                agent.getName() + " handling message: " + msg.getConversationId() + " done: "
+                    + this.done);
         } else {
             block();
         }
@@ -35,7 +38,7 @@ public class WaitForMessages extends SimpleBehaviour {
 
     @Override
     public boolean done() {
-        System.out.println(agent.getName() + " done: " + this.done);
+        Logger.print(this.agent.getLocalName(), agent.getLocalName() + " done: " + this.done);
 
         return (this.done != -1);
     }
@@ -43,7 +46,7 @@ public class WaitForMessages extends SimpleBehaviour {
     @Override
     public int onEnd() {
         int done = this.done;
-        System.err.println(agent.getName() + " wfm: " + done);
+        Logger.print(this.agent.getLocalName(), agent.getLocalName() + " wfm: " + done);
         this.done = INITIAL_DONE;
         this.reset();
 

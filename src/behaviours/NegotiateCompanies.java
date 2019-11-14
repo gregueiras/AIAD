@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.AgentManager;
+import helper.Logger;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
@@ -23,8 +24,6 @@ public class NegotiateCompanies extends ContractNetResponder {
   }
 
   private static MessageTemplate createTemplate() {
-    System.out.println("HEH Negotiate");
-
     return MessageTemplate.and(
         MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
         MessageTemplate.MatchPerformative(ACLMessage.CFP)
@@ -33,7 +32,7 @@ public class NegotiateCompanies extends ContractNetResponder {
 
   @Override
   protected ACLMessage handleCfp(ACLMessage cfp) throws NotUnderstoodException {
-    System.out.println(
+    Logger.print(this.agent.getLocalName(),
         "Agent " + myAgent.getName() + ": CFP received from " + cfp.getSender().getName());
 
     try {
@@ -45,7 +44,8 @@ public class NegotiateCompanies extends ContractNetResponder {
 
     int proposal = agent.getPerson().getPriceBuy(offeredCompany);
     // We provide a proposal
-    System.out.println("Agent " + myAgent.getName() + ": Proposing " + proposal);
+    Logger
+        .print(this.agent.getLocalName(), "Agent " + myAgent.getName() + ": Proposing " + proposal);
     ACLMessage propose = cfp.createReply();
     propose.setPerformative(ACLMessage.PROPOSE);
     propose.setContent(String.valueOf(proposal));
@@ -55,7 +55,7 @@ public class NegotiateCompanies extends ContractNetResponder {
 
   @Override
   protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) {
-    System.out.println("Agent " + myAgent.getName() + ": Proposal accepted");
+    Logger.print(this.agent.getLocalName(), "Agent " + myAgent.getName() + ": Proposal accepted");
 
     this.agent.addCompany(offeredCompany);
 
@@ -69,7 +69,7 @@ public class NegotiateCompanies extends ContractNetResponder {
   @Override
   protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
     this.finished = true;
-    System.out.println("Agent " + myAgent.getName() + ": Proposal rejected");
+    Logger.print(this.agent.getLocalName(), "Agent " + myAgent.getName() + ": Proposal rejected");
   }
 
   @Override
@@ -79,8 +79,6 @@ public class NegotiateCompanies extends ContractNetResponder {
 
   @Override
   public int onEnd() {
-    System.out.println("END NEGOTIATE");
-
     this.finished = false;
     this.reset();
 

@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.OurAgent;
+import helper.Logger;
 import helper.State;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -29,7 +30,7 @@ public class WaitForMessage extends MsgReceiver {
   @Override
   protected void handleMessage(ACLMessage msg) {
     try {
-      System.out.println("WaitForMessage.action: " + msg.getConversationId());
+      Logger.print(this.agent.getLocalName(), "WaitForMessage.action: " + msg.getConversationId());
       this.agent.handleMessage(msg);
     } catch (Exception e) {
       e.printStackTrace();

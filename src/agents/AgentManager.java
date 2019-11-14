@@ -7,6 +7,7 @@ import behaviours.SendMessage;
 import behaviours.StateMachine;
 import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
+import helper.Logger;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -112,7 +113,7 @@ public class AgentManager extends OurAgent {
       return State.SHIFT_END.ordinal();
     }
 
-    System.out.println(msg.getPerformative() + ": " + msg.getContent());
+    Logger.print(this.getLocalName(), msg.getPerformative() + ": " + msg.getContent());
     return -1;
   }
 
@@ -132,7 +133,7 @@ public class AgentManager extends OurAgent {
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
-    System.out.println(getAID().getName() + " assign investor:  " + name);
+    Logger.print(this.getLocalName(), getAID().getName() + " assign investor:  " + name);
     return ret;
   }
 
@@ -148,6 +149,7 @@ public class AgentManager extends OurAgent {
         }
       }
       System.out.println(getAID().getName() + " assign companies:  " + this.wallet);
+      Logger.print(this.getLocalName(), getAID().getName() + " assign companies:  " + this.wallet);
 
     } catch (UnreadableException e) {
       e.printStackTrace();
@@ -166,7 +168,7 @@ public class AgentManager extends OurAgent {
     }
 
     // Printout a dismissal message
-    System.out.println("Seller-agent " + getAID().getName() + " terminating.");
+    Logger.print(this.getLocalName(), "Seller-agent " + getAID().getName() + " terminating.");
   }
 
   private AID getInvestor() {
@@ -189,11 +191,11 @@ public class AgentManager extends OurAgent {
         try {
           this.board = agents[0];
         } catch (Exception e) {
-          System.err.println(e);
+          Logger.print(this.getLocalName(), e.toString());
         }
         break;
       default:
-        System.err.println("Invalid agent type");
+        Logger.print(this.getLocalName(), "Invalid agent type");
         break;
     }
   }
@@ -249,7 +251,7 @@ public class AgentManager extends OurAgent {
       e.printStackTrace();
     }
     send(msg);
-    System.out.println("agent " + getName() + " Informing board");
+    Logger.print(this.getLocalName(), "agent " + getName() + " Informing board");
     msg.reset();
   }
 

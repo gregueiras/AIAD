@@ -1,5 +1,6 @@
 package behaviours;
 
+import helper.Logger;
 import helper.Transition;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -30,7 +31,7 @@ public class StateMachine extends FSMBehaviour {
   }
 
   public int onEnd() {
-    System.out.println("FSM behaviour completed.");
+    Logger.print(this.agent.getLocalName(), "FSM behaviour completed.");
     this.agent.doDelete();
     return super.onEnd();
   }

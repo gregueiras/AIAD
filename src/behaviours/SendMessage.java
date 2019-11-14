@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.OurAgent;
+import helper.Logger;
 import helper.State;
 import jade.core.behaviours.OneShotBehaviour;
 
@@ -12,12 +13,12 @@ public class SendMessage extends OneShotBehaviour {
         this.agent = agent;
         this.state = state;
         super.setBehaviourName("SendMessage" + state.toString() + this.agent.getAID().getName());
-        System.err.println(super.getBehaviourName());
     }
 
     @Override
     public void action() {
-        System.out.println(this.agent.getName() + " SendMessage.action: " + state.toString());
+        Logger.print(this.agent.getLocalName(),
+            this.agent.getName() + " SendMessage.action: " + state.toString());
         this.agent.sendMessage(this.state);
     }
 

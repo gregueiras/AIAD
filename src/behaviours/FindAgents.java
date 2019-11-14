@@ -2,6 +2,7 @@ package behaviours;
 
 import agents.AgentType;
 import agents.OurAgent;
+import helper.Logger;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
@@ -26,7 +27,7 @@ public class FindAgents extends OneShotBehaviour {
 
   @Override
   public void action() {
-    System.out.println("FindAgents.action");
+    Logger.print(this.agent.getLocalName(), "FindAgents.action");
 
     DFAgentDescription template = new DFAgentDescription();
     ServiceDescription sd = new ServiceDescription();
@@ -34,7 +35,7 @@ public class FindAgents extends OneShotBehaviour {
     template.addServices(sd);
     try {
       DFAgentDescription[] result = DFService.search(myAgent, template);
-      System.out.println("Found the following " + typeToSearch + " agents:");
+      Logger.print(this.agent.getLocalName(), "Found the following " + typeToSearch + " agents:");
       AID[] sellerAgents = new AID[result.length];
 
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
@@ -47,7 +48,7 @@ public class FindAgents extends OneShotBehaviour {
         sellerAgents[i] = result[i].getName();
 
         msg.addReceiver(sellerAgents[i]);
-        System.out.println(sellerAgents[i].getName());
+        Logger.print(this.agent.getLocalName(), sellerAgents[i].getName());
       }
       this.agent.registerAgent(sellerAgents, this.typeToSearch);
       this.agent.send(msg);
