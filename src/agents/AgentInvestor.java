@@ -15,9 +15,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import jade.lang.acl.UnreadableException;
 import market.Company;
@@ -26,8 +24,10 @@ import market.InvestmentType;
 public class AgentInvestor extends OurAgent {
 
   // The companies that the investor has in it's wallet, mapped by title
-  private Hashtable<String, Company> wallet;
-  
+  //private Hashtable<String, Company> wallet;
+
+  private Map<InvestmentType, List<Company>> wallet;
+
   private Personality person;
 
   private String companyToBuy;
@@ -38,13 +38,33 @@ public class AgentInvestor extends OurAgent {
 
   private final static int INITIAL_CAPITAL = 120; //mil
 
+  private void incCurrentCapital(int inc){
+    this.currentCapital += inc;
+  }
 
+  public void addCompany(Company c) {
+    InvestmentType type = c.getType();
+
+    List<Company> companies = this.wallet.get(type);
+    companies.add(c);
+
+    this.wallet.put(type, companies);
+  }
+
+  private void initializeWallet(){
+    this.wallet = new HashMap<>();
+    this.wallet.put(InvestmentType.RED, new LinkedList<>());
+    this.wallet.put(InvestmentType.BLUE, new LinkedList<>());
+    this.wallet.put(InvestmentType.YELLOW, new LinkedList<>());
+    this.wallet.put(InvestmentType.GREEN, new LinkedList<>());
+  }
     // Put agent initializations here
   protected void setup() {
     // Printout a welcome message
     System.out.println("Hallo! Buyer-agent " + getAID().getName() + " is ready.");
     this.currentCapital = INITIAL_CAPITAL;
     person = new Normal();
+    this.initializeWallet();
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
@@ -83,8 +103,10 @@ public class AgentInvestor extends OurAgent {
       System.out.println(this.getName() + ": " + msg.getContent());
     if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
        return handleNegotiateMsg(msg);
-      if(msg.getConversationId().equals(State.GAME_END.toString()))
-          return 2;
+    if(msg.getConversationId().equals(State.GAME_END.toString()))
+       return 2;
+    if (msg.getConversationId().equals(State.ROUND_END.toString()))
+      return handleRoundEndMsg(msg);
 
     return -1;
   }
@@ -103,9 +125,26 @@ public class AgentInvestor extends OurAgent {
     reply.setPerformative( ACLMessage.INFORM );
     reply.setContent("oi oi");
     send(reply);
-    System.out.println("sent reply");
     return -1;
   }
+
+    private int handleRoundEndMsg(ACLMessage msg) {
+      try {
+        Map<InvestmentType, Integer> dicesResult = (HashMap<InvestmentType, Integer>) msg
+                .getContentObject();
+        for (Map.Entry<InvestmentType, Integer> entry : dicesResult.entrySet()) {
+          Integer result = entry.getValue();
+          InvestmentType type = entry.getKey();
+          int nrCompanies = this.wallet.get(type).size();
+          this.incCurrentCapital(nrCompanies*result);
+        }
+        System.out.println(getAID().getName() + " current capital:  " + this.currentCapital);
+
+      } catch (UnreadableException e) {
+        e.printStackTrace();
+      }
+      return -1;
+    }
 
   List<Company> processOffer(HashMap<InvestmentType, List<Company>> offer){
     return null;
@@ -117,7 +156,6 @@ public class AgentInvestor extends OurAgent {
       case BOARD:
         try {
           this.board = agents[0];
-          System.out.println("THIS IS MY BOARD " + this.board);
         }
         catch(Exception e){
           System.err.println(e);

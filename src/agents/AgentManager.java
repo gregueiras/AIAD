@@ -103,9 +103,6 @@ public class AgentManager extends OurAgent {
     if (msg.getConversationId().equals(State.GAME_END.toString())) {
       return 2;
     }
-    if (msg.getConversationId().equals(State.ROUND_END.toString())) {
-      return handleRoundEndMsg(msg);
-    }
     if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
       return State.SHIFT_END.ordinal();
     }
@@ -147,17 +144,6 @@ public class AgentManager extends OurAgent {
     return -1;
   }
 
-  private int handleRoundEndMsg(ACLMessage msg) {
-    try {
-      Map<InvestmentType, Integer> dicesResult = (HashMap<InvestmentType, Integer>) msg
-              .getContentObject();
-      System.out.println(getAID().getName() + " dices result:  " + dicesResult);
-
-    } catch (UnreadableException e) {
-      e.printStackTrace();
-    }
-    return -1;
-  }
 
   // Put agent clean-up operations here
   protected void takeDown() {
@@ -234,7 +220,6 @@ public class AgentManager extends OurAgent {
 
 
   private void sendMsgNegotiate(ACLMessage msg) throws IOException {
-    System.out.println("ProposeInitiator.action " + getInvestor());
     msg.setSender(getAID());
     msg.setContentObject((HashMap<InvestmentType, List<Company>>) this.wallet);
     msg.addReceiver(getInvestor());

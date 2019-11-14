@@ -84,6 +84,10 @@ public class AgentBoard extends OurAgent {
     this.currentRound = currentRound;
   }
 
+  public Integer getCurrentRound() {
+    return currentRound;
+  }
+
   public void resetCurrentShift() {
     this.currentShift = 0;
   }
@@ -208,7 +212,6 @@ public class AgentBoard extends OurAgent {
 
   @Override
   public void sendMessage(State type) {
-    System.out.println("stet:: " + type);
     switch (type) {
       case ROUND_END:
       case SHIFT_END:

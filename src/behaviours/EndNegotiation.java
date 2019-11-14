@@ -37,6 +37,7 @@ public class EndNegotiation extends SimpleBehaviour {
 
     public int onEnd() {
         this.nrResponses = 0;
+        System.err.println("CURRENT ROUND: " + this.agent.getCurrentRound());
         if(!this.agent.isEndRound()) { // is not end round, so it should update the current shift to the next in the round
             this.agent.incCurrentShift();
             return 0;
