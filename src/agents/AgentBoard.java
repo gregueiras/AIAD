@@ -7,21 +7,20 @@ import helper.State;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import jade.lang.acl.UnreadableException;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
@@ -39,9 +38,9 @@ public class AgentBoard extends OurAgent {
 
   private Map<InvestmentType, Profits> profitsResults;
 
-  private List<AID> investors;
+  private Map<AID, Integer> investors;
 
-  private List<AID> managers;
+  private Map<AID, Integer> managers;
 
   private Round round;
 
@@ -51,13 +50,30 @@ public class AgentBoard extends OurAgent {
 
   private Random rand;
 
-
-  public List<AID> getInvestors() {
+  public Map<AID, Integer> getInvestors() {
     return investors;
   }
 
-  public List<AID> getManagers() {
+  public List<AID> getListInvestors(){
+    List<AID> listInvestors = new LinkedList<>();
+    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
+      AID investor= entry.getKey();
+      listInvestors.add(investor);
+    }
+    return listInvestors;
+  }
+
+  public Map<AID, Integer> getManagers() {
     return managers;
+  }
+
+  public List<AID> getListManagers(){
+    List<AID> listManagers = new LinkedList<>();
+    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
+      AID manager = entry.getKey();
+      listManagers.add(manager);
+    }
+    return listManagers;
   }
 
   public Round getRound() {
@@ -118,8 +134,8 @@ public class AgentBoard extends OurAgent {
   protected void setup() {
     // Create the catalogue
     catalogue = generateCatalogue();
-    investors = new LinkedList<>();
-    managers = new LinkedList<>();
+    investors = new HashMap<>();
+    managers = new HashMap<>();
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
@@ -198,10 +214,14 @@ public class AgentBoard extends OurAgent {
   public void registerAgent(AID[] agents, AgentType type) {
     switch (type) {
       case INVESTOR:
-        this.investors = Arrays.asList(agents);
+        for(AID agent: agents){
+          this.investors.put(agent, 120);
+        }
         break;
       case MANAGER:
-        this.managers = Arrays.asList(agents);
+        for(AID agent: agents){
+          this.managers.put(agent, 0);
+        }
         break;
       default:
         System.err.println("Invalid agent type");
@@ -225,12 +245,17 @@ public class AgentBoard extends OurAgent {
   private void sendEndStateMsg(State state) {
     ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
     msg.setSender(getAID());
-    for (AID manager : this.managers) {
+
+    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
+      AID manager = entry.getKey();
       msg.addReceiver(manager);
     }
-    for (AID investor : this.investors) {
+
+    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
+      AID investor = entry.getKey();
       msg.addReceiver(investor);
     }
+
     if(state.equals(State.ROUND_END)){
         this.rollDices();
         Map<InvestmentType, Integer> results = new HashMap<>();
@@ -294,6 +319,29 @@ public class AgentBoard extends OurAgent {
     System.out.println("ROLL DICES: " + this.profitsResults);
   }
 
+  public void handleEndNegotiationMsg(ACLMessage msg) {
+    AID manager = msg.getSender();
+    Integer managerCapital = this.managers.get(manager);
+    try {
+      Map<InvestmentType, List<Company>> msgCompanies = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      for (Map.Entry<InvestmentType, List<Company>> entry : msgCompanies.entrySet()) {
+        List<Company>  companies = entry.getValue();
+        for(Company company: companies){
+          Integer price = company.getPrice();
+          AID owner = company.getCurrentOwner();
+          if(owner.compareTo(manager) != 0) {
+            Integer investorCapital = this.investors.get(owner) - price;
+            this.investors.put(owner, investorCapital);
+            managerCapital += price;
+          }
+        }
+      }
+      this.managers.put(manager, managerCapital);
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+
+  }
 
   @Override
   public int onEnd(State state) {
