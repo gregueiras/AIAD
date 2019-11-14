@@ -142,7 +142,7 @@ public class AgentBoard extends OurAgent {
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
-    Behaviour rollDices = new RollDices(this);
+   // Behaviour rollDices = new RollDices(this);
     Behaviour offerCompanies = new OfferCompanies(this);
 
     Transition t1 = new Transition(findManagers, findInvestors);
@@ -152,17 +152,16 @@ public class AgentBoard extends OurAgent {
     Transition t4 = new Transition(assignInvestors, endNegotiation);
 
     Transition t5_1 = new Transition(endNegotiation, sendShiftEnd, 0);
-    Transition t5_2 = new Transition(endNegotiation, rollDices, 1);
+    Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
     Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
     Transition t6_1 = new Transition(sendShiftEnd, offerCompanies);
     Transition t6_11 = new Transition(offerCompanies, assignInvestors);
-    Transition t6_2 = new Transition(rollDices, sendRoundEnd);
-    Transition t6_22 = new Transition(sendRoundEnd, createRound);
+    Transition t6_2 = new Transition(sendRoundEnd, createRound);
     Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
     StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1,
-        t5_2, t5_3, t6_1, t6_2, t6_3, t6_11, t6_22);
+        t5_2, t5_3, t6_1, t6_2, t6_3, t6_11);
     addBehaviour(sm);
   }
 
@@ -233,6 +232,7 @@ public class AgentBoard extends OurAgent {
       msg.addReceiver(investor);
     }
     if(state.equals(State.ROUND_END)){
+        this.rollDices();
         Map<InvestmentType, Integer> results = new HashMap<>();
         for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsResults().entrySet()) {
           Profits profits = entry.getValue();
@@ -284,6 +284,14 @@ public class AgentBoard extends OurAgent {
     }
 
     return catalogue;
+  }
+
+  private void rollDices(){
+    for (Map.Entry<InvestmentType, Profits> entry : this.profitsResults.entrySet()) {
+      Profits profits = entry.getValue();
+      profits.roll_dice();
+    }
+    System.out.println("ROLL DICES: " + this.profitsResults);
   }
 
 
