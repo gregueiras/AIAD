@@ -6,31 +6,28 @@ import jade.core.behaviours.OneShotBehaviour;
 import market.InvestmentType;
 import market.dices.Dice;
 import market.dices.DiceFactory;
+import market.profits.Profits;
 
 import javax.sound.midi.SysexMessage;
 import java.util.Map;
 
 public class RollDices extends OneShotBehaviour {
 
-    private Map<InvestmentType, Dice> dices;
     private AgentBoard agent;
 
     public RollDices(AgentBoard agent) {
         DiceFactory diceFactory = new DiceFactory();
-        this.dices = diceFactory.createAllDice();
         this.agent = agent;
         super.setBehaviourName("Roll_Dices_" + this.agent.getName());
     }
 
     @Override
     public void action() {
-        for (Map.Entry<InvestmentType, Dice> entry : this.dices.entrySet()) {
+        for (Map.Entry<InvestmentType, Profits> entry : this.agent.getProfitsResults().entrySet()) {
             System.out.println(entry.getKey() + "/" + entry.getValue());
-            InvestmentType type = entry.getKey();
-            Dice dice = entry.getValue();
-            int result = dice.launchDice();
-            this.agent.setDiceResult(type, result);
+            Profits profits = entry.getValue();
+            profits.roll_dice();
         }
-        System.out.println("ROLL DICES: " + this.agent.getDiceResults());
+        System.out.println("ROLL DICES: " + this.agent.getProfitsResults());
     }
 }

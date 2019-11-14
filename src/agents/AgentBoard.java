@@ -25,6 +25,8 @@ import java.util.Random;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
+import market.profits.Profits;
+import market.profits.ProfitsFactory;
 
 public class AgentBoard extends OurAgent {
 
@@ -35,7 +37,7 @@ public class AgentBoard extends OurAgent {
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
 
-  private Map<InvestmentType, Integer> diceResults;
+  private Map<InvestmentType, Profits> profitsResults;
 
   private List<AID> investors;
 
@@ -94,21 +96,14 @@ public class AgentBoard extends OurAgent {
     return this.currentRound >= (NR_ROUNDS - 1);
   }
 
-  private void initializeDiceResults(){
-      this.diceResults = new HashMap<>();
-      this.diceResults.put(InvestmentType.YELLOW, 0);
-      this.diceResults.put(InvestmentType.BLUE, 0);
-      this.diceResults.put(InvestmentType.GREEN, 0);
-      this.diceResults.put(InvestmentType.RED, 0);
+  private void initializeProfitsResults(){
+      this.profitsResults = ProfitsFactory.createAllProfits();
   }
 
-  public Map<InvestmentType, Integer> getDiceResults() {
-      return diceResults;
+  public Map<InvestmentType, Profits> getProfitsResults() {
+      return profitsResults;
   }
 
-    public void setDiceResult(InvestmentType type, Integer result){
-      this.diceResults.put(type, result);
-  }
 
   public void setRound(Round round) {
     this.round = round;
@@ -124,7 +119,7 @@ public class AgentBoard extends OurAgent {
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
-    this.initializeDiceResults();
+    this.initializeProfitsResults();
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -235,8 +230,15 @@ public class AgentBoard extends OurAgent {
       msg.addReceiver(investor);
     }
     if(state.equals(State.ROUND_END)){
+        Map<InvestmentType, Integer> results = new HashMap<>();
+        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsResults().entrySet()) {
+          Profits profits = entry.getValue();
+          InvestmentType type = entry.getKey();
+          results.put(type, profits.getActualProfit());
+        }
         try {
-            msg.setContentObject((Serializable) this.diceResults);
+
+            msg.setContentObject((Serializable) results);
         } catch (IOException e) {
             e.printStackTrace();
         }

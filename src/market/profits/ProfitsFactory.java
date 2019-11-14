@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ProfitsFactory {
 
-    public Profits createProfits(InvestmentType type)
+    public static Profits createProfits(InvestmentType type)
     {
         Profits ret;
         switch (type) {
@@ -39,7 +39,7 @@ public class ProfitsFactory {
         return ret;
     }
 
-    public Map<InvestmentType, Profits> createAllProfits(){
+    public static Map<InvestmentType, Profits> createAllProfits(){
 
         Map<InvestmentType,Profits> allProfits = new HashMap<InvestmentType,Profits>();
 
