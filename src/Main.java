@@ -43,7 +43,6 @@ public class Main {
       }
       agentsBuilder.deleteCharAt(agentsBuilder.length() - 1);
       String agentsArgs = agentsBuilder.toString();
-      System.err.println(agentsArgs);
 
       AgentController sniff = mainController.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer",
           new Object[]{agentsArgs});
@@ -61,9 +60,8 @@ public class Main {
 
       board.start();
 
-      Logger.setup("main");
       Logger.print("main", "This is a test");
-      Logger.print("main", "Huge Success");
+      Logger.print("main", "Huge SuccessA");
 
     } catch (StaleProxyException | UnknownHostException e) {
       e.printStackTrace();

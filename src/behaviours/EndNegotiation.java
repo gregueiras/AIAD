@@ -1,6 +1,7 @@
 package behaviours;
 
 import agents.AgentBoard;
+import helper.Logger;
 import helper.State;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -30,14 +31,12 @@ public class EndNegotiation extends SimpleBehaviour {
     @Override
     public boolean done() {
         int maxNrResponses = this.agent.getManagers().size();
-        if(this.nrResponses >= maxNrResponses ) {
-            return true;
-        } else return false;
+        return this.nrResponses >= maxNrResponses;
     }
 
     public int onEnd() {
         this.nrResponses = 0;
-        System.err.println("CURRENT ROUND: " + this.agent.getCurrentRound());
+        Logger.print(this.agent.getLocalName(), "CURRENT ROUND: " + this.agent.getCurrentRound());
         if(!this.agent.isEndRound()) { // is not end round, so it should update the current shift to the next in the round
             this.agent.incCurrentShift();
             return 0;

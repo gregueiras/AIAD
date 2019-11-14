@@ -1,6 +1,7 @@
 package behaviours;
 
 
+import helper.Logger;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class Print extends OneShotBehaviour {
@@ -22,6 +23,7 @@ public class Print extends OneShotBehaviour {
   @Override
   public void action() {
     System.out.println(this.msg);
+    Logger.print(this.getAgent().getLocalName(), this.msg);
   }
 
   @Override

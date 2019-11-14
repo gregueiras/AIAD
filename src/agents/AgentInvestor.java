@@ -3,8 +3,7 @@ package agents;
 import behaviours.Print;
 import behaviours.StateMachine;
 import behaviours.WaitForMessages;
-import personalities.Normal;
-import personalities.Personality;
+import helper.Logger;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -14,12 +13,15 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-
-import java.util.*;
-
 import jade.lang.acl.UnreadableException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import market.Company;
 import market.InvestmentType;
+import personalities.Normal;
+import personalities.Personality;
 
 public class AgentInvestor extends OurAgent {
 
@@ -61,7 +63,7 @@ public class AgentInvestor extends OurAgent {
     // Put agent initializations here
   protected void setup() {
     // Printout a welcome message
-    System.out.println("Hallo! Buyer-agent " + getAID().getName() + " is ready.");
+    Logger.print(this.getLocalName(), "Hallo! Buyer-agent " + getAID().getName() + " is ready.");
     this.currentCapital = INITIAL_CAPITAL;
     person = new Normal();
     this.initializeWallet();
@@ -95,12 +97,12 @@ public class AgentInvestor extends OurAgent {
   // Put agent clean-up operations here
   protected void takeDown() {
     // Printout a dismissal message
-    System.out.println("Buyer-agent " + getAID().getName() + " terminating.");
+    Logger.print(this.getLocalName(), "Buyer-agent " + getAID().getName() + " terminating.");
   }
 
   @Override
   public int handleMessage(ACLMessage msg){
-      System.out.println(this.getName() + ": " + msg.getContent());
+    Logger.print(this.getLocalName(), this.getName() + ": " + msg.getContent());
     if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
        return handleNegotiateMsg(msg);
     if(msg.getConversationId().equals(State.GAME_END.toString()))
@@ -112,10 +114,10 @@ public class AgentInvestor extends OurAgent {
   }
 
   private int handleNegotiateMsg(ACLMessage msg) {
-    //System.out.println("i am receiving: " + msg.getContent());
+    //Logger.print(this.getLocalName(), "i am receiving: " + msg.getContent());
     try {
       HashMap<InvestmentType, List<Company>> offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
-      System.out.println("offer:" + offer);
+      Logger.print(this.getLocalName(), "offer:" + offer);
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
@@ -138,7 +140,8 @@ public class AgentInvestor extends OurAgent {
           int nrCompanies = this.wallet.get(type).size();
           this.incCurrentCapital(nrCompanies*result);
         }
-        System.out.println(getAID().getName() + " current capital:  " + this.currentCapital);
+        Logger.print(this.getLocalName(),
+            getAID().getName() + " current capital:  " + this.currentCapital);
 
       } catch (UnreadableException e) {
         e.printStackTrace();
@@ -158,11 +161,11 @@ public class AgentInvestor extends OurAgent {
           this.board = agents[0];
         }
         catch(Exception e){
-          System.err.println(e);
+          Logger.print(this.getLocalName(), e.toString());
         }
         break;
       default:
-        System.err.println("Invalid agent type");
+        Logger.print(this.getLocalName(), "Invalid agent type");
         break;
     }
   }
