@@ -66,4 +66,13 @@ public class Company implements Serializable {
   public void setType(InvestmentType type) {
     this.type = type;
   }
+
+  @Override
+  public String toString() {
+    return "Company{" +
+        "type=" + type +
+        ", name='" + name + '\'' +
+        ", price=" + price +
+        '}';
+  }
 }

@@ -19,7 +19,6 @@ public class Main {
       Runtime rt = Runtime.instance();
 
       Profile p1 = new ProfileImpl();
-      //p1.setParameter(Profile.GUI, "true");
 
       ContainerController mainController = rt.createAgentContainer(p1);
       AgentController ac1 = mainController
@@ -63,8 +62,10 @@ public class Main {
       Logger.print("main", "This is a test");
       Logger.print("main", "Huge SuccessA");
 
-    } catch (StaleProxyException | UnknownHostException e) {
+
+    } catch (UnknownHostException | StaleProxyException e) {
       e.printStackTrace();
     }
+
   }
 }
