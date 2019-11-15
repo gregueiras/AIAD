@@ -19,11 +19,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import market.Company;
@@ -62,12 +58,7 @@ public class AgentBoard extends OurAgent {
   }
 
   public List<AID> getListInvestors(){
-    List<AID> listInvestors = new LinkedList<>();
-    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
-      AID investor= entry.getKey();
-      listInvestors.add(investor);
-    }
-    return listInvestors;
+    return new ArrayList<>(this.investors.keySet());
   }
 
   public Map<AID, Integer> getManagers() {
@@ -75,12 +66,7 @@ public class AgentBoard extends OurAgent {
   }
 
   public List<AID> getListManagers(){
-    List<AID> listManagers = new LinkedList<>();
-    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
-      AID manager = entry.getKey();
-      listManagers.add(manager);
-    }
-    return listManagers;
+    return new ArrayList<>(this.managers.keySet());
   }
 
   public Round getRound() {
