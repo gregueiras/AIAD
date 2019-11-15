@@ -17,7 +17,9 @@ public class Normal extends Personality {
   private double tit4tatRatio = 1.2; // the ratio the agent lowers/raises the price of negotiation in a counter offer
 
   public boolean acceptBuyOffer(Company c) {
-    return c.getPrice() < (maxPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0));
+    if (c.getPrice() < (maxPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0)))
+      return true;
+    return false;
   }
 
     public Company counterBuyOffer(Company c) {
@@ -42,7 +44,23 @@ public class Normal extends Personality {
     return null;
   }
 
-    public Company randomOffer(Company c, double floor){
+  @Override
+  double getTypeRatio(Company c) {
+    switch (c.getType()) {
+      case RED:
+        return redRatio;
+      case BLUE:
+        return 1.0;
+      case YELLOW:
+        return yellowRatio;
+      case GREEN:
+        return greenRatio;
+      default:
+        return -1;
+    }
+  }
+
+  public Company randomOffer(Company c, double floor){
     double rand =  Math.random() + floor;
     int newValue = (int) (rand * c.getPrice());
     Company offer = new Company(c);

@@ -133,8 +133,8 @@ public class AgentManager extends OurAgent {
 
               for (int i = 0; i < beforeList.size(); i++)
               {
-                  if(beforeList.get(i).getCurrentOwner() != afterList.get(i).getCurrentOwner())
-                    ret += beforeList.get(i).toString() + "\n";
+                  if(beforeList.get(i).getCurrentOwner().compareTo(afterList.get(i).getCurrentOwner()) != 0)
+                    ret += afterList.get(i).toString() + "\n";
               }
 
           }
