@@ -9,11 +9,7 @@ import behaviours.OfferCompanies;
 import behaviours.Print;
 import behaviours.SendMessage;
 import behaviours.StateMachine;
-import helper.Logger;
-import helper.Round;
-import helper.Shift;
-import helper.State;
-import helper.Transition;
+import helper.*;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
@@ -21,17 +17,11 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import jade.lang.acl.UnreadableException;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
@@ -68,12 +58,7 @@ public class AgentBoard extends OurAgent {
   }
 
   public List<AID> getListInvestors(){
-    List<AID> listInvestors = new LinkedList<>();
-    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
-      AID investor= entry.getKey();
-      listInvestors.add(investor);
-    }
-    return listInvestors;
+    return new ArrayList<>(this.investors.keySet());
   }
 
   public Map<AID, Integer> getManagers() {
@@ -81,12 +66,7 @@ public class AgentBoard extends OurAgent {
   }
 
   public List<AID> getListManagers(){
-    List<AID> listManagers = new LinkedList<>();
-    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
-      AID manager = entry.getKey();
-      listManagers.add(manager);
-    }
-    return listManagers;
+    return new ArrayList<>(this.managers.keySet());
   }
 
   public Round getRound() {
@@ -184,9 +164,9 @@ public class AgentBoard extends OurAgent {
     Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
     Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
-    Transition t6_1 = new Transition(sendShiftEnd, offerCompanies);
-    Transition t6_11 = new Transition(offerCompanies, assignInvestors);
-    Transition t6_2 = new Transition(sendRoundEnd, createRound);
+    Transition t6_1 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t6_11 = new Transition(sendRoundEnd, offerCompanies);
+    Transition t6_2 = new Transition(offerCompanies, createRound);
     Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
     StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1,
@@ -280,25 +260,53 @@ public class AgentBoard extends OurAgent {
     }
 
     if(state.equals(State.ROUND_END)){
-        this.rollDices();
-        Map<InvestmentType, Integer> results = new HashMap<>();
-        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsBoard().entrySet()) {
-          Profits profits = entry.getValue();
-          InvestmentType type = entry.getKey();
-          results.put(type, profits.getActualProfit());
-        }
-        try {
-
-            msg.setContentObject((Serializable) results);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+      this.rollDices();
+      createRoundEndMsg(msg);
     } else
+      if(state.equals(State.GAME_END)){
+        this.rollDices();
+        createGameEndMsg(msg);
+      } else
          msg.setContent(state.toString());
+
     msg.setConversationId(state.toString());
     send(msg);
     Logger.print(this.getLocalName(),
         "send message: " + state.toString() + " -> " + msg.getContent());
+  }
+
+  private Map<InvestmentType, Integer> getInvestmentResults() {
+    Map<InvestmentType, Integer> results = new HashMap<>();
+    for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsBoard().entrySet()) {
+      Profits profits = entry.getValue();
+      InvestmentType type = entry.getKey();
+      results.put(type, profits.getActualProfit());
+    }
+    return results;
+  }
+
+  private void createRoundEndMsg(ACLMessage msg) {
+    Map<InvestmentType, Integer> results = getInvestmentResults();
+    StateEndMsg stateEndMsg = new StateEndMsg(results,this.investors, this.managers);
+    try {
+        msg.setContentObject(stateEndMsg);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+  }
+
+  private void createGameEndMsg(ACLMessage msg) {
+    Map<InvestmentType, Integer> results = getInvestmentResults();
+    Map<AID, Integer> winnerManagers = this.findWinnerManagers();
+    Map<AID, Integer> winnerInvestors = this.findWinnerInvestors();
+    StateEndMsg content = new StateEndMsg(results, this.investors, this.managers);
+    content.setWinnerInvestors(winnerInvestors);
+    content.setWinnerManagers(winnerManagers);
+    try {
+      msg.setContentObject(content);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public Map<InvestmentType, List<Company>> getCatalogue() {
@@ -335,10 +343,6 @@ public class AgentBoard extends OurAgent {
     return catalogue;
   }
 
-  /*
-  *   private ConcurrentMap<AID, Integer> investors;
-  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;*/
-
   private void rollDices(){
     for (Map.Entry<InvestmentType, Profits> entry : this.profitsBoard.entrySet()) {
       InvestmentType type = entry.getKey();
@@ -366,10 +370,13 @@ public class AgentBoard extends OurAgent {
         for(Company company: companies){
           Integer price = company.getPrice();
           AID owner = company.getCurrentOwner();
+          Boolean isDouble = company.isDoubleValue();
           if(owner.compareTo(manager) != 0) {
             Integer investorCapital = this.investors.get(owner) - price;
             this.investors.put(owner, investorCapital);
-            this.incInvestment(owner,type);
+            this.incInvestment(owner,type, isDouble);
+            if(isDouble)
+              managerCapital+=price;
             managerCapital += price;
           }
         }
@@ -378,14 +385,39 @@ public class AgentBoard extends OurAgent {
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
-
   }
 
-  private void incInvestment(AID agent, InvestmentType type) {
+  private void incInvestment(AID agent, InvestmentType type, Boolean isDouble) {
     Map<InvestmentType, Integer>  inv = this.investments.get(agent);
     Integer nr = inv.get(type);
+    if(isDouble)
+      nr+=1;
     inv.put(type, nr + 1);
     this.investments.put(agent, inv);
+  }
+
+  private  Map<AID,Integer> findWinnerAgents(Map<AID, Integer> agents){
+    Map<AID,Integer> result = new HashMap<>();
+    Map.Entry<AID, Integer> maxEntry = null;
+    for (Map.Entry<AID, Integer> entry : agents.entrySet())
+    {
+      if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+        maxEntry = entry;
+    }
+    for (Map.Entry<AID, Integer> entry : agents.entrySet())
+    {
+      if (entry.getValue().compareTo(maxEntry.getValue()) == 0)
+        result.put(entry.getKey(), entry.getValue());
+    }
+    return result;
+  }
+
+  private  Map<AID,Integer> findWinnerInvestors(){
+    return this.findWinnerAgents(this.investors);
+  }
+
+  private  Map<AID,Integer> findWinnerManagers(){
+    return this.findWinnerAgents(this.managers);
   }
 
   @Override

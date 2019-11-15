@@ -51,8 +51,8 @@ public class Main {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      ac1.start();
 
+      ac1.start();
       ac2.start();
       ac3.start();
       ac4.start();
