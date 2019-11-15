@@ -381,7 +381,6 @@ public class AgentBoard extends OurAgent {
             /*if(isDouble)
               managerCapital+=price;*/
             managerCapital += price;
-            System.out.println(currentRound + " " + manager.getName() + " " + managerCapital + " " + company.toString());
           }
         }
       }
