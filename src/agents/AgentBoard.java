@@ -45,6 +45,8 @@ public class AgentBoard extends OurAgent {
 
   private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;
 
+  private ConcurrentHashMap<AID, List<Company>> investmentsOwners;
+
   private Round round;
 
   private Integer currentShift;
@@ -130,6 +132,7 @@ public class AgentBoard extends OurAgent {
     investors = new ConcurrentHashMap<>();
     managers = new ConcurrentHashMap<>();
     this.investments = new ConcurrentHashMap<>();
+    this.investmentsOwners = new ConcurrentHashMap<>();
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
@@ -359,6 +362,14 @@ public class AgentBoard extends OurAgent {
     Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsBoard);
   }
 
+  private boolean alreadySold(AID owner, Company c)
+  {
+    if(this.investmentsOwners.get(owner) != null )
+      for(Company comp : this.investmentsOwners.get(owner))
+        if(comp.getName().compareTo(c.getName()) == 0)
+          return true;
+    return false;
+  }
   public void handleEndNegotiationMsg(ACLMessage msg) {
     AID manager = msg.getSender();
     Integer managerCapital = this.managers.get(manager);
@@ -371,8 +382,16 @@ public class AgentBoard extends OurAgent {
           Integer price = company.getPrice();
           AID owner = company.getCurrentOwner();
           Boolean isDouble = company.isDoubleValue();
-          if(owner.compareTo(manager) != 0) {
+          if(owner.compareTo(manager) != 0 && !alreadySold(owner, company)) {
             Integer investorCapital = this.investors.get(owner) - price;
+            if(this.investmentsOwners.get(owner) == null) {
+              List<Company> newC = new LinkedList<>();
+              newC.add(company);
+              this.investmentsOwners.put(owner, newC);
+            }
+            else{
+              this.investmentsOwners.get(owner).add(company);
+            }
             this.investors.put(owner, investorCapital);
             this.incInvestment(owner,type, isDouble);
             if(isDouble)

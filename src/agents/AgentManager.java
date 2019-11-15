@@ -133,13 +133,15 @@ public class AgentManager extends OurAgent {
 
               for (int i = 0; i < beforeList.size(); i++)
               {
-                  if(beforeList.get(i).getCurrentOwner().compareTo(afterList.get(i).getCurrentOwner()) != 0)
-                    ret += afterList.get(i).toString() + "\n";
+                  if(beforeList.get(i).getCurrentOwner().compareTo(afterList.get(i).getCurrentOwner()) != 0) {
+                      this.currentCapital += afterList.get(i).getPrice() * (afterList.get(i).isDoubleValue() ? 2.0 : 1.0);
+                      ret += afterList.get(i).toString() + "\n";
+                  }
               }
 
           }
       }
-      ret += "---END_OF_SOLD_COMPANIES_REPORT---\n";
+      ret += "---END_OF_SOLD_COMPANIES_REPORT---\n ->New balance: " + this.currentCapital +"\n";
       return ret;
 
   }
