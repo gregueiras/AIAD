@@ -28,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import jade.lang.acl.UnreadableException;
 import market.Company;
@@ -45,13 +47,13 @@ public class AgentBoard extends OurAgent {
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
 
-  private Map<InvestmentType, Profits> profitsResults;
+  private Map<InvestmentType, Profits> profitsBoard;
 
-  private Map<AID, Integer> investors;
+  private ConcurrentMap<AID, Integer> investors;
 
-  private Map<AID, Integer> managers;
+  private ConcurrentMap<AID, Integer> managers;
 
-  private Map<AID, Map<InvestmentType,Integer>> investments;
+  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;
 
   private Round round;
 
@@ -127,12 +129,12 @@ public class AgentBoard extends OurAgent {
     return this.currentRound >= (NR_ROUNDS - 1);
   }
 
-  private void initializeProfitsResults(){
-      this.profitsResults = ProfitsFactory.createAllProfits();
+  private void initializeProfitsBoard(){
+      this.profitsBoard = ProfitsFactory.createAllProfits();
   }
 
-  private Map<InvestmentType, Profits> getProfitsResults() {
-      return profitsResults;
+  private Map<InvestmentType, Profits> getProfitsBoard() {
+      return profitsBoard;
   }
 
 
@@ -145,13 +147,13 @@ public class AgentBoard extends OurAgent {
   protected void setup() {
     // Create the catalogue
     catalogue = generateCatalogue();
-    investors = new HashMap<>();
-    managers = new HashMap<>();
-    this.investments = new HashMap<>();
+    investors = new ConcurrentHashMap<>();
+    managers = new ConcurrentHashMap<>();
+    this.investments = new ConcurrentHashMap<>();
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
-    this.initializeProfitsResults();
+    this.initializeProfitsBoard();
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -280,7 +282,7 @@ public class AgentBoard extends OurAgent {
     if(state.equals(State.ROUND_END)){
         this.rollDices();
         Map<InvestmentType, Integer> results = new HashMap<>();
-        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsResults().entrySet()) {
+        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsBoard().entrySet()) {
           Profits profits = entry.getValue();
           InvestmentType type = entry.getKey();
           results.put(type, profits.getActualProfit());
@@ -333,12 +335,24 @@ public class AgentBoard extends OurAgent {
     return catalogue;
   }
 
+  /*
+  *   private ConcurrentMap<AID, Integer> investors;
+  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;*/
+
   private void rollDices(){
-    for (Map.Entry<InvestmentType, Profits> entry : this.profitsResults.entrySet()) {
+    for (Map.Entry<InvestmentType, Profits> entry : this.profitsBoard.entrySet()) {
+      InvestmentType type = entry.getKey();
       Profits profits = entry.getValue();
       profits.roll_dice();
+      for(Map.Entry<AID, Map<InvestmentType, Integer>> e : this.investments.entrySet()){
+        AID agent = e.getKey();
+        Map<InvestmentType, Integer> value = e.getValue();
+        int nrCompanies = value.get(type);
+        Integer investorCapital = this.investors.get(agent) + profits.getActualProfit()*nrCompanies;
+        this.investors.put(agent, investorCapital);
+      }
     }
-    Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsResults);
+    Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsBoard);
   }
 
   public void handleEndNegotiationMsg(ACLMessage msg) {

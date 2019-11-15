@@ -148,9 +148,7 @@ public class AgentManager extends OurAgent {
           c.setCurrentOwner(this.getAID());
         }
       }
-      System.out.println(getAID().getName() + " assign companies:  " + this.wallet);
-      Logger.print(this.getLocalName(), getAID().getName() + " assign companies:  " + this.wallet);
-
+      Logger.print(this.getLocalName(),getAID().getName() + " assign companies:  " + this.wallet);
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
