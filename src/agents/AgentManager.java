@@ -21,9 +21,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import market.Company;
 import market.InvestmentType;
 import personalities.Normal;
@@ -100,6 +99,9 @@ public class AgentManager extends OurAgent {
 
   @Override
   public int handleMessage(ACLMessage msg) {
+      if(msg.getConversationId().equals(State.NEGOTIATE.toString())){
+          return handleNegotiationMsg(msg);
+      }
     if (msg.getConversationId().equals(State.ASSIGN_INVESTOR.toString())) {
       return handleAssignInvestorMsg(msg);
     }
@@ -115,6 +117,44 @@ public class AgentManager extends OurAgent {
 
     Logger.print(this.getLocalName(), msg.getPerformative() + ": " + msg.getContent());
     return -1;
+  }
+
+  private String printSoldCompanies(HashMap<InvestmentType, List<Company>> before, HashMap<InvestmentType, List<Company>> after){
+      String ret = "";
+      for(InvestmentType key : before.keySet())
+      {
+          List<Company> beforeList  = before.get(key);
+          List<Company> afterList  = after.get(key);
+
+          if(beforeList != null || afterList != null || beforeList.size() != afterList.size())
+              ret += "Inconsistency Detected: Companies have disappeared from the wallet or there are no Companies.\n";
+          else {
+              ret += "Companies Sold this round:\n";
+              for (int i = 0; i < beforeList.size(); i++)
+              {
+                  if(beforeList.get(i).getCurrentOwner() != afterList.get(i).getCurrentOwner())
+                    ret += beforeList.get(i).toString() + "\n";
+              }
+              ret += "---END_OF_SOLD_COMPANIES_REPORT---\n";
+          }
+      }
+      return ret;
+
+  }
+
+  private int handleNegotiationMsg(ACLMessage msg){
+      int ret = -1;
+      try{
+          if(msg.getContentObject() != null){
+              HashMap<InvestmentType,List<Company>> tempWallet = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+              Logger.print(this.getLocalName(), printSoldCompanies((HashMap<InvestmentType, List<Company>>) this.wallet, tempWallet));
+              this.wallet = tempWallet;
+              ret = 0;
+          }
+      }catch(UnreadableException e){
+          e.printStackTrace();
+      }
+      return ret;
   }
 
   private int handleAssignInvestorMsg(ACLMessage msg) {

@@ -16,11 +16,11 @@ public class Normal extends Personality {
   private int minPriceSell = 90; // the min price an agent can accept to sell
   private double tit4tatRatio = 1.2; // the ratio the agent lowers/raises the price of negotiation in a counter offer
 
-  boolean acceptBuyOffer(Company c) {
+  public boolean acceptBuyOffer(Company c) {
     return c.getPrice() < (maxPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0));
   }
 
-  Company counterBuyOffer(Company c) {
+    public Company counterBuyOffer(Company c) {
     if (c.getPrice() < (maxCounterPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0))) {
       Company counter = new Company(c);
       counter.setPrice((int)(c.getPrice() * (2 - tit4tatRatio)));
@@ -29,11 +29,11 @@ public class Normal extends Personality {
     return null;
   }
 
-  boolean acceptSellOffer(Company c) {
+    public boolean acceptSellOffer(Company c) {
     return c.getPrice() > (minPriceSell * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0));
   }
 
-  Company counterSellOffer(Company c) {
+    public Company counterSellOffer(Company c) {
     if (c.getPrice() > (minPriceSell * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0))) {
       Company counter = new Company(c);
       counter.setPrice((int) (c.getPrice() * (tit4tatRatio)));
@@ -42,7 +42,7 @@ public class Normal extends Personality {
     return null;
   }
 
-  Company randomOffer(Company c, double floor){
+    public Company randomOffer(Company c, double floor){
     double rand =  Math.random() + floor;
     int newValue = (int) (rand * c.getPrice());
     Company offer = new Company(c);

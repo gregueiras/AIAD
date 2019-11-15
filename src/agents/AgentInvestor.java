@@ -14,6 +14,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class AgentInvestor extends OurAgent {
 
   private Map<InvestmentType, List<Company>> wallet;
 
-  private Personality person;
+  private Normal person;
 
   private String companyToBuy;
 
@@ -115,9 +117,22 @@ public class AgentInvestor extends OurAgent {
 
   private int handleNegotiateMsg(ACLMessage msg) {
     //Logger.print(this.getLocalName(), "i am receiving: " + msg.getContent());
+    HashMap<InvestmentType,List<Company>> acceptedOffers = new HashMap<>();
+    AID sellerID = msg.getSender();
     try {
       HashMap<InvestmentType, List<Company>> offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
       Logger.print(this.getLocalName(), "offer:" + offer);
+        for(InvestmentType type: offer.keySet()) {
+            List<Company> acceptedType = new LinkedList<>();
+            for (Company c : offer.get(type)) {
+                if (person.acceptBuyOffer(c) && c.getCurrentOwner() == sellerID) {
+                    c.setCurrentOwner(getAID());
+                    Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
+                }
+                acceptedType.add(c);
+            }
+            offer.put(type, acceptedType);
+        }
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
@@ -125,8 +140,12 @@ public class AgentInvestor extends OurAgent {
     ACLMessage reply = msg.createReply();
     reply.setInReplyTo(State.NEGOTIATE.toString());
     reply.setPerformative( ACLMessage.INFORM );
-    reply.setContent("oi oi");
-    send(reply);
+      try {
+          reply.setContentObject(acceptedOffers);
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+      send(reply);
     return -1;
   }
 
