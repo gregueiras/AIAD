@@ -8,8 +8,8 @@ import behaviours.StateMachine;
 import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
 import helper.Logger;
-import helper.StateEndMsg;
 import helper.State;
+import helper.StateEndMsg;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -112,9 +112,6 @@ public class AgentManager extends OurAgent {
     }
     if (msg.getConversationId().equals(State.ROUND_END.toString())) {
       return handleRoundEndMsg(msg);
-    }
-    if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
-      return State.SHIFT_END.ordinal();
     }
 
     Logger.print(this.getLocalName(), msg.getPerformative() + ": " + msg.getContent());
