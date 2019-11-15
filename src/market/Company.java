@@ -16,6 +16,7 @@ public class Company implements Serializable {
   private boolean doubleValue;
   private int actualBid; //Might not be needed, its here just in case
 
+
   public Company(String name, Integer price, InvestmentType type, boolean doubleValue) {
     this.type = type;
     this.name = name;
@@ -74,7 +75,7 @@ public class Company implements Serializable {
     return "Company{" +
         "type=" + type +
         ", name='" + name + '\'' +
-        ", price=" + price +
+        ", price=" + price + ", owner=" + currentOwner +
         '}';
   }
 

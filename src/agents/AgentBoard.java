@@ -273,6 +273,7 @@ public class AgentBoard extends OurAgent {
     send(msg);
     Logger.print(this.getLocalName(),
         "send message: " + state.toString() + " -> " + msg.getContent());
+    this.resetManagersCapital();
   }
 
   private Map<InvestmentType, Integer> getInvestmentResults() {
@@ -373,11 +374,14 @@ public class AgentBoard extends OurAgent {
           Boolean isDouble = company.isDoubleValue();
           if(owner.compareTo(manager) != 0) {
             Integer investorCapital = this.investors.get(owner) - price;
+           /* if(isDouble)
+              investorCapital -= price;*/
             this.investors.put(owner, investorCapital);
             this.incInvestment(owner,type, isDouble);
-            if(isDouble)
-              managerCapital+=price;
+            /*if(isDouble)
+              managerCapital+=price;*/
             managerCapital += price;
+            System.out.println(currentRound + " " + manager.getName() + " " + managerCapital + " " + company.toString());
           }
         }
       }
@@ -418,6 +422,13 @@ public class AgentBoard extends OurAgent {
 
   private  Map<AID,Integer> findWinnerManagers(){
     return this.findWinnerAgents(this.managers);
+  }
+
+  private void resetManagersCapital(){
+    for (Map.Entry<AID, Integer> entry : this.managers.entrySet())
+    {
+      this.managers.put(entry.getKey(), 0);
+    }
   }
 
   @Override
