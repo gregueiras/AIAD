@@ -8,6 +8,7 @@ import behaviours.StateMachine;
 import behaviours.WaitForMessage;
 import behaviours.WaitForMessages;
 import helper.Logger;
+import helper.StateEndMsg;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -109,11 +110,29 @@ public class AgentManager extends OurAgent {
     if (msg.getConversationId().equals(State.GAME_END.toString())) {
       return 2;
     }
+    if (msg.getConversationId().equals(State.ROUND_END.toString())) {
+      return handleRoundEndMsg(msg);
+    }
     if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
       return State.SHIFT_END.ordinal();
     }
 
     Logger.print(this.getLocalName(), msg.getPerformative() + ": " + msg.getContent());
+    return -1;
+  }
+
+
+  private int handleRoundEndMsg(ACLMessage msg){
+    try {
+      StateEndMsg stateEndMsg = (StateEndMsg) msg
+              .getContentObject();
+      this.currentCapital = stateEndMsg.getManagerCapital(this.getAID());
+      Logger.print(this.getLocalName(),
+              getAID().getName() + " current capital:  " + this.currentCapital);
+
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
     return -1;
   }
 
