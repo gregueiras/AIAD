@@ -4,6 +4,7 @@ import behaviours.Print;
 import behaviours.StateMachine;
 import behaviours.WaitForMessages;
 import helper.Logger;
+import helper.StateEndMsg;
 import helper.State;
 import helper.Transition;
 import jade.core.AID;
@@ -40,9 +41,6 @@ public class AgentInvestor extends OurAgent {
 
   private final static int INITIAL_CAPITAL = 120; //mil
 
-  private void incCurrentCapital(int inc){
-    this.currentCapital += inc;
-  }
 
   public void addCompany(Company c) {
     InvestmentType type = c.getType();
@@ -132,14 +130,9 @@ public class AgentInvestor extends OurAgent {
 
     private int handleRoundEndMsg(ACLMessage msg) {
       try {
-        Map<InvestmentType, Integer> dicesResult = (HashMap<InvestmentType, Integer>) msg
+        StateEndMsg stateEndMsg = (StateEndMsg) msg
                 .getContentObject();
-        for (Map.Entry<InvestmentType, Integer> entry : dicesResult.entrySet()) {
-          Integer result = entry.getValue();
-          InvestmentType type = entry.getKey();
-          int nrCompanies = this.wallet.get(type).size();
-          this.incCurrentCapital(nrCompanies*result);
-        }
+        this.currentCapital = stateEndMsg.getInvestorCapital(this.getAID());
         Logger.print(this.getLocalName(),
             getAID().getName() + " current capital:  " + this.currentCapital);
 
