@@ -87,7 +87,7 @@ public class AgentManager extends OurAgent {
     Transition t3_1 = new Transition(wms, proposeInitiator, 0);
     Transition t3_2 = new Transition(wms, informBoard, 1);
     Transition t8 = new Transition(wms, printEnd, 2);
-    Transition t9 = new Transition(wms, negotiate, State.SHIFT_END.ordinal());
+    Transition t9 = new Transition(wms, negotiate, State.ROUND_END.ordinal());
     Transition t10 = new Transition(negotiate, wms);
     Transition t5 = new Transition(proposeInitiator, proposeReply);
     Transition t6 = new Transition(proposeReply, informBoard);
@@ -109,8 +109,8 @@ public class AgentManager extends OurAgent {
     if (msg.getConversationId().equals(State.GAME_END.toString())) {
       return 2;
     }
-    if (msg.getConversationId().equals(State.SHIFT_END.toString())) {
-      return State.SHIFT_END.ordinal();
+    if (msg.getConversationId().equals(State.ROUND_END.toString())) {
+      return State.ROUND_END.ordinal();
     }
 
     Logger.print(this.getLocalName(), msg.getPerformative() + ": " + msg.getContent());

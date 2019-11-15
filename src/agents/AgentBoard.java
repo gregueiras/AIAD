@@ -21,6 +21,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -30,8 +31,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import jade.lang.acl.UnreadableException;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
@@ -184,9 +183,9 @@ public class AgentBoard extends OurAgent {
     Transition t5_2 = new Transition(endNegotiation, sendRoundEnd, 1);
     Transition t5_3 = new Transition(endNegotiation, sendGameEnd, 2);
 
-    Transition t6_1 = new Transition(sendShiftEnd, offerCompanies);
-    Transition t6_11 = new Transition(offerCompanies, assignInvestors);
-    Transition t6_2 = new Transition(sendRoundEnd, createRound);
+    Transition t6_1 = new Transition(sendShiftEnd, assignInvestors);
+    Transition t6_11 = new Transition(sendRoundEnd, offerCompanies);
+    Transition t6_2 = new Transition(offerCompanies, createRound);
     Transition t6_3 = new Transition(sendGameEnd, printEnd);
 
     StateMachine sm = new StateMachine(this, findManagers, printEnd, t1, t2, t3_1, t3_2, t4, t5_1,
