@@ -51,6 +51,8 @@ public class AgentBoard extends OurAgent {
 
   private Map<AID, Integer> managers;
 
+  private Map<AID, Map<InvestmentType,Integer>> investments;
+
   private Round round;
 
   private Integer currentShift;
@@ -145,6 +147,7 @@ public class AgentBoard extends OurAgent {
     catalogue = generateCatalogue();
     investors = new HashMap<>();
     managers = new HashMap<>();
+    this.investments = new HashMap<>();
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
@@ -167,7 +170,6 @@ public class AgentBoard extends OurAgent {
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
-   // Behaviour rollDices = new RollDices(this);
     Behaviour offerCompanies = new OfferCompanies(this);
 
     Transition t1 = new Transition(findManagers, findInvestors);
@@ -225,6 +227,7 @@ public class AgentBoard extends OurAgent {
       case INVESTOR:
         for(AID agent: agents){
           this.investors.put(agent, 120);
+          initializeInvestment(agent);
         }
         break;
       case MANAGER:
@@ -236,6 +239,15 @@ public class AgentBoard extends OurAgent {
         Logger.print(this.getLocalName(), "Invalid agent type");
         break;
     }
+  }
+
+  private void initializeInvestment(AID agent) {
+    Map<InvestmentType,Integer> initialMap = new HashMap<>();
+    initialMap.put(InvestmentType.YELLOW, 0);
+    initialMap.put(InvestmentType.RED, 0);
+    initialMap.put(InvestmentType.BLUE, 0);
+    initialMap.put(InvestmentType.GREEN, 0);
+    this.investments.put(agent, initialMap);
   }
 
   @Override
@@ -333,15 +345,17 @@ public class AgentBoard extends OurAgent {
     AID manager = msg.getSender();
     Integer managerCapital = this.managers.get(manager);
     try {
-      Map<InvestmentType, List<Company>> msgCompanies = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
-      for (Map.Entry<InvestmentType, List<Company>> entry : msgCompanies.entrySet()) {
+      Map<InvestmentType, List<Company>> wallet = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      for (Map.Entry<InvestmentType, List<Company>> entry : wallet.entrySet()) {
         List<Company>  companies = entry.getValue();
+        InvestmentType type = entry.getKey();
         for(Company company: companies){
           Integer price = company.getPrice();
           AID owner = company.getCurrentOwner();
           if(owner.compareTo(manager) != 0) {
             Integer investorCapital = this.investors.get(owner) - price;
             this.investors.put(owner, investorCapital);
+            this.incInvestment(owner,type);
             managerCapital += price;
           }
         }
@@ -351,6 +365,13 @@ public class AgentBoard extends OurAgent {
       e.printStackTrace();
     }
 
+  }
+
+  private void incInvestment(AID agent, InvestmentType type) {
+    Map<InvestmentType, Integer>  inv = this.investments.get(agent);
+    Integer nr = inv.get(type);
+    inv.put(type, nr + 1);
+    this.investments.put(agent, inv);
   }
 
   @Override
