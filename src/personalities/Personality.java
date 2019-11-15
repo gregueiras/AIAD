@@ -18,20 +18,9 @@ public abstract class Personality {
     abstract boolean acceptSellOffer(Company c);
     abstract Company counterSellOffer(Company c);
 
-  double getTypeRatio(Company c) {
-    switch (c.getType()) {
-      case RED:
-        return redRatio;
-      case BLUE:
-        return 1.0;
-      case YELLOW:
-        return yellowRatio;
-      case GREEN:
-        return greenRatio;
-      default:
-        return -1;
-    }
-  }
+  abstract double getTypeRatio(Company c);
+
+
 
   public int getPriceBuy(Company c) {
     return (int) Math.round(getTypeRatio(c) * maxPriceBuy);

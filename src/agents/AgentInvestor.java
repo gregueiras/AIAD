@@ -121,9 +121,8 @@ public class AgentInvestor extends OurAgent {
       offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
       Logger.print(this.getLocalName(), "offer:" + offer);
         for(InvestmentType type: offer.keySet()) {
-            List<Company> acceptedType = new LinkedList<>();
             for (Company c : offer.get(type)) {
-              if (person.acceptBuyOffer(c) && c.getCurrentOwner() == sellerID) { //TODO:check balance for buy
+              if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0)) { //TODO:check balance for buy
                 c.setCurrentOwner(getAID());
                 Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
               }
