@@ -121,24 +121,25 @@ public class AgentManager extends OurAgent {
   }
 
   private String printSoldCompanies(HashMap<InvestmentType, List<Company>> before, HashMap<InvestmentType, List<Company>> after){
-      String ret = "";
+      String ret = "Companies Sold this round:\n";
       for(InvestmentType key : before.keySet())
       {
           List<Company> beforeList  = before.get(key);
           List<Company> afterList  = after.get(key);
 
-          if(beforeList != null || afterList != null || beforeList.size() != afterList.size())
+          if(beforeList == null || afterList == null || beforeList.size() != afterList.size())
               ret += "Inconsistency Detected: Companies have disappeared from the wallet or there are no Companies.\n";
           else {
-              ret += "Companies Sold this round:\n";
+
               for (int i = 0; i < beforeList.size(); i++)
               {
                   if(beforeList.get(i).getCurrentOwner() != afterList.get(i).getCurrentOwner())
                     ret += beforeList.get(i).toString() + "\n";
               }
-              ret += "---END_OF_SOLD_COMPANIES_REPORT---\n";
+
           }
       }
+      ret += "---END_OF_SOLD_COMPANIES_REPORT---\n";
       return ret;
 
   }
