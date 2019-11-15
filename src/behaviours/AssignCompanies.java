@@ -37,7 +37,7 @@ public class AssignCompanies extends OneShotBehaviour {
 
       Map<InvestmentType, List<Company>> catalogue = this.agent.getCatalogue();
 
-      for (AID aid : this.agent.getManagers()) {
+      for (AID aid : this.agent.getListManagers()) {
 
         Map<InvestmentType, List<Company>> companies = new HashMap<>();
 

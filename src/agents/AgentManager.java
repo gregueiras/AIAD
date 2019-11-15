@@ -42,6 +42,10 @@ public class AgentManager extends OurAgent {
 
   private boolean skipShift;
 
+  private int currentCapital;
+
+  private final static int INITIAL_CAPITAL = 0;
+
   // Put agent initializations here
   protected void setup() {
     // Create the catalogue
@@ -49,6 +53,7 @@ public class AgentManager extends OurAgent {
     wallet = new HashMap<>();
     skipShift = false;
     person = new Normal();
+    this.currentCapital = INITIAL_CAPITAL;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
@@ -137,8 +142,13 @@ public class AgentManager extends OurAgent {
       Map<InvestmentType, List<Company>> companies = (HashMap<InvestmentType, List<Company>>) msg
           .getContentObject();
       this.wallet = companies;
-      Logger.print(this.getLocalName(), getAID().getName() + " assign companies:  " + this.wallet);
-
+      for (Map.Entry<InvestmentType, List<Company>> entry : this.wallet.entrySet()) {
+        List<Company> cs = entry.getValue();
+        for(Company c : cs){
+          c.setCurrentOwner(this.getAID());
+        }
+      }
+      Logger.print(this.getLocalName(),getAID().getName() + " assign companies:  " + this.wallet);
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
@@ -231,9 +241,13 @@ public class AgentManager extends OurAgent {
 
   private void sendMsgInformBoard(ACLMessage msg) {
     msg.setSender(getAID());
-    msg.setContent("end of negotiation");
     msg.addReceiver(getBoard());
     msg.setConversationId(State.INFORM_BOARD.toString());
+    try {
+      msg.setContentObject((HashMap<InvestmentType, List<Company>>) this.wallet);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     send(msg);
     Logger.print(this.getLocalName(), "agent " + getName() + " Informing board");
     msg.reset();
@@ -245,7 +259,7 @@ public class AgentManager extends OurAgent {
 
   public void addCompany(Company c) {
     InvestmentType type = c.getType();
-
+    c.setCurrentOwner(this.getAID());
     List<Company> companies = this.wallet.get(type);
     companies.add(c);
 

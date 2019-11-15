@@ -77,8 +77,8 @@ public class CreateRound extends OneShotBehaviour {
         Logger.print(this.agent.getLocalName(), "CreateRound.action");
 
         Round r;
-        List<AID> managers = this.agent.getManagers();
-        List<AID> investors = this.agent.getInvestors();
+        List<AID> managers = this.agent.getListManagers();
+        List<AID> investors = this.agent.getListInvestors();
         Collections.shuffle(managers);
         Collections.shuffle(investors);
         if(this.agent.getManagers().size() >= this.agent.getInvestors().size())

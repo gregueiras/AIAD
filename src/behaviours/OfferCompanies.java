@@ -9,6 +9,7 @@ import jade.proto.ContractNetInitiator;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Vector;
 import market.Company;
 import market.InvestmentType;
@@ -46,7 +47,8 @@ public class OfferCompanies extends ContractNetInitiator {
       e.printStackTrace();
     }
 
-    for (AID manager : agent.getManagers()) {
+    for (Map.Entry<AID, Integer> entry : this.agent.getManagers().entrySet()) {
+      AID manager = entry.getKey();
       msg.addReceiver(manager);
     }
 

@@ -1,6 +1,9 @@
 package market;
 
+import agents.AgentInvestor;
 import agents.OurAgent;
+import jade.core.AID;
+
 import java.io.Serializable;
 
 public class Company implements Serializable {
@@ -8,8 +11,8 @@ public class Company implements Serializable {
   private InvestmentType type;
   private String name;
   private boolean closed;
-  private Integer price;
-  private OurAgent currentOwner;
+  private Integer price; //price for which it was sold
+  private AID currentOwner; // investor who bought it
   private boolean doubleValue;
   private int actualBid; //Might not be needed, its here just in case
 
@@ -27,9 +30,8 @@ public class Company implements Serializable {
     this.price = c.price;
     this.closed = c.closed;
     this.doubleValue = c.doubleValue;
+    this.currentOwner = c.getCurrentOwner();
   }
-
-
 
   public InvestmentType getType() {
     return type;
@@ -74,5 +76,13 @@ public class Company implements Serializable {
         ", name='" + name + '\'' +
         ", price=" + price +
         '}';
+  }
+
+  public AID getCurrentOwner() {
+    return currentOwner;
+  }
+
+  public void setCurrentOwner(AID currentOwner) {
+    this.currentOwner = currentOwner;
   }
 }

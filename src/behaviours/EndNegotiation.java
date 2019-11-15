@@ -23,6 +23,7 @@ public class EndNegotiation extends SimpleBehaviour {
         ACLMessage msg = this.agent.receive(mt);
         if(msg!=null){
             this.nrResponses++;
+            this.agent.handleEndNegotiationMsg(msg);
         } else {
             block();
         }

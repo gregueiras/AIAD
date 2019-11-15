@@ -23,12 +23,15 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import jade.lang.acl.UnreadableException;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
@@ -44,11 +47,13 @@ public class AgentBoard extends OurAgent {
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
 
-  private Map<InvestmentType, Profits> profitsResults;
+  private Map<InvestmentType, Profits> profitsBoard;
 
-  private List<AID> investors;
+  private ConcurrentMap<AID, Integer> investors;
 
-  private List<AID> managers;
+  private ConcurrentMap<AID, Integer> managers;
+
+  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;
 
   private Round round;
 
@@ -58,13 +63,30 @@ public class AgentBoard extends OurAgent {
 
   private Random rand;
 
-
-  public List<AID> getInvestors() {
+  public Map<AID, Integer> getInvestors() {
     return investors;
   }
 
-  public List<AID> getManagers() {
+  public List<AID> getListInvestors(){
+    List<AID> listInvestors = new LinkedList<>();
+    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
+      AID investor= entry.getKey();
+      listInvestors.add(investor);
+    }
+    return listInvestors;
+  }
+
+  public Map<AID, Integer> getManagers() {
     return managers;
+  }
+
+  public List<AID> getListManagers(){
+    List<AID> listManagers = new LinkedList<>();
+    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
+      AID manager = entry.getKey();
+      listManagers.add(manager);
+    }
+    return listManagers;
   }
 
   public Round getRound() {
@@ -107,12 +129,12 @@ public class AgentBoard extends OurAgent {
     return this.currentRound >= (NR_ROUNDS - 1);
   }
 
-  private void initializeProfitsResults(){
-      this.profitsResults = ProfitsFactory.createAllProfits();
+  private void initializeProfitsBoard(){
+      this.profitsBoard = ProfitsFactory.createAllProfits();
   }
 
-  private Map<InvestmentType, Profits> getProfitsResults() {
-      return profitsResults;
+  private Map<InvestmentType, Profits> getProfitsBoard() {
+      return profitsBoard;
   }
 
 
@@ -125,12 +147,13 @@ public class AgentBoard extends OurAgent {
   protected void setup() {
     // Create the catalogue
     catalogue = generateCatalogue();
-    investors = new LinkedList<>();
-    managers = new LinkedList<>();
+    investors = new ConcurrentHashMap<>();
+    managers = new ConcurrentHashMap<>();
+    this.investments = new ConcurrentHashMap<>();
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
-    this.initializeProfitsResults();
+    this.initializeProfitsBoard();
 
     // Register the book-selling service in the yellow pages
     registerDFS();
@@ -149,7 +172,6 @@ public class AgentBoard extends OurAgent {
     Behaviour sendRoundEnd = new SendMessage(this, State.ROUND_END);
     Behaviour sendShiftEnd = new SendMessage(this, State.SHIFT_END);
     Behaviour sendGameEnd = new SendMessage(this, State.GAME_END);
-   // Behaviour rollDices = new RollDices(this);
     Behaviour offerCompanies = new OfferCompanies(this);
 
     Transition t1 = new Transition(findManagers, findInvestors);
@@ -205,15 +227,29 @@ public class AgentBoard extends OurAgent {
   public void registerAgent(AID[] agents, AgentType type) {
     switch (type) {
       case INVESTOR:
-        this.investors = Arrays.asList(agents);
+        for(AID agent: agents){
+          this.investors.put(agent, 120);
+          initializeInvestment(agent);
+        }
         break;
       case MANAGER:
-        this.managers = Arrays.asList(agents);
+        for(AID agent: agents){
+          this.managers.put(agent, 0);
+        }
         break;
       default:
         Logger.print(this.getLocalName(), "Invalid agent type");
         break;
     }
+  }
+
+  private void initializeInvestment(AID agent) {
+    Map<InvestmentType,Integer> initialMap = new HashMap<>();
+    initialMap.put(InvestmentType.YELLOW, 0);
+    initialMap.put(InvestmentType.RED, 0);
+    initialMap.put(InvestmentType.BLUE, 0);
+    initialMap.put(InvestmentType.GREEN, 0);
+    this.investments.put(agent, initialMap);
   }
 
   @Override
@@ -232,16 +268,21 @@ public class AgentBoard extends OurAgent {
   private void sendEndStateMsg(State state) {
     ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
     msg.setSender(getAID());
-    for (AID manager : this.managers) {
+
+    for (Map.Entry<AID, Integer> entry : this.managers.entrySet()) {
+      AID manager = entry.getKey();
       msg.addReceiver(manager);
     }
-    for (AID investor : this.investors) {
+
+    for (Map.Entry<AID, Integer> entry : this.investors.entrySet()) {
+      AID investor = entry.getKey();
       msg.addReceiver(investor);
     }
+
     if(state.equals(State.ROUND_END)){
         this.rollDices();
         Map<InvestmentType, Integer> results = new HashMap<>();
-        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsResults().entrySet()) {
+        for (Map.Entry<InvestmentType, Profits> entry : this.getProfitsBoard().entrySet()) {
           Profits profits = entry.getValue();
           InvestmentType type = entry.getKey();
           results.put(type, profits.getActualProfit());
@@ -294,14 +335,58 @@ public class AgentBoard extends OurAgent {
     return catalogue;
   }
 
+  /*
+  *   private ConcurrentMap<AID, Integer> investors;
+  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;*/
+
   private void rollDices(){
-    for (Map.Entry<InvestmentType, Profits> entry : this.profitsResults.entrySet()) {
+    for (Map.Entry<InvestmentType, Profits> entry : this.profitsBoard.entrySet()) {
+      InvestmentType type = entry.getKey();
       Profits profits = entry.getValue();
       profits.roll_dice();
+      for(Map.Entry<AID, Map<InvestmentType, Integer>> e : this.investments.entrySet()){
+        AID agent = e.getKey();
+        Map<InvestmentType, Integer> value = e.getValue();
+        int nrCompanies = value.get(type);
+        Integer investorCapital = this.investors.get(agent) + profits.getActualProfit()*nrCompanies;
+        this.investors.put(agent, investorCapital);
+      }
     }
-    Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsResults);
+    Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsBoard);
   }
 
+  public void handleEndNegotiationMsg(ACLMessage msg) {
+    AID manager = msg.getSender();
+    Integer managerCapital = this.managers.get(manager);
+    try {
+      Map<InvestmentType, List<Company>> wallet = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
+      for (Map.Entry<InvestmentType, List<Company>> entry : wallet.entrySet()) {
+        List<Company>  companies = entry.getValue();
+        InvestmentType type = entry.getKey();
+        for(Company company: companies){
+          Integer price = company.getPrice();
+          AID owner = company.getCurrentOwner();
+          if(owner.compareTo(manager) != 0) {
+            Integer investorCapital = this.investors.get(owner) - price;
+            this.investors.put(owner, investorCapital);
+            this.incInvestment(owner,type);
+            managerCapital += price;
+          }
+        }
+      }
+      this.managers.put(manager, managerCapital);
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  private void incInvestment(AID agent, InvestmentType type) {
+    Map<InvestmentType, Integer>  inv = this.investments.get(agent);
+    Integer nr = inv.get(type);
+    inv.put(type, nr + 1);
+    this.investments.put(agent, inv);
+  }
 
   @Override
   public int onEnd(State state) {
