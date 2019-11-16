@@ -122,8 +122,9 @@ public class AgentInvestor extends OurAgent {
       Logger.print(this.getLocalName(), "offer:" + offer);
         for(InvestmentType type: offer.keySet()) {
             for (Company c : offer.get(type)) {
-              if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0)) { //TODO:check balance for buy
+              if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/)) {
                 c.setCurrentOwner(getAID());
+                this.currentCapital -= (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/);
                 Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
               }
             }
@@ -131,7 +132,7 @@ public class AgentInvestor extends OurAgent {
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
-
+    Logger.print(this.getLocalName(), "-> New balance: " + this.currentCapital + "\n");
     ACLMessage reply = msg.createReply();
     reply.setInReplyTo(State.NEGOTIATE.toString());
     reply.setPerformative( ACLMessage.INFORM );
