@@ -110,6 +110,15 @@ public class AgentManager extends OurAgent {
       return handleAssignCompaniesMsg(msg);
     }
     if (msg.getConversationId().equals(State.GAME_END.toString())) {
+      StateEndMsg stateEndMsg = null;
+      try {
+        stateEndMsg = (StateEndMsg) msg
+                .getContentObject();
+        Logger.print(this.getLocalName(), "Winners Investor: " + stateEndMsg.getWinnerInvestors());
+        Logger.print(this.getLocalName(), "Winners Managers: " + stateEndMsg.getWinnerManagers());
+      } catch (UnreadableException e) {
+        e.printStackTrace();
+      }
       return 2;
     }
     if (msg.getConversationId().equals(State.ROUND_END.toString())) {
