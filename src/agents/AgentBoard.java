@@ -273,7 +273,7 @@ public class AgentBoard extends OurAgent {
     send(msg);
     Logger.print(this.getLocalName(),
         "send message: " + state.toString() + " -> " + msg.getContent());
-    this.resetManagersCapital();
+    //this.resetManagersCapital();
   }
 
   private Map<InvestmentType, Integer> getInvestmentResults() {
