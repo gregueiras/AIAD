@@ -260,6 +260,7 @@ public class AgentManager extends OurAgent {
   @Override
   public void sendMessage(State type) {
     ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+
     switch (type) {
       case INFORM_BOARD:
         sendMsgInformBoard(msg);
@@ -283,6 +284,7 @@ public class AgentManager extends OurAgent {
         } else {
           return 0;
         }
+
       default:
         return 0;
     }

@@ -10,6 +10,7 @@ public enum State {
   GAME_END("game_end"),
   ASSIGN_COMPANIES("assign_companies");
 
+
   private final String val;
 
   State(String val) {
