@@ -60,7 +60,7 @@ public class AgentInvestor extends OurAgent {
     this.wallet.put(InvestmentType.YELLOW, new LinkedList<>());
     this.wallet.put(InvestmentType.GREEN, new LinkedList<>());
   }
-    // Put agent initializations here
+  // Put agent initializations here
   protected void setup() {
     // Printout a welcome message
     Logger.print(this.getLocalName(), "Hallo! Buyer-agent " + getAID().getName() + " is ready.");
@@ -81,16 +81,16 @@ public class AgentInvestor extends OurAgent {
     }
     Behaviour printStart = new Print("Waiting for msg");
 
-      Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
+    Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
-      Behaviour printEnd = new Print("MSG Received");
+    Behaviour printEnd = new Print("MSG Received");
 
     Transition t1= new Transition(printStart, wms);
     Transition t2 = new Transition(wms, printEnd, 2);
 
 
 
-   StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
+    StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
     addBehaviour(sm);
   }
 
@@ -102,14 +102,31 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public int handleMessage(ACLMessage msg){
-    Logger.print(this.getLocalName(), this.getName() + ": " + msg.getContent());
-    if(msg.getConversationId().equals(State.NEGOTIATE.toString()))
-       return handleNegotiateMsg(msg);
-    if(msg.getConversationId().equals(State.GAME_END.toString()))
-       return 2;
-    if (msg.getConversationId().equals(State.ROUND_END.toString()))
-      return handleRoundEndMsg(msg);
+    if(msg.getConversationId().equals(State.NEGOTIATE.toString())) {
+      try {
+        Logger.print(this.getLocalName(), this.getName() + ": " + (HashMap<InvestmentType,List<Company>>)msg.getContentObject());
+      } catch (UnreadableException e) {
+        e.printStackTrace();
+      }
+      return handleNegotiateMsg(msg);
+    }
+    if(msg.getConversationId().equals(State.GAME_END.toString())) {
 
+      StateEndMsg stateEndMsg = null;
+      try {
+        stateEndMsg = (StateEndMsg) msg
+                .getContentObject();
+        Logger.print(this.getLocalName(), "Winners Investor: " + stateEndMsg.getWinnerInvestors());
+        Logger.print(this.getLocalName(), "Winners Managers: " + stateEndMsg.getWinnerManagers());
+      } catch (UnreadableException e) {
+        e.printStackTrace();
+      }
+
+      return 2;
+    }
+    if (msg.getConversationId().equals(State.ROUND_END.toString())) {
+      return handleRoundEndMsg(msg);
+    }
     return -1;
   }
 
@@ -119,16 +136,16 @@ public class AgentInvestor extends OurAgent {
     HashMap<InvestmentType, List<Company>> offer = null;
     try {
       offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
-      Logger.print(this.getLocalName(), "offer:" + offer);
-        for(InvestmentType type: offer.keySet()) {
-            for (Company c : offer.get(type)) {
-              if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/)) {
-                c.setCurrentOwner(getAID());
-                this.currentCapital -= (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/);
-                Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
-              }
-            }
+      Logger.print(this.getLocalName(), "offer:" + offer.toString());
+      for(InvestmentType type: offer.keySet()) {
+        for (Company c : offer.get(type)) {
+          if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/)) {
+            c.setCurrentOwner(getAID());
+            this.currentCapital -= (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/);
+            Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
+          }
         }
+      }
     } catch (UnreadableException e) {
       e.printStackTrace();
     }
@@ -136,28 +153,29 @@ public class AgentInvestor extends OurAgent {
     ACLMessage reply = msg.createReply();
     reply.setInReplyTo(State.NEGOTIATE.toString());
     reply.setPerformative( ACLMessage.INFORM );
-      try {
-          reply.setContentObject(offer);
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
-      send(reply);
+    try {
+      reply.setContentObject(offer);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    send(reply);
     return -1;
   }
 
-    private int handleRoundEndMsg(ACLMessage msg) {
-      try {
-        StateEndMsg stateEndMsg = (StateEndMsg) msg
-                .getContentObject();
-        this.currentCapital = stateEndMsg.getInvestorCapital(this.getAID());
-        Logger.print(this.getLocalName(),
-            getAID().getName() + " current capital:  " + this.currentCapital);
+  private int handleRoundEndMsg(ACLMessage msg) {
+    try {
+      StateEndMsg stateEndMsg = (StateEndMsg) msg
+              .getContentObject();
+      this.currentCapital = stateEndMsg.getInvestorCapital(this.getAID());
+      Logger.print(this.getLocalName(),
+              getAID().getName() + " current capital:  " + this.currentCapital);
+      Logger.print(this.getLocalName(), "Stock results: " + (Map<InvestmentType, Integer>)stateEndMsg.getResults());
 
-      } catch (UnreadableException e) {
-        e.printStackTrace();
-      }
-      return -1;
+    } catch (UnreadableException e) {
+      e.printStackTrace();
     }
+    return -1;
+  }
 
   List<Company> processOffer(HashMap<InvestmentType, List<Company>> offer){
     return null;
@@ -187,7 +205,7 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public int onEnd(State statE) {
-        return 0;
+    return 0;
   }
 
 }
