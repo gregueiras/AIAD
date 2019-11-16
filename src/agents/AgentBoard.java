@@ -274,6 +274,7 @@ public class AgentBoard extends OurAgent {
     Logger.print(this.getLocalName(),
         "send message: " + state.toString() + " -> " + msg.getContent());
     this.resetManagersCapital();
+    this.resetInvestments();
   }
 
   private Map<InvestmentType, Integer> getInvestmentResults() {
@@ -427,6 +428,19 @@ public class AgentBoard extends OurAgent {
     for (Map.Entry<AID, Integer> entry : this.managers.entrySet())
     {
       this.managers.put(entry.getKey(), 0);
+    }
+  }
+
+  private void resetInvestments(){
+    for (Map.Entry<AID, Map<InvestmentType,Integer>> entry : this.investments.entrySet())
+    {
+      Map<InvestmentType, Integer> temp = new HashMap<>();
+      this.investors.put(entry.getKey(),120);
+      for (Map.Entry<InvestmentType,Integer> e : entry.getValue().entrySet())
+      {
+        temp.put(e.getKey(), 0);
+      }
+      this.investments.put(entry.getKey(), temp);
     }
   }
 

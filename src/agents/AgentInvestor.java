@@ -169,7 +169,7 @@ public class AgentInvestor extends OurAgent {
       this.currentCapital = stateEndMsg.getInvestorCapital(this.getAID());
       Logger.print(this.getLocalName(),
               getAID().getName() + " current capital:  " + this.currentCapital);
-      Logger.print(this.getLocalName(), "Stock results: " + (Map<InvestmentType, Integer>)stateEndMsg.getResults());
+      Logger.print(this.getLocalName(), "Stock results: " + stateEndMsg.getResults());
 
     } catch (UnreadableException e) {
       e.printStackTrace();
