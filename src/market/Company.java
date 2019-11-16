@@ -15,6 +15,7 @@ public class Company implements Serializable {
   private AID currentOwner; // investor who bought it
   private boolean doubleValue;
   private int actualBid; //Might not be needed, its here just in case
+  private String id;
 
 
   public Company(String name, Integer price, InvestmentType type, boolean doubleValue) {
@@ -23,6 +24,7 @@ public class Company implements Serializable {
     this.price = price;
     this.closed = true;
     this.doubleValue = doubleValue;
+    this.id = this.name + Math.random();
   }
 
   public Company(Company c){
@@ -32,6 +34,7 @@ public class Company implements Serializable {
     this.closed = c.closed;
     this.doubleValue = c.doubleValue;
     this.currentOwner = c.getCurrentOwner();
+    this.id = this.name + Math.random();
   }
 
   public InvestmentType getType() {
@@ -85,5 +88,9 @@ public class Company implements Serializable {
 
   public void setCurrentOwner(AID currentOwner) {
     this.currentOwner = currentOwner;
+  }
+
+  public String getId() {
+    return id;
   }
 }

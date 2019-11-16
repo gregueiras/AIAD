@@ -43,7 +43,7 @@ public class AgentBoard extends OurAgent {
 
   private ConcurrentMap<AID, Integer> managers;
 
-  private ConcurrentMap<AID, Map<InvestmentType,Integer>> investments;
+  private ConcurrentMap<AID, Map<InvestmentType,Set<String>>> investments;
 
   private Round round;
 
@@ -224,11 +224,11 @@ public class AgentBoard extends OurAgent {
   }
 
   private void initializeInvestment(AID agent) {
-    Map<InvestmentType,Integer> initialMap = new HashMap<>();
-    initialMap.put(InvestmentType.YELLOW, 0);
-    initialMap.put(InvestmentType.RED, 0);
-    initialMap.put(InvestmentType.BLUE, 0);
-    initialMap.put(InvestmentType.GREEN, 0);
+    Map<InvestmentType,Set<String>> initialMap = new HashMap<>();
+    initialMap.put(InvestmentType.YELLOW, new HashSet<>());
+    initialMap.put(InvestmentType.RED, new HashSet<>());
+    initialMap.put(InvestmentType.BLUE, new HashSet<>());
+    initialMap.put(InvestmentType.GREEN, new HashSet<>());
     this.investments.put(agent, initialMap);
   }
 
@@ -329,6 +329,12 @@ public class AgentBoard extends OurAgent {
     return company;
   }
 
+  private boolean isNewInvestment(AID agent, InvestmentType type, Company company){
+    Map<InvestmentType, Set<String>> t = this.investments.get(agent);
+    Set<String> companies = t.get(type);
+    return !companies.contains(company.getId());
+  }
+
   private Map<InvestmentType, List<Company>> generateCatalogue() {
     final int companyNumber = COMPANY_NUMBER * 4;
     HashMap<InvestmentType, List<Company>> catalogue = new HashMap<>();
@@ -349,10 +355,10 @@ public class AgentBoard extends OurAgent {
       InvestmentType type = entry.getKey();
       Profits profits = entry.getValue();
       profits.roll_dice();
-      for(Map.Entry<AID, Map<InvestmentType, Integer>> e : this.investments.entrySet()){
+      for(Map.Entry<AID, Map<InvestmentType, Set<String>>> e : this.investments.entrySet()){
         AID agent = e.getKey();
-        Map<InvestmentType, Integer> value = e.getValue();
-        int nrCompanies = value.get(type);
+        Map<InvestmentType, Set<String>> value = e.getValue();
+        int nrCompanies = value.get(type).size();
         Integer investorCapital = this.investors.get(agent) + profits.getActualProfit()*nrCompanies;
         this.investors.put(agent, investorCapital);
       }
@@ -372,12 +378,12 @@ public class AgentBoard extends OurAgent {
           Integer price = company.getPrice();
           AID owner = company.getCurrentOwner();
           Boolean isDouble = company.isDoubleValue();
-          if(owner.compareTo(manager) != 0) {
+          if(owner.compareTo(manager) != 0 && this.isNewInvestment(owner, type, company)) {
             Integer investorCapital = this.investors.get(owner) - price;
            /* if(isDouble)
               investorCapital -= price;*/
             this.investors.put(owner, investorCapital);
-            this.incInvestment(owner,type, isDouble);
+            this.incInvestment(owner,type, company);
             /*if(isDouble)
               managerCapital+=price;*/
             managerCapital += price;
@@ -390,12 +396,11 @@ public class AgentBoard extends OurAgent {
     }
   }
 
-  private void incInvestment(AID agent, InvestmentType type, Boolean isDouble) {
-    Map<InvestmentType, Integer>  inv = this.investments.get(agent);
-    Integer nr = inv.get(type);
-    if(isDouble)
-      nr+=1;
-    inv.put(type, nr + 1);
+  private void incInvestment(AID agent, InvestmentType type, Company company) {
+    Map<InvestmentType, Set<String>>  inv = this.investments.get(agent);
+    Set<String> companies = inv.get(type);
+    companies.add(company.getId());
+    inv.put(type, companies);
     this.investments.put(agent, inv);
   }
 
@@ -429,6 +434,7 @@ public class AgentBoard extends OurAgent {
       this.managers.put(entry.getKey(), 0);
     }
   }
+
 
   @Override
   public int onEnd(State state) {
