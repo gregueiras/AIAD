@@ -24,4 +24,8 @@ public class Normal extends Personality {
         investmentPriority = Arrays.asList(InvestmentType.GREEN, InvestmentType.YELLOW, InvestmentType.BLUE, InvestmentType.RED);
 
     }
+
+   public String getType(){
+        return "Normal";
+   }
 }

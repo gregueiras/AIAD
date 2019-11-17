@@ -22,4 +22,7 @@ public class HighRoller extends Personality {
         investmentPriority = Arrays.asList(InvestmentType.RED, InvestmentType.YELLOW, InvestmentType.GREEN, InvestmentType.BLUE);
 
     }
+    public String getType(){
+        return "HighRoller";
+    }
 }

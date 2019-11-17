@@ -23,4 +23,8 @@ public class SafeBetter extends Personality {
         investmentPriority = Arrays.asList(InvestmentType.BLUE, InvestmentType.GREEN, InvestmentType.YELLOW, InvestmentType.RED);
 
     }
+
+    public String getType(){
+        return "SafeBetter";
+    }
 }

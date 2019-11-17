@@ -25,6 +25,7 @@ import market.Company;
 import market.InvestmentType;
 import personalities.Normal;
 import personalities.Personality;
+import personalities.PersonalityFactory;
 
 public class AgentInvestor extends OurAgent {
 
@@ -33,7 +34,9 @@ public class AgentInvestor extends OurAgent {
 
   private Map<InvestmentType, List<Company>> wallet;
 
-  private Normal person;
+  private Personality person;
+
+  private PersonalityFactory personalityFactory;
 
   private String companyToBuy;
 
@@ -65,8 +68,10 @@ public class AgentInvestor extends OurAgent {
     // Printout a welcome message
     Logger.print(this.getLocalName(), "Hallo! Buyer-agent " + getAID().getName() + " is ready.");
     this.currentCapital = INITIAL_CAPITAL;
-    person = new Normal();
+    personalityFactory = new PersonalityFactory();
+    person = personalityFactory.giveRandomPersonality();
     this.initializeWallet();
+
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
     dfd.setName(getAID());
@@ -81,6 +86,7 @@ public class AgentInvestor extends OurAgent {
     }
     Behaviour printStart = new Print("Waiting for msg");
 
+
     Behaviour wms = new WaitForMessages(this, ACLMessage.INFORM);
 
     Behaviour printEnd = new Print("MSG Received");
@@ -92,6 +98,8 @@ public class AgentInvestor extends OurAgent {
 
     StateMachine sm = new StateMachine(this, printStart, printEnd, t1, t2);
     addBehaviour(sm);
+    Logger.print(this.getLocalName(), "I'm a " + person.getClass().toString().substring(20) + " investor!");
+
   }
 
   // Put agent clean-up operations here
@@ -183,6 +191,7 @@ public class AgentInvestor extends OurAgent {
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
+
     switch (type){
       case BOARD:
         try {

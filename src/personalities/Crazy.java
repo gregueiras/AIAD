@@ -26,4 +26,8 @@ public class Crazy extends Personality{
         Collections.shuffle(investmentPriority);
 
     }
+
+    public String getType(){
+        return "Crazy";
+    }
 }
