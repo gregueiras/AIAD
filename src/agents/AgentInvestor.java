@@ -145,7 +145,7 @@ public class AgentInvestor extends OurAgent {
     try {
       offer = (HashMap<InvestmentType, List<Company>>) msg.getContentObject();
       Logger.print(this.getLocalName(), "offer:" + offer.toString());
-      for(InvestmentType type: offer.keySet()) {
+      for(InvestmentType type: person.getInvestmentPriority()) {
         for (Company c : offer.get(type)) {
           if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/)) {
             c.setCurrentOwner(getAID());

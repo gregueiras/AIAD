@@ -16,17 +16,22 @@ public class Personality {
     protected double redRatio;
     protected double greenRatio;
     protected double blueRatio;
+
+    public List<InvestmentType> getInvestmentPriority() {
+        return investmentPriority;
+    }
+
     protected List<InvestmentType> investmentPriority;
 
 
     public boolean acceptBuyOffer(Company c) {
-        if (c.getPrice() < (maxPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0)))
+        if (c.getPrice() < (maxPriceBuy * getTypeRatio(c)))
             return true;
         return false;
     }
 
     public Company counterBuyOffer(Company c) {
-        if (c.getPrice() < (maxCounterPriceBuy * getTypeRatio(c) * (c.isDoubleValue() ? 2.0 : 1.0))) {
+        if (c.getPrice() < (maxCounterPriceBuy * getTypeRatio(c))) {
             Company counter = new Company(c);
             counter.setPrice((int) (c.getPrice() * (2 - tit4tatRatio)));
             return counter;
