@@ -32,7 +32,7 @@ public class AgentBoard extends OurAgent {
 
   private static final int COMPANY_NUMBER = 15;
 
-  private static final int NR_ROUNDS = 3;
+  private static final int NR_ROUNDS = 5;
 
   // The catalogue of books for sale (maps the title of a book to its price)
   private Map<InvestmentType, List<Company>> catalogue;
