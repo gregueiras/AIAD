@@ -111,18 +111,7 @@ public class AgentInvestor extends OurAgent {
       return handleNegotiateMsg(msg);
     }
     if(msg.getConversationId().equals(State.GAME_END.toString())) {
-
-      StateEndMsg stateEndMsg = null;
-      try {
-        stateEndMsg = (StateEndMsg) msg
-                .getContentObject();
-        Logger.print(this.getLocalName(), "Winners Investor: " + stateEndMsg.getWinnerInvestors());
-        Logger.print(this.getLocalName(), "Winners Managers: " + stateEndMsg.getWinnerManagers());
-      } catch (UnreadableException e) {
-        e.printStackTrace();
-      }
-
-      return 2;
+      return handleGameEndMsg(msg);
     }
     if (msg.getConversationId().equals(State.ROUND_END.toString())) {
       return handleRoundEndMsg(msg);
@@ -175,6 +164,23 @@ public class AgentInvestor extends OurAgent {
       e.printStackTrace();
     }
     return -1;
+  }
+
+  private int handleGameEndMsg(ACLMessage msg) {
+    StateEndMsg stateEndMsg = null;
+    try {
+       stateEndMsg = (StateEndMsg) msg
+              .getContentObject();
+      this.currentCapital = stateEndMsg.getInvestorCapital(this.getAID());
+      Logger.print(this.getLocalName(),
+              getAID().getName() + " current capital:  " + this.currentCapital);
+      Logger.print(this.getLocalName(), "Stock results: " + stateEndMsg.getResults());
+      Logger.print(this.getLocalName(), "Winners Investor: " + stateEndMsg.getWinnerInvestors());
+      Logger.print(this.getLocalName(), "Winners Managers: " + stateEndMsg.getWinnerManagers());
+    } catch (UnreadableException e) {
+      e.printStackTrace();
+    }
+    return 2;
   }
 
   List<Company> processOffer(HashMap<InvestmentType, List<Company>> offer){
