@@ -380,12 +380,10 @@ public class AgentBoard extends OurAgent {
           Boolean isDouble = company.isDoubleValue();
           if(owner.compareTo(manager) != 0 && this.isNewInvestment(owner, type, company)) {
             Integer investorCapital = this.investors.get(owner) - price;
-           /* if(isDouble)
-              investorCapital -= price;*/
+
             this.investors.put(owner, investorCapital);
             this.incInvestment(owner,type, company);
-            /*if(isDouble)
-              managerCapital+=price;*/
+
             managerCapital += price;
           }
         }
@@ -443,7 +441,7 @@ public class AgentBoard extends OurAgent {
 
   @Override
   public int handleMessage(ACLMessage msg) {
-    //TODO
+
     return -1;
   }
 }

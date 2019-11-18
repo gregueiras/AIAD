@@ -14,7 +14,7 @@ public class StateMachine extends FSMBehaviour {
     super(a);
     this.agent = a;
 
-    registerFirstState(initialState, initialState.getBehaviourName()); // TODO: Check if initial/last state is really a OurBehaviour
+    registerFirstState(initialState, initialState.getBehaviourName());
     registerLastState( lastState, lastState.getBehaviourName());
 
     for(Transition transition : transitions) {

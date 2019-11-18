@@ -128,7 +128,6 @@ public class AgentInvestor extends OurAgent {
   }
 
   private int handleNegotiateMsg(ACLMessage msg) {
-    //Logger.print(this.getLocalName(), "i am receiving: " + msg.getContent());
     AID sellerID = msg.getSender();
     HashMap<InvestmentType, List<Company>> offer = null;
     try {
@@ -136,9 +135,9 @@ public class AgentInvestor extends OurAgent {
       Logger.print(this.getLocalName(), "offer:" + offer.toString());
       for(InvestmentType type: person.getInvestmentPriority()) {
         for (Company c : offer.get(type)) {
-          if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/)) {
+          if (person.acceptBuyOffer(c) && (c.getCurrentOwner().compareTo(sellerID) == 0) && this.currentCapital > (c.getPrice() )) {
             c.setCurrentOwner(getAID());
-            this.currentCapital -= (c.getPrice() /** (c.isDoubleValue() ? 2.0 : 1.0)*/);
+            this.currentCapital -= (c.getPrice() );
             Logger.print(this.getLocalName(), "Accepted Company " + c.toString());
           }
         }

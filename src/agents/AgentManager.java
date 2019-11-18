@@ -138,7 +138,7 @@ public class AgentManager extends OurAgent {
               {
                   if(beforeList.get(i).getCurrentOwner().compareTo(afterList.get(i).getCurrentOwner()) != 0) {
                     ret += afterList.get(i).toString() + "\n";
-                    this.currentCapital += afterList.get(i).getPrice() /** (afterList.get(i).isDoubleValue() ? 2.0 : 1.0)*/;
+                    this.currentCapital += afterList.get(i).getPrice() ;
                   }
               }
 

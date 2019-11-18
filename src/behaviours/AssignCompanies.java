@@ -31,7 +31,7 @@ public class AssignCompanies extends OneShotBehaviour {
   @Override
   public void action() {
     if (this.agent.getManagers() != null && !this.agent.getManagers()
-        .isEmpty()) { //TODO: Recheck this line
+        .isEmpty()) {
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
       msg.setSender(this.agent.getAID());
 
