@@ -47,8 +47,22 @@ public class CompanyFactory {
   public static Company createCompany(InvestmentType type) {
     Random rand = new Random();
     String randomName = NAMES.get(rand.nextInt(NAMES.size()));
+    int price = 50;
+    switch(type){
+      case RED:
+        price = 90;
+        break;
+      case BLUE:
+        break;
+      case YELLOW:
+        price =75;
+        break;
+      case GREEN:
+        price = 60;
+        break;
+    }
 
-    return new Company(randomName, PRICE, type, false);
+    return new Company(randomName, price, type, false);
   }
 
 }

@@ -26,8 +26,8 @@ import java.util.*;
 
 import market.Company;
 import market.InvestmentType;
-import personalities.Normal;
 import personalities.Personality;
+import personalities.PersonalityFactory;
 
 public class AgentManager extends OurAgent {
 
@@ -39,6 +39,8 @@ public class AgentManager extends OurAgent {
   private AID investor;
 
   private Personality person;
+
+  private PersonalityFactory personalityFactory;
 
   private boolean skipShift;
 
@@ -52,7 +54,8 @@ public class AgentManager extends OurAgent {
     //wallet = WalletExamples.getEx1();
     wallet = new HashMap<>();
     skipShift = false;
-    person = new Normal();
+    personalityFactory = new PersonalityFactory();
+    person = personalityFactory.giveRandomPersonality();
     this.currentCapital = INITIAL_CAPITAL;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();
@@ -259,6 +262,8 @@ public class AgentManager extends OurAgent {
 
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
+    Logger.print(this.getLocalName(), "I'm a " + person.getClass().toString().substring(20) + " manager!");
+
     switch (type) {
       case BOARD:
         try {
