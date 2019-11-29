@@ -22,8 +22,9 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import java.io.IOException;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import market.Company;
 import market.InvestmentType;
 import personalities.Personality;
@@ -50,12 +51,14 @@ public class AgentManager extends OurAgent {
 
   // Put agent initializations here
   protected void setup() {
+    Personality[] args = (Personality[]) getArguments();
+    Personality personality = args[0];
+
     // Create the catalogue
     //wallet = WalletExamples.getEx1();
     wallet = new HashMap<>();
     skipShift = false;
-    personalityFactory = new PersonalityFactory();
-    person = personalityFactory.giveRandomPersonality();
+    person = personality;
     this.currentCapital = INITIAL_CAPITAL;
     // Register the manager service in the yellow pages
     DFAgentDescription dfd = new DFAgentDescription();

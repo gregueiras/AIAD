@@ -1,4 +1,13 @@
 {
-  "managers": 4,
-  "investors": 3
+  "managers": [
+    "Crazy",
+    "Normal",
+    "HighRoller"
+  ],
+  "investors": [
+    "SafeBetter",
+    "SafeBetter",
+    "Normal",
+    "HighRoller"
+  ]
 }

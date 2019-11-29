@@ -4,8 +4,8 @@ import behaviours.Print;
 import behaviours.StateMachine;
 import behaviours.WaitForMessages;
 import helper.Logger;
-import helper.StateEndMsg;
 import helper.State;
+import helper.StateEndMsg;
 import helper.Transition;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -15,7 +15,6 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import market.Company;
 import market.InvestmentType;
-import personalities.Normal;
 import personalities.Personality;
 import personalities.PersonalityFactory;
 
@@ -65,11 +63,13 @@ public class AgentInvestor extends OurAgent {
   }
   // Put agent initializations here
   protected void setup() {
+    Personality[] args = (Personality[]) getArguments();
+    Personality personality = args[0];
+
     // Printout a welcome message
     Logger.print(this.getLocalName(), "Hallo! Buyer-agent " + getAID().getName() + " is ready.");
     this.currentCapital = INITIAL_CAPITAL;
-    personalityFactory = new PersonalityFactory();
-    person = personalityFactory.giveRandomPersonality();
+    person = personality;
     this.initializeWallet();
 
     // Register the manager service in the yellow pages
@@ -112,7 +112,7 @@ public class AgentInvestor extends OurAgent {
   public int handleMessage(ACLMessage msg){
     if(msg.getConversationId().equals(State.NEGOTIATE.toString())) {
       try {
-        Logger.print(this.getLocalName(), this.getName() + ": " + (HashMap<InvestmentType,List<Company>>)msg.getContentObject());
+        Logger.print(this.getLocalName(), this.getName() + ": " + msg.getContentObject());
       } catch (UnreadableException e) {
         e.printStackTrace();
       }

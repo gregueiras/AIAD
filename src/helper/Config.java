@@ -1,11 +1,13 @@
 package helper;
 
+import java.util.List;
+
 public class Config {
 
-  public int managers;
-  public int investors;
+  public List<String> managers;
+  public List<String> investors;
 
-  public Config(int managers, int investors) {
+  public Config(List<String> managers, List<String> investors) {
     this.managers = managers;
     this.investors = investors;
   }

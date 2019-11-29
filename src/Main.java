@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -23,6 +24,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import personalities.Personality;
+import personalities.PersonalityFactory;
 
 public class Main {
 
@@ -42,35 +45,21 @@ public class Main {
   public static void main(String[] args) {
     CommandLine cmd = setupCommandLine(args);
     int scenario;
-    int managers;
-    int investors;
+    List<String> managers;
+    List<String> investors;
 
-    String managersString = cmd.getOptionValue("managers");
-    String investorsString = cmd.getOptionValue("investors");
     String scenarioString = cmd.getOptionValue("scenario");
 
-    if (managersString != null && investorsString != null) {
-
-      managers = Integer.parseInt(managersString);
-      investors = Integer.parseInt(investorsString);
-
-      if (managers <= 0 || investors <= 0) {
-        System.err.println("Invalid managers or investors number");
-        System.exit(1);
-      }
-
+    if (scenarioString != null) {
+      scenario = Integer.parseInt(scenarioString);
     } else {
-      if (scenarioString != null) {
-        scenario = Integer.parseInt(scenarioString);
-      } else {
-        scenario = 1;
-      }
-
-      Config config = readJSON(scenario);
-      assert config != null;
-      managers = config.managers;
-      investors = config.investors;
+      scenario = 1;
     }
+
+    Config config = readJSON(scenario);
+    assert config != null;
+    managers = config.managers;
+    investors = config.investors;
 
     try {
       Runtime rt = Runtime.instance();
@@ -80,21 +69,32 @@ public class Main {
       ArrayList<AgentController> controllers = new ArrayList<>();
       ArrayList<String> agents = new ArrayList<>();
 
-      for (int i = 0; i < managers; ++i) {
+      for (int i = 0; i < managers.size(); ++i) {
+        String personalityString = managers.get(i);
         String agent = "Manager" + i;
+
+        Personality personality = PersonalityFactory.createPersonality(personalityString);
+
         AgentController ac = mainController
-            .createNewAgent(agent, AgentManager.class.getName(), null);
+            .createNewAgent(agent, AgentManager.class.getName(), new Personality[]{personality});
         controllers.add(ac);
         agents.add(agent);
       }
 
-      for (int i = 0; i < investors; ++i) {
+      for (int i = 0; i < investors.size(); ++i) {
+        String personalityString = investors.get(i);
         String agent = "Investor" + i;
+
+        Personality personality = PersonalityFactory.createPersonality(personalityString);
+
         AgentController ac = mainController
-            .createNewAgent(agent, AgentInvestor.class.getName(), null);
+            .createNewAgent(agent, AgentInvestor.class.getName(), new Personality[]{personality});
         controllers.add(ac);
         agents.add(agent);
       }
+
+      System.err.println(managers);
+      System.err.println(investors);
 
       AgentController board = mainController
           .createNewAgent("BOARD", AgentBoard.class.getName(), null);
@@ -136,14 +136,6 @@ public class Main {
 
   private static CommandLine setupCommandLine(String[] args) {
     Options options = new Options();
-
-    Option managers = new Option("m", "managers", true, "number of managers");
-    managers.setRequired(false);
-    options.addOption(managers);
-
-    Option investors = new Option("i", "investors", true, "number of investors");
-    investors.setRequired(false);
-    options.addOption(investors);
 
     Option scenario = new Option("s", "scenario", true, "number of scenario");
     scenario.setRequired(false);

@@ -2,7 +2,7 @@
   <configuration default="false" name="Main 3" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="AIAD" />
-    <option name="PROGRAM_PARAMETERS" value="-s 2" />
+    <option name="PROGRAM_PARAMETERS" value="-s 3" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
