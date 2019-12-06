@@ -54,6 +54,7 @@ public class AgentManager extends OurAgent {
     Personality[] args = (Personality[]) getArguments();
     Personality personality = args[0];
 
+
     // Create the catalogue
     //wallet = WalletExamples.getEx1();
     wallet = new HashMap<>();
