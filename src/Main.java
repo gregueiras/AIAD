@@ -71,7 +71,7 @@ public class Main {
 
       for (int i = 0; i < managers.size(); ++i) {
         String personalityString = managers.get(i);
-        String agent = "Manager" + i;
+        String agent = "Manager" + i + "#" + personalityString;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 
@@ -83,7 +83,7 @@ public class Main {
 
       for (int i = 0; i < investors.size(); ++i) {
         String personalityString = investors.get(i);
-        String agent = "Investor" + i;
+        String agent = "Investor" + i + "#" + personalityString;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 

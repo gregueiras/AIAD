@@ -10,12 +10,16 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import personalities.Personality;
+
+import java.util.HashMap;
 
 public class FindAgents extends OneShotBehaviour {
 
   private AgentType typeToSearch; // type of agent to search
   private boolean agentsFound;
   private OurAgent agent;
+
 
   public FindAgents(AgentType typeToSearch, OurAgent agent) {
     this.typeToSearch = typeToSearch;

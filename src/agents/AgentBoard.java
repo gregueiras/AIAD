@@ -113,6 +113,10 @@ public class AgentBoard extends OurAgent {
       this.profitsBoard = ProfitsFactory.createAllProfits();
   }
 
+  private HashMap<String, Integer> personalitiesInvestors;
+
+  private HashMap<String, Integer> personalitiesManagers;
+
   private Map<InvestmentType, Profits> getProfitsBoard() {
       return profitsBoard;
   }
@@ -130,6 +134,10 @@ public class AgentBoard extends OurAgent {
     investors = new ConcurrentHashMap<>();
     managers = new ConcurrentHashMap<>();
     this.investments = new ConcurrentHashMap<>();
+
+    this.personalitiesInvestors = new HashMap<>();
+    this.personalitiesManagers = new HashMap<>();
+
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
@@ -203,18 +211,32 @@ public class AgentBoard extends OurAgent {
   }
 
 
+  public void associate(HashMap<String, Integer> map, String agentPersonality){
+    if(map.get(agentPersonality) == null)
+      map.put(agentPersonality, 1);
+    else{
+      map.put(agentPersonality, map.get(agentPersonality) + 1);
+    }
+  }
+
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
     switch (type) {
       case INVESTOR:
         for(AID agent: agents){
           this.investors.put(agent, 120);
+          String agentPersonality = (agent.getName().split("#")[1]).split("@")[0];
+          associate(this.personalitiesInvestors, agentPersonality);
           initializeInvestment(agent);
         }
         break;
       case MANAGER:
         for(AID agent: agents){
           this.managers.put(agent, 0);
+
+          String agentPersonality = (agent.getName().split("#")[1]).split("@")[0];
+          System.out.println(agentPersonality);
+          associate(this.personalitiesManagers, agentPersonality);
         }
         break;
       default:
@@ -364,6 +386,7 @@ public class AgentBoard extends OurAgent {
       }
     }
     Logger.print(this.getLocalName(), "ROLL DICES: " + this.profitsBoard);
+
   }
 
   public void handleEndNegotiationMsg(ACLMessage msg) {

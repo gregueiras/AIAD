@@ -5,7 +5,7 @@ import market.InvestmentType;
 
 import java.util.List;
 
-public class Personality {
+public abstract class Personality {
 
     protected int maxPriceBuy; // the max price an agent can accept to buy
     protected int maxCounterPriceBuy; //the max price an agent can propose a counter offer to buy
@@ -75,6 +75,8 @@ public class Personality {
         offer.setPrice(newValue);
         return offer;
     }
+
+    public abstract String getType();
 
 
     public int getPriceBuy(Company c) {
