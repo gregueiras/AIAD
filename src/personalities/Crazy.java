@@ -3,9 +3,7 @@ package personalities;
 import market.InvestmentType;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class Crazy extends Personality{
 
@@ -27,6 +25,7 @@ public class Crazy extends Personality{
 
     }
 
+    @Override
     public String getType(){
         return "Crazy";
     }

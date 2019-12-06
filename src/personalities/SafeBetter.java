@@ -3,7 +3,6 @@ package personalities;
 import market.InvestmentType;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class SafeBetter extends Personality {
 
@@ -24,6 +23,7 @@ public class SafeBetter extends Personality {
 
     }
 
+    @Override
     public String getType(){
         return "SafeBetter";
     }

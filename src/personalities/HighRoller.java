@@ -3,7 +3,6 @@ package personalities;
 import market.InvestmentType;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class HighRoller extends Personality {
 
@@ -22,6 +21,8 @@ public class HighRoller extends Personality {
         investmentPriority = Arrays.asList(InvestmentType.RED, InvestmentType.YELLOW, InvestmentType.GREEN, InvestmentType.BLUE);
 
     }
+
+    @Override
     public String getType(){
         return "HighRoller";
     }

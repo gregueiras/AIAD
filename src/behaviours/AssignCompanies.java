@@ -5,25 +5,26 @@ import helper.State;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import market.Company;
+import market.InvestmentType;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import market.Company;
-import market.InvestmentType;
 
 public class AssignCompanies extends OneShotBehaviour {
 
-  private static int COMPANY_NUMBER = 2; // Number of companies of each type to assign
   private boolean companiesAssigned;
+  private Map<InvestmentType, Integer> initialDistribution;
   private AgentBoard agent;
 
-  public AssignCompanies(AgentBoard agent) {
+  public AssignCompanies(AgentBoard agent, Map<InvestmentType, Integer> initialDistribution) {
     this.companiesAssigned = false;
     this.agent = agent;
+    this.initialDistribution = initialDistribution;
 
     super.setBehaviourName("Assign_companies");
   }
@@ -35,18 +36,16 @@ public class AssignCompanies extends OneShotBehaviour {
       ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
       msg.setSender(this.agent.getAID());
 
-      Map<InvestmentType, List<Company>> catalogue = this.agent.getCatalogue();
-
       for (AID aid : this.agent.getListManagers()) {
 
         Map<InvestmentType, List<Company>> companies = new HashMap<>();
 
-        Random rand = new Random();
 
-        for (InvestmentType type : InvestmentType.values()) {
+        for (InvestmentType type : this.initialDistribution.keySet()) {
           List<Company> newCompanies = new LinkedList<>();
+          int companyNumber = this.initialDistribution.get(type);
 
-          for (int i = 0; i < COMPANY_NUMBER; i++) {
+          for (int i = 0; i < companyNumber; i++) {
             Company c = agent.drawCompany(type);
             newCompanies.add(c);
           }

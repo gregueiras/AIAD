@@ -10,24 +10,24 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
+import market.InvestmentType;
+import org.apache.commons.cli.*;
+import personalities.Personality;
+import personalities.PersonalityFactory;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import personalities.Personality;
-import personalities.PersonalityFactory;
 
 public class Main {
+
+  private static final Random RANDOM = new Random();
 
   private static Config readJSON(int scenario) {
     try {
@@ -47,19 +47,25 @@ public class Main {
     int scenario;
     List<String> managers;
     List<String> investors;
+    HashMap<InvestmentType, Integer> companies;
 
     String scenarioString = cmd.getOptionValue("scenario");
 
+    Config config;
     if (scenarioString != null) {
       scenario = Integer.parseInt(scenarioString);
+      config = readJSON(scenario);
     } else {
-      scenario = 1;
+      List<String> man = generateCombination(3);
+      List<String> inv = generateCombination(3);
+      List<Integer> invT = generateCompanies(4);
+      config = new Config(man, inv, invT);
     }
 
-    Config config = readJSON(scenario);
     assert config != null;
     managers = config.managers;
     investors = config.investors;
+    companies = config.companies;
 
     try {
       Runtime rt = Runtime.instance();
@@ -71,7 +77,7 @@ public class Main {
 
       for (int i = 0; i < managers.size(); ++i) {
         String personalityString = managers.get(i);
-        String agent = "Manager" + i;
+        String agent = "Manager" + i + "#" + personalityString;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 
@@ -83,7 +89,7 @@ public class Main {
 
       for (int i = 0; i < investors.size(); ++i) {
         String personalityString = investors.get(i);
-        String agent = "Investor" + i;
+        String agent = "Investor" + i + "#" + personalityString;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 
@@ -95,9 +101,11 @@ public class Main {
 
       System.err.println(managers);
       System.err.println(investors);
+      System.err.println(companies);
+
 
       AgentController board = mainController
-          .createNewAgent("BOARD", AgentBoard.class.getName(), null);
+              .createNewAgent("BOARD", AgentBoard.class.getName(), new Object[]{companies});
       controllers.add(board);
       agents.add("BOARD");
 
@@ -122,6 +130,32 @@ public class Main {
     } catch (UnknownHostException | StaleProxyException e) {
       e.printStackTrace();
     }
+  }
+
+  private static List<Integer> generateCompanies(int maxCompanies) {
+    List<Integer> res = new ArrayList<>();
+
+    int SIZE = InvestmentType.values().length;
+    for (int i = 0; i < SIZE; i++) {
+      int r = RANDOM.nextInt(maxCompanies);
+      res.add(r);
+    }
+
+    return res;
+  }
+
+
+  private static List<String> generateCombination(int i) {
+    List<String> res = new ArrayList<>();
+
+    String[] VALUES = {"Crazy", "HighRoller", "Normal", "SafeBetter"};
+    int SIZE = VALUES.length;
+
+    for (int j = 0; j < i; j++) {
+      res.add(VALUES[RANDOM.nextInt(SIZE)]);
+    }
+
+    return res;
   }
 
   private static String createAgentsString(ArrayList<String> agents) throws UnknownHostException {

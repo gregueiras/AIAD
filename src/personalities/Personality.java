@@ -80,4 +80,8 @@ public class Personality {
     public int getPriceBuy(Company c) {
         return (int) Math.round(getTypeRatio(c) * maxPriceBuy);
     }
+
+    public String getType() {
+        return "";
+    }
 }

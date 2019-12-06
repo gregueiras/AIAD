@@ -1,14 +1,6 @@
 package agents;
 
-import behaviours.AssignCompanies;
-import behaviours.AssignInvestors;
-import behaviours.CreateRound;
-import behaviours.EndNegotiation;
-import behaviours.FindAgents;
-import behaviours.OfferCompanies;
-import behaviours.Print;
-import behaviours.SendMessage;
-import behaviours.StateMachine;
+import behaviours.*;
 import helper.*;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -18,15 +10,16 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
 import market.profits.Profits;
 import market.profits.ProfitsFactory;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AgentBoard extends OurAgent {
 
@@ -44,6 +37,8 @@ public class AgentBoard extends OurAgent {
   private ConcurrentMap<AID, Integer> managers;
 
   private ConcurrentMap<AID, Map<InvestmentType,Set<String>>> investments;
+
+    private Map<InvestmentType, Integer> initialCompanyDistribution;
 
   private Round round;
 
@@ -135,6 +130,9 @@ public class AgentBoard extends OurAgent {
     this.currentRound = 0;
     this.initializeProfitsBoard();
 
+      Object[] args = (Object[]) getArguments();
+      this.initialCompanyDistribution = (Map<InvestmentType, Integer>) args[0];
+
     // Register the book-selling service in the yellow pages
     registerDFS();
     stateMachine();
@@ -145,7 +143,7 @@ public class AgentBoard extends OurAgent {
     Behaviour findManagers = new FindAgents(AgentType.MANAGER, this);
     Behaviour findInvestors = new FindAgents(AgentType.INVESTOR, this);
     Behaviour createRound = new CreateRound(this);
-    Behaviour assignCompanies = new AssignCompanies(this);
+      Behaviour assignCompanies = new AssignCompanies(this, initialCompanyDistribution);
     Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
     Behaviour endNegotiation = new EndNegotiation(this);

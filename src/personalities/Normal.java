@@ -1,11 +1,8 @@
 package personalities;
 
-import market.Company;
 import market.InvestmentType;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 public class Normal extends Personality {
 
@@ -25,7 +22,8 @@ public class Normal extends Personality {
 
     }
 
-   public String getType(){
+    @Override
+    public String getType() {
         return "Normal";
    }
 }
