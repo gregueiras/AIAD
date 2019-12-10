@@ -82,7 +82,7 @@ public class Logger {
         final Path path = getFileName(name);
         if (!path.toFile().exists()) {
           setup(name);
-          header = "Personality,agentType,nrPlayers,nrCrazyInvestors,nrHighRollerInvestors,nrNormalInvestors,nrSafeBetterInvestors,nrCrazyManagers,nrHighRollerManagers,nrNormalManagers,nrSafeBetterManagers,nrCompanies,nrBlueCompanies,nrGreenCompanies,nrYellowCompanies,nrRedCompanies,finalCapital\n";
+          header = "Personality,agentType,nrPlayers,nrCrazyInvestors,nrHighRollerInvestors,nrNormalInvestors,nrSafeBetterInvestors,nrCrazyManagers,nrHighRollerManagers,nrNormalManagers,nrSafeBetterManagers,nrCompanies,nrBlueCompanies,nrGreenCompanies,nrYellowCompanies,nrRedCompanies,finalCapital,winner\n";
 
         }
         content = header + content;

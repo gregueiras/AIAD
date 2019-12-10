@@ -503,13 +503,17 @@ public class AgentBoard extends OurAgent {
 
   private String getAgentsRowTable(ConcurrentMap<AID,Integer> agents , int numberPlayers, int numberCrazyInvestors, int numberHighRollerInvestors, int numberNormalInvestors, int numberSafeBetterInvestors, int numberCrazyManagers, int numberHighRollerManagers, int numberNormalManagers, int numberSafeBetterManagers, String agentType, String dataCompanies) {
     String row = "";
+    Map<AID,Integer> winnerAgents = this.findWinnerAgents(agents);
     for (Map.Entry<AID, Integer> entry : agents.entrySet()) {
+      String winner = "false";
       AID agent = entry.getKey();
+      if(winnerAgents.get(agent)!= null)
+        winner = "true";
       row += this.getAgentPersonality(agent) + "," + agentType +
               "," + numberPlayers + "," +
               numberCrazyInvestors + "," + numberHighRollerInvestors + "," + numberNormalInvestors + "," + numberSafeBetterInvestors + "," +
               numberCrazyManagers + "," + numberHighRollerManagers + "," + numberNormalManagers + "," + numberSafeBetterManagers + "," + dataCompanies +
-              "," + agents.get(agent) + "\n";
+              "," + agents.get(agent) + "," + winner + "\n";
     }
     return row;
   }
