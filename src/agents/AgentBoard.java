@@ -38,7 +38,7 @@ public class AgentBoard extends OurAgent {
 
   private ConcurrentMap<AID, Map<InvestmentType,Set<String>>> investments;
 
-    private Map<InvestmentType, Integer> initialCompanyDistribution;
+  private Map<InvestmentType, Integer> initialCompanyDistribution;
 
   private Round round;
 
@@ -133,6 +133,10 @@ public class AgentBoard extends OurAgent {
     this.personalitiesInvestors = new HashMap<>();
     this.personalitiesManagers = new HashMap<>();
 
+    this.initializePersonalities(this.personalitiesInvestors);
+    this.initializePersonalities(this.personalitiesManagers);
+
+
     rand = new Random();
     this.resetCurrentShift();
     this.currentRound = 0;
@@ -217,13 +221,18 @@ public class AgentBoard extends OurAgent {
     }
   }
 
+  private String getAgentPersonality(AID agent){
+    return (agent.getName().split("#")[1]).split("@")[0];
+  }
+
+
   @Override
   public void registerAgent(AID[] agents, AgentType type) {
     switch (type) {
       case INVESTOR:
         for(AID agent: agents){
           this.investors.put(agent, 120);
-          String agentPersonality = (agent.getName().split("#")[1]).split("@")[0];
+          String agentPersonality = this.getAgentPersonality(agent);
           associate(this.personalitiesInvestors, agentPersonality);
           initializeInvestment(agent);
         }
@@ -231,8 +240,7 @@ public class AgentBoard extends OurAgent {
       case MANAGER:
         for(AID agent: agents){
           this.managers.put(agent, 0);
-
-          String agentPersonality = (agent.getName().split("#")[1]).split("@")[0];
+          String agentPersonality = this.getAgentPersonality(agent);
           System.out.println(agentPersonality);
           associate(this.personalitiesManagers, agentPersonality);
         }
@@ -252,13 +260,24 @@ public class AgentBoard extends OurAgent {
     this.investments.put(agent, initialMap);
   }
 
+
+  private void initializePersonalities(HashMap<String,Integer> personalities){
+    personalities.put("Crazy", 0);
+    personalities.put("HighRoller", 0);
+    personalities.put("Normal", 0);
+    personalities.put("SafeBetter", 0);
+  }
+
   @Override
   public void sendMessage(State type) {
     switch (type) {
       case ROUND_END:
       case SHIFT_END:
+        sendEndStateMsg(type);
+        break;
       case GAME_END:
         sendEndStateMsg(type);
+        this.printTable();
         break;
       default:
         break;
@@ -286,6 +305,7 @@ public class AgentBoard extends OurAgent {
       if(state.equals(State.GAME_END)){
         this.rollDices();
         createGameEndMsg(msg);
+
       } else
          msg.setContent(state.toString());
 
@@ -452,6 +472,44 @@ public class AgentBoard extends OurAgent {
     {
       this.managers.put(entry.getKey(), 0);
     }
+  }
+
+
+  private void printTable(){
+    String row = buildTable();
+    Logger.print("GameData", row);
+  }
+
+
+  private String buildTable(){
+    String row = "";
+    int numberPlayers = this.investors.size() + this.managers.size();
+    int numberCrazyInvestors = this.personalitiesInvestors.get("Crazy");
+    int numberHighRollerInvestors = this.personalitiesInvestors.get("HighRoller");
+    int numberNormalInvestors = this.personalitiesInvestors.get("Normal");
+    int numberSafeBetterInvestors = this.personalitiesInvestors.get("SafeBetter");
+
+    int numberCrazyManagers = this.personalitiesManagers.get("Crazy");
+    int numberHighRollerManagers = this.personalitiesManagers.get("HighRoller");
+    int numberNormalManagers = this.personalitiesManagers.get("Normal");
+    int numberSafeBetterManagers = this.personalitiesManagers.get("SafeBetter");
+
+    row = getAgentsRowTable(this.investors, row, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers);
+    row += getAgentsRowTable(this.managers, row, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers);
+    return row;
+  }
+
+  private String getAgentsRowTable(ConcurrentMap<AID,Integer> agents ,String row, int numberPlayers, int numberCrazyInvestors, int numberHighRollerInvestors, int numberNormalInvestors, int numberSafeBetterInvestors, int numberCrazyManagers, int numberHighRollerManagers, int numberNormalManagers, int numberSafeBetterManagers) {
+    for (Map.Entry<AID, Integer> entry : agents.entrySet()) {
+      AID investor = entry.getKey();
+      row += this.getAgentPersonality(investor) + ";" + numberPlayers + ";" +
+              numberCrazyInvestors + ";" + numberHighRollerInvestors + ";" + numberNormalInvestors + ";" + numberSafeBetterInvestors +
+              numberCrazyManagers + ";" + numberHighRollerManagers + ";" + numberNormalManagers + ";" + numberSafeBetterManagers +
+              ";" + agents.get(investor) + "/n";
+    }
+
+    System.out.println(row);
+    return row;
   }
 
 

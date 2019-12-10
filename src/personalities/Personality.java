@@ -75,8 +75,7 @@ public abstract class Personality {
         offer.setPrice(newValue);
         return offer;
     }
-
-    public abstract String getType();
+    
 
 
     public int getPriceBuy(Company c) {
