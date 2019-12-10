@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
+  private static final int BOUND = 10000;
   private static final Random RANDOM = new Random();
 
   private static Config readJSON(int scenario) {
@@ -75,9 +76,11 @@ public class Main {
       ArrayList<AgentController> controllers = new ArrayList<>();
       ArrayList<String> agents = new ArrayList<>();
 
+
       for (int i = 0; i < managers.size(); ++i) {
+        int randId = RANDOM.nextInt(BOUND);
         String personalityString = managers.get(i);
-        String agent = "Manager" + i + "#" + personalityString;
+        String agent = "Manager" + i + "#" + personalityString + "#" + randId;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 
@@ -88,8 +91,9 @@ public class Main {
       }
 
       for (int i = 0; i < investors.size(); ++i) {
+        int randId = RANDOM.nextInt(BOUND);
         String personalityString = investors.get(i);
-        String agent = "Investor" + i + "#" + personalityString;
+        String agent = "Investor" + i + "#"  + personalityString + "#" + randId;
 
         Personality personality = PersonalityFactory.createPersonality(personalityString);
 
@@ -103,11 +107,12 @@ public class Main {
       System.err.println(investors);
       System.err.println(companies);
 
-
+      int randID = RANDOM.nextInt(BOUND);
+      String boardName = "BOARD" + "#" + randID;
       AgentController board = mainController
-              .createNewAgent("BOARD", AgentBoard.class.getName(), new Object[]{companies});
+              .createNewAgent(boardName, AgentBoard.class.getName(), new Object[]{companies});
       controllers.add(board);
-      agents.add("BOARD");
+      agents.add(boardName);
 
       String agentsArgs = createAgentsString(agents);
 
@@ -160,6 +165,7 @@ public class Main {
 
   private static String createAgentsString(ArrayList<String> agents) throws UnknownHostException {
     StringBuilder agentsBuilder = new StringBuilder();
+
     for (String s : agents) {
       String agent = s + "@" + InetAddress.getLocalHost().getHostAddress() + ":1099/JADE;";
       agentsBuilder.append(agent);

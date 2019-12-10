@@ -222,7 +222,7 @@ public class AgentBoard extends OurAgent {
   }
 
   private String getAgentPersonality(AID agent){
-    return (agent.getName().split("#")[1]).split("@")[0];
+    return agent.getName().split("#")[1];
   }
 
 
