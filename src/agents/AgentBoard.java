@@ -1,25 +1,50 @@
 package agents;
 
-import behaviours.*;
-import helper.*;
+import behaviours.AssignCompanies;
+import behaviours.AssignInvestors;
+import behaviours.CreateRound;
+import behaviours.EndNegotiation;
+import behaviours.FindAgents;
+import behaviours.OfferCompanies;
+import behaviours.Print;
+import behaviours.SendMessage;
+import behaviours.StateMachine;
+import helper.Logger;
+import helper.Round;
+import helper.Shift;
+import helper.State;
+import helper.StateEndMsg;
+import helper.Transition;
+import jade.content.lang.Codec;
+import jade.content.lang.sl.SLCodec;
+import jade.content.onto.Ontology;
+import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
+import jade.domain.JADEAgentManagement.JADEManagementOntology;
+import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import market.Company;
 import market.CompanyFactory;
 import market.InvestmentType;
 import market.profits.Profits;
 import market.profits.ProfitsFactory;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class AgentBoard extends OurAgent {
 
@@ -142,7 +167,7 @@ public class AgentBoard extends OurAgent {
     this.currentRound = 0;
     this.initializeProfitsBoard();
 
-      Object[] args = (Object[]) getArguments();
+    Object[] args = getArguments();
       this.initialCompanyDistribution = (Map<InvestmentType, Integer>) args[0];
 
     // Register the book-selling service in the yellow pages
@@ -210,6 +235,20 @@ public class AgentBoard extends OurAgent {
     // Close the GUI
     // Printout a dismissal message
     Logger.print(this.getLocalName(), "Seller-agent " + getAID().getName() + " terminating.");
+
+    Codec codec = new SLCodec();
+    Ontology jmo = JADEManagementOntology.getInstance();
+    getContentManager().registerLanguage(codec);
+    getContentManager().registerOntology(jmo);
+    ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+    msg.addReceiver(getAMS());
+    msg.setLanguage(codec.getName());
+    msg.setOntology(jmo.getName());
+    try {
+      getContentManager().fillContent(msg, new Action(getAID(), new ShutdownPlatform()));
+      send(msg);
+    } catch (Exception e) {
+    }
   }
 
 
