@@ -155,7 +155,7 @@ public class AgentBoard extends OurAgent {
     Behaviour findManagers = new FindAgents(AgentType.MANAGER, this);
     Behaviour findInvestors = new FindAgents(AgentType.INVESTOR, this);
     Behaviour createRound = new CreateRound(this);
-      Behaviour assignCompanies = new AssignCompanies(this, initialCompanyDistribution);
+    Behaviour assignCompanies = new AssignCompanies(this, initialCompanyDistribution);
     Behaviour assignInvestors = new AssignInvestors(this);
     Behaviour printEnd = new Print("MSG Received");
     Behaviour endNegotiation = new EndNegotiation(this);
@@ -241,7 +241,6 @@ public class AgentBoard extends OurAgent {
         for(AID agent: agents){
           this.managers.put(agent, 0);
           String agentPersonality = this.getAgentPersonality(agent);
-          System.out.println(agentPersonality);
           associate(this.personalitiesManagers, agentPersonality);
         }
         break;
@@ -494,22 +493,58 @@ public class AgentBoard extends OurAgent {
     int numberNormalManagers = this.personalitiesManagers.get("Normal");
     int numberSafeBetterManagers = this.personalitiesManagers.get("SafeBetter");
 
-    row = getAgentsRowTable(this.investors, row, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers);
-    row += getAgentsRowTable(this.managers, row, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers);
+    String dataCompanies = this.getCompaniesInitialDistributionData();
+
+
+    row = "Personality,agentType,nrPlayers,nrCrazyInvestors,nrHighRollerInvestors,nrNormalInvestors,nrSafeBetterInvestors,nrCrazyManagers,nrHighRollerManagers,nrNormalManagers,nrSafeBetterManagers,nrCompanies,nrBlueCompanies,nrGreenCompanies,nrYellowCompanies,nrRedCompanies,finalCapital\n";
+
+    row += getAgentsRowTable(this.investors, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers, "investor", dataCompanies);
+    row += getAgentsRowTable(this.managers, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers, "manager", dataCompanies);
+
     return row;
   }
 
-  private String getAgentsRowTable(ConcurrentMap<AID,Integer> agents ,String row, int numberPlayers, int numberCrazyInvestors, int numberHighRollerInvestors, int numberNormalInvestors, int numberSafeBetterInvestors, int numberCrazyManagers, int numberHighRollerManagers, int numberNormalManagers, int numberSafeBetterManagers) {
+  private String getAgentsRowTable(ConcurrentMap<AID,Integer> agents , int numberPlayers, int numberCrazyInvestors, int numberHighRollerInvestors, int numberNormalInvestors, int numberSafeBetterInvestors, int numberCrazyManagers, int numberHighRollerManagers, int numberNormalManagers, int numberSafeBetterManagers, String agentType, String dataCompanies) {
+    String row = "";
     for (Map.Entry<AID, Integer> entry : agents.entrySet()) {
-      AID investor = entry.getKey();
-      row += this.getAgentPersonality(investor) + ";" + numberPlayers + ";" +
-              numberCrazyInvestors + ";" + numberHighRollerInvestors + ";" + numberNormalInvestors + ";" + numberSafeBetterInvestors +
-              numberCrazyManagers + ";" + numberHighRollerManagers + ";" + numberNormalManagers + ";" + numberSafeBetterManagers +
-              ";" + agents.get(investor) + "/n";
+      AID agent = entry.getKey();
+      row += this.getAgentPersonality(agent) + "," + agentType +
+              "," + numberPlayers + "," +
+              numberCrazyInvestors + "," + numberHighRollerInvestors + "," + numberNormalInvestors + "," + numberSafeBetterInvestors + "," +
+              numberCrazyManagers + "," + numberHighRollerManagers + "," + numberNormalManagers + "," + numberSafeBetterManagers + "," + dataCompanies +
+              "," + agents.get(agent) + "\n";
     }
-
-    System.out.println(row);
     return row;
+  }
+
+  private String getCompaniesInitialDistributionData(){
+    int nrCompanies = 0;
+    int nrYellowCompanies = 0;
+    int nrBlueCompanies = 0;
+    int nrGreenCompanies = 0;
+    int nrRedCompanies = 0;
+
+    for (InvestmentType type : this.initialCompanyDistribution.keySet()) {
+      int companyNumber = this.initialCompanyDistribution.get(type);
+      nrCompanies += companyNumber;
+      switch (type) {
+        case RED:
+          nrRedCompanies = companyNumber;
+          break;
+        case BLUE:
+          nrBlueCompanies = companyNumber;
+          break;
+        case YELLOW:
+          nrYellowCompanies= companyNumber;
+          break;
+        case GREEN:
+          nrGreenCompanies = companyNumber;
+          break;
+      }
+
+    }
+    String data = nrCompanies + "," + nrBlueCompanies + "," + nrGreenCompanies + "," + nrYellowCompanies + "," + nrRedCompanies;
+    return data;
   }
 
 
