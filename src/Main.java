@@ -10,11 +10,6 @@ import jade.core.Runtime;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
-import market.InvestmentType;
-import org.apache.commons.cli.*;
-import personalities.Personality;
-import personalities.PersonalityFactory;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetAddress;
@@ -23,7 +18,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import market.InvestmentType;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import personalities.Personality;
+import personalities.PersonalityFactory;
 
 public class Main {
 
@@ -70,7 +74,7 @@ public class Main {
     try {
       Runtime rt = Runtime.instance();
       Profile p1 = new ProfileImpl();
-      ContainerController mainController = rt.createAgentContainer(p1);
+      ContainerController mainController = rt.createMainContainer(p1);
 
       ArrayList<AgentController> controllers = new ArrayList<>();
       ArrayList<String> agents = new ArrayList<>();
@@ -103,12 +107,12 @@ public class Main {
       System.err.println(investors);
       System.err.println(companies);
 
-
       AgentController board = mainController
               .createNewAgent("BOARD", AgentBoard.class.getName(), new Object[]{companies});
       controllers.add(board);
       agents.add("BOARD");
 
+      /*
       String agentsArgs = createAgentsString(agents);
 
       AgentController sniff = mainController.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer",
@@ -120,6 +124,7 @@ public class Main {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+      */
 
       for (AgentController ac : controllers) {
         ac.start();
@@ -127,7 +132,7 @@ public class Main {
 
       Logger.print("main", "This is a test");
       Logger.print("main", "Huge Success");
-    } catch (UnknownHostException | StaleProxyException e) {
+    } catch (StaleProxyException e) {
       e.printStackTrace();
     }
   }

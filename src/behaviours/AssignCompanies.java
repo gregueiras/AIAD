@@ -5,15 +5,14 @@ import helper.State;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
-import market.Company;
-import market.InvestmentType;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import market.Company;
+import market.InvestmentType;
 
 public class AssignCompanies extends OneShotBehaviour {
 
@@ -39,7 +38,6 @@ public class AssignCompanies extends OneShotBehaviour {
       for (AID aid : this.agent.getListManagers()) {
 
         Map<InvestmentType, List<Company>> companies = new HashMap<>();
-
 
         for (InvestmentType type : this.initialDistribution.keySet()) {
           List<Company> newCompanies = new LinkedList<>();
