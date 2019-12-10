@@ -476,7 +476,7 @@ public class AgentBoard extends OurAgent {
 
   private void printTable(){
     String row = buildTable();
-    Logger.print("GameData", row);
+    Logger.print("GameData", row, true);
   }
 
 
@@ -495,12 +495,9 @@ public class AgentBoard extends OurAgent {
 
     String dataCompanies = this.getCompaniesInitialDistributionData();
 
-
-    row = "Personality,agentType,nrPlayers,nrCrazyInvestors,nrHighRollerInvestors,nrNormalInvestors,nrSafeBetterInvestors,nrCrazyManagers,nrHighRollerManagers,nrNormalManagers,nrSafeBetterManagers,nrCompanies,nrBlueCompanies,nrGreenCompanies,nrYellowCompanies,nrRedCompanies,finalCapital\n";
-
-    row += getAgentsRowTable(this.investors, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers, "investor", dataCompanies);
+    row = getAgentsRowTable(this.investors, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers, "investor", dataCompanies);
     row += getAgentsRowTable(this.managers, numberPlayers, numberCrazyInvestors, numberHighRollerInvestors, numberNormalInvestors, numberSafeBetterInvestors, numberCrazyManagers, numberHighRollerManagers, numberNormalManagers, numberSafeBetterManagers, "manager", dataCompanies);
-
+    row = row.substring(0, row.length() - 1);
     return row;
   }
 

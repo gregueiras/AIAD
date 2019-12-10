@@ -32,7 +32,7 @@ public class Logger {
       f.getParentFile().mkdirs();
       f.createNewFile();
     } catch (IOException e) {
-      e.printStackTrace();
+     // e.printStackTrace();
     }
 
   }
@@ -55,7 +55,13 @@ public class Logger {
 
       if (!init) {
         init = true;
-        FileUtils.cleanDirectory(path.toFile().getParentFile());
+       // FileUtils.cleanDirectory(path.toFile().getParentFile());
+        for (File file: path.toFile().getParentFile().listFiles()) {
+          if(!file.getName().equals("GameData.txt")) {
+            System.out.println(file.getName());
+            file.delete();
+          }
+        }
       }
       if (!path.toFile().exists()) {
         setup(name);
@@ -66,5 +72,26 @@ public class Logger {
     } catch (final IOException ioe) {
       ioe.printStackTrace();
     }
+  }
+
+  public static void print(String name, String content, Boolean append) {
+    String header = "";
+    if(!append) print(name,content);
+    else {
+      try {
+        final Path path = getFileName(name);
+        if (!path.toFile().exists()) {
+          setup(name);
+          header = "Personality,agentType,nrPlayers,nrCrazyInvestors,nrHighRollerInvestors,nrNormalInvestors,nrSafeBetterInvestors,nrCrazyManagers,nrHighRollerManagers,nrNormalManagers,nrSafeBetterManagers,nrCompanies,nrBlueCompanies,nrGreenCompanies,nrYellowCompanies,nrRedCompanies,finalCapital\n";
+
+        }
+        content = header + content;
+        content += "\n";
+        Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+      } catch (final IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
+
   }
 }
