@@ -12,12 +12,15 @@ import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import market.InvestmentType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -72,8 +75,14 @@ public class Main {
     companies = config.companies;
 
     try {
+      ServerSocket socket = new ServerSocket(0);
+      int port = socket.getLocalPort();
+      socket.setReuseAddress(true);
+
+      socket.close();
+
       Runtime rt = Runtime.instance();
-      Profile p1 = new ProfileImpl();
+      Profile p1 = new ProfileImpl(null, port, null);
       ContainerController mainController = rt.createMainContainer(p1);
 
       ArrayList<AgentController> controllers = new ArrayList<>();
@@ -120,12 +129,12 @@ public class Main {
       sniff.start();
 
 
+      */
       try {
         TimeUnit.SECONDS.sleep(2);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      */
 
       for (AgentController ac : controllers) {
         ac.start();
@@ -133,7 +142,7 @@ public class Main {
 
       Logger.print("main", "This is a test");
       Logger.print("main", "Huge Success");
-    } catch (StaleProxyException e) {
+    } catch (StaleProxyException | IOException e) {
       e.printStackTrace();
     }
   }
