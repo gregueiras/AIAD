@@ -4,8 +4,8 @@ import subprocess
 import sys
 
 MAX_WORKERS = 4
-NO_RUNS = 20
-INITIAL_NO_RUNS = 20
+NO_RUNS = 200
+INITIAL_NO_RUNS = 200
 
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -72,3 +72,4 @@ def main():
     sys.exit(0)
 
 main()
+sys.exit(0)
