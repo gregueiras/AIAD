@@ -3,7 +3,7 @@ import multiprocessing
 import subprocess
 import sys
 
-MAX_WORKERS = 4
+MAX_WORKERS = 2
 NO_RUNS = 200
 INITIAL_NO_RUNS = 200
 
@@ -85,5 +85,12 @@ def main():
     print("program continued")
     sys.exit(0)
 
-main()
+
+while True:
+   main()
+   time.sleep(30) # 3600 seconds = 1 hour
+   NO_RUNS = 200
+   INITIAL_NO_RUNS = 200
+
+
 sys.exit(0)
